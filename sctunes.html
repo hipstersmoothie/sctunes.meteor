@@ -1,0 +1,96 @@
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>sctunes</title>
+</head>
+
+<body>
+  {{> renderPage}}
+</body>
+
+<template name="app">
+   <div class="container">
+      <div class="row topRow">
+         <span class="col-md-4">
+            {{> loginButtons}}
+         </span>
+         {{#if loggedIn}}
+            <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>
+            <span id="reset" class="col-md-1"><button type="button">Reset</button></span>
+            <span id="sort" class="col-md-2 sort">
+               <span>Sort By:</span>
+            </span>
+            <span id="sBU" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByName">Uploader</span>
+            <span id="sBA" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByArtist">Artist</span>
+         {{/if}}
+      </div>
+      {{#if loggedIn}} 
+         <h1 id="loadingTracks" class="row"> Loading... </h1>
+         <div class="row" id="ui">
+            {{#if playlistMode}}
+            <div id="playlists" class="col-md-2">
+               <span id="newPlaylist"><button type="button" data-toggle="modal" data-target=".newPlaylistModal">New Playlist</button></span>
+               <br>
+               <div id="favorites" class="playlistRow">Favorites</div>
+               {{#each playlists}}
+                  <div id={{this.id}} class="playlistRow">{{this.title}}</div>
+               {{/each}}
+            </div>
+            {{else}}
+            <div id="queue" class="col-md-2">
+               <br>
+               <h3>Queue</h3>
+               {{#each queue}}
+                  <div id="{{this.id}}-queue" class="queueRow {{this.queueIndex}} {{this.qplaystatus}}">{{this.title}}</div>
+               {{/each}}
+            </div>
+            {{/if}}
+            <div id="tracks" class="col-md-10">
+               {{#each tracks}}
+                  <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
+                     {{#if uploader}} 
+                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
+                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                     {{else}}
+                     {{#if artist}}
+                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
+                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.artist}}</span>
+                     {{else}}
+                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
+                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                     {{/if}}
+                     {{/if}}
+                  </div>
+               {{/each}}
+            </div>
+         </div>
+      {{/if}}
+   </div>
+   <div class="modal fade newPlaylistModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-sm container">
+      <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+           <h4 class="modal-title">New Playlist</h4>
+         </div>
+         <div class="modal-body">
+           <form>
+             Name: <input id="newName" type="text" name="name"><br>
+           </form>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+           <button id="newPlaylistSubmit" type="button" class="btn btn-primary">Save changes</button>
+         </div>
+         <br>
+   </div>
+     </div>
+   </div>
+</template>
+
+
+
+<template name="callback">
+   <body onload="window.opener.setTimeout(window.opener.SC.connectCallback, 1)">
+     <b style="width: 100%; text-align: center;">This popup should automatically close in a few seconds</b>
+  </body>
+</template>

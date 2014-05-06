@@ -1,0 +1,77 @@
+/* CSS declarations go here */
+.title {
+   
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+   .topRow {
+      padding-left: 20px;
+   }
+   
+   .uploader {
+      
+   }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+   .topRow {
+      padding-left: 80px;
+   }
+   .uploader {
+      
+   }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+   .topRow {
+      padding-left: 120px;
+   }
+   .uploader {
+      padding-right: 75px;
+   }
+}
+.trackRow {
+   cursor: hand;
+   user-select: none;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+}
+
+.uploader {
+   text-align: right;
+}
+
+#loadingTracks {
+   padding-left: 40%;
+}
+
+#ui {
+   visibility: hidden;
+}
+
+.playing {
+   background : darkorange;
+}
+
+#sort {
+   padding-left: 20px;
+}
+
+#topRow {
+   padding-left: 20px;
+}
+
+.options {
+   display: inline;
+}
+
+.selected {
+   background: darkturquoise;
+}
+
+.waveform {
+   width: 100%;
+}
