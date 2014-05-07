@@ -45,6 +45,12 @@
             </div>
             {{/if}}
             <div id="tracks" class="col-md-10">
+               {{#if currentTrack}}
+                  <div id="currentTrackPlayer" class="row">
+                     <span id="playpause" class="col-md-1"><button type="button">Play!</button></span>
+                     <span class="col-xs-11 col-sm-11 col-md-11 col-lg-11">{{ctTitle}} {{ctUploader}}</span>                  
+                  </div>
+               {{/if}}
                {{#each tracks}}
                   <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
                      {{#if uploader}} 

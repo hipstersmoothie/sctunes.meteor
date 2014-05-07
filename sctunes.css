@@ -27,17 +27,23 @@
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
    .topRow {
-      padding-left: 120px;
+      padding-left: 180px;
    }
    .uploader {
       padding-right: 75px;
    }
 }
 .trackRow {
+   cursor: pointer;
    cursor: hand;
    user-select: none;
    -webkit-user-select: none;
    -moz-user-select: none;
+}
+
+.playlistRow {
+   cursor: pointer;
+   cursor: hand;
 }
 
 .uploader {
@@ -46,6 +52,10 @@
 
 #loadingTracks {
    padding-left: 40%;
+}
+
+#currentTrackPlayer {
+   visibility: hidden;
 }
 
 #ui {
@@ -61,7 +71,7 @@
 }
 
 #topRow {
-   padding-left: 20px;
+   padding-left: 180px;
 }
 
 .options {
@@ -70,6 +80,10 @@
 
 .selected {
    background: darkturquoise;
+}
+
+.selectedForQueue {
+   background: gold;
 }
 
 .waveform {
