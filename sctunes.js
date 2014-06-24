@@ -5,7 +5,6 @@ if (Meteor.isClient) {
       Session.set("ctTitle", null);
       Session.set("ctUploader", null);
       Session.set("playing", false);
-
       Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
       Mousetrap.bind('p', function() { 
          $("#playlists").css('visibility', 'visible'); 
@@ -31,9 +30,9 @@ if (Meteor.isClient) {
    };
    
    Template.app.loggedIn = function () {
-      // update user's profile description
       if(Meteor.user()) {
          getTracks();
+         $('html, body').css("background", "none");
          madeTracks = true;
          Session.set("favoritesView", true);
          return true;
@@ -43,66 +42,67 @@ if (Meteor.isClient) {
    };
    
    Template.app.artist = function () {
-      // update user's profile description
       return sortArtist;
    };
    
    Template.app.currentTrack = function () {
-      // update user's profile description
-      console.log(Session.get("ctTitle") !== null);
       return Session.get("playing");
    };
    
    Template.app.uploader = function () {
-      // update user's profile description
       return sortUploader;
    };
    
    Template.app.ctTitle = function () {
-      // update user's profile description
       return Session.get("ctTitle");
    };
    
    Template.app.ctUploader = function () {
-      // update user's profile description
       return Session.get("ctUploader");
    };
    
    var getArtist = function(tracks) {
-      for(var i = 0; i < tracks.length; i++)  {
-         tracks[i].playstatus = "notplaying";
-         if(tracks[i].title.indexOf(tracks[i].user.username) === -1 && tracks[i].title.indexOf('-') > -1) {
-            var checkValid = parseInt(tracks[i].title.substr(0, tracks[i].title.indexOf('-'))) || 0;
+      var keys = Object.keys(tracks);
+      for(var i = 0; i < keys.lengt; i++)  {
+         tracks[keys[i]].playstatus = "notplaying";
+         if(tracks[keys[i]].title.indexOf(tracks[keys[i]].user.username) === -1 && tracks[keys[i]].title.indexOf('-') > -1) {
+            var checkValid = parseInt(tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'))) || 0;
             if(checkValid > 0) {
-               tracks[i].artist = tracks[i].title.substr(tracks[i].title.indexOf('-') + 1, tracks[i].title.substr(tracks[i].title.indexOf('-') + 1, tracks[i].title.length).indexOf('-'));
-               if(tracks[i].artist == "")
-                  tracks[i].artist = tracks[i].title.substr(0, tracks[i].title.indexOf('-'));
+               tracks[keys[i]].artist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length).indexOf('-'));
+               if(tracks[keys[i]].artist == "")
+                  tracks[keys[i]].artist = tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'));
             } else
-               tracks[i].artist = tracks[i].title.substr(0, tracks[i].title.indexOf('-'));
-            tracks[i].titleWithoutArtist = tracks[i].title.substr(tracks[i].title.indexOf('-') + 1, tracks[i].title.length);
+               tracks[keys[i]].artist = tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'));
+            tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length);
          } else {
-            if(tracks[i].title.indexOf('-') > -1 && tracks[i].user.username.localeCompare(tracks[i].title.substr(0, tracks[i].title.indexOf('-') - 1)) == 0)
-               tracks[i].titleWithoutArtist = tracks[i].title.substr(tracks[i].title.indexOf('-') + 1, tracks[i].title.length);
+            if(tracks[keys[i]].title.indexOf('-') > -1 && tracks[keys[i]].user.username.localeCompare(tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-') - 1)) == 0)
+               tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length);
             else
-               tracks[i].titleWithoutArtist = tracks[i].title;
-            tracks[i].artist = tracks[i].user.username;
+               tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title;
+            tracks[keys[i]].artist = tracks[keys[i]].user.username;
          }
       }
-      
       return tracks;
    }
    
    var getTracks = function () {
       // update user's profile description
-      var tracks = [], offset = 0;
+      var tracks = {}, offset = 0;
       if(!madeTracks)
          Meteor.call("getAccessToken", function(error, accessToken){
             accessTokenS = accessToken;
             Meteor.call("getMe", accessToken, function(error, me) {
+               console.log(me.id)
                for(var i = 0; i < Math.ceil(me.public_favorites_count / 200); i++) {
                   Meteor.call("getFavorites", accessToken, i, function(error, favorites) {
                      i += favorites.length;
-                     tracks.push.apply(tracks, getArtist(indexTracks(favorites, tracks.length)));
+                     var moreTracks = getArtist(indexTracks(favorites));
+                     var keys = Object.keys(tracks);
+                     console.log(moreTracks);
+                     var keys = Object.keys(moreTracks);
+                     for (var x = 0; x < keys.length; x++ )
+                        tracks[keys[x]] = moreTracks[keys[x]];
+                     console.log(tracks);
                      Session.set("tracks", tracks);
                      Session.set("origTracks", tracks);
                   });
@@ -118,20 +118,28 @@ if (Meteor.isClient) {
    };
    
    var indexTracks = function(tracksToIndex) {
-      for(var i = 0; i < tracksToIndex.length; i++) 
+      tracks = {};
+      for(var i = 0; i < tracksToIndex.length; i++) {
          tracksToIndex[i].index = tIndex++;
+         tracks[tracksToIndex[i].id] = tracksToIndex[i];
+      }
       
-      return tracksToIndex;
+      return tracks;
    }
    
    Template.app.tracks = function () {
-      // update user's profile description
       SC.initialize({
-         client_id: '51c5ebff845639af50314b134ae1e904',
+         client_id: 'fc6924c8838d01597bab5ab42807c4ae',
          redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
          access_token: accessTokenS
       });
-      return Session.get("tracks");
+      var tracks = Session.get("tracks");
+      if(tracks) {
+         var keys = Object.keys(tracks);
+         return keys.map(function(v) { return tracks[v]; });
+      } else {
+         return [];
+      }
    };
    
    Template.app.playlists = function () {
@@ -257,7 +265,7 @@ if (Meteor.isClient) {
                currentTrack.stop();
                $("#currentTrackPlayer")[0].children[2].remove()
                if($("#" + currentTrackId).length)
-                  tracks[$("#" + currentTrackId)[0].classList[3]].playstatus = "notplaying";
+                  tracks[currentTrackId].playstatus = "notplaying";
                if(queueOn && $("#" + currentTrackId + "-queue").length) {
                   var queue = Session.get("queue");
                   queueOn = false;
@@ -265,7 +273,8 @@ if (Meteor.isClient) {
                   Session.set("queue", queue);
                }
             }
-            tracks[node.classList[3]].playstatus = "playing";
+            console.log(tracks[node.id]);
+            tracks[node.id].playstatus = "playing";
             Session.set("tracks", tracks);
             
             streamTrack(node.id, false);
@@ -296,8 +305,6 @@ if (Meteor.isClient) {
             } 
             tIndex = 0;
             Session.set("tracks",indexTracks(tracks.sort(function(a, b){ 
-               // console.log(a.user.username);
-               // console.log(b.user.username);
                return (a.artist).localeCompare(b.artist);
             })));
          } else {
@@ -329,8 +336,10 @@ if (Meteor.isClient) {
             if(event.target.id.localeCompare("favorites") === 0) {
                var tracks =  Session.get("origTracks");
                for(var i = 0; i < tracks.length; i++)                    
-               if(tracks[i].id === parseInt(currentTrackId)) 
-                  tracks[i].playstatus = "playing";
+                  if(tracks[i].id === parseInt(currentTrackId)) {
+                     tracks[i].playstatus = "playing";
+                     break;
+                  }
                
                Session.set("tracks", tracks);
             } else {
@@ -437,7 +446,15 @@ if (Meteor.isClient) {
    
    Meteor.Router.add({
       '/callback.html': 'callback',
-      '/': 'app',
+      '/': function() {
+         if(Meteor.user()) {
+            $('html, body').css("background", "none");
+            return 'app';
+         } else {
+            $('html, body').css("background", "darkorange");
+            return 'login';
+         };
+      },
       '*': 'not_found'
    });
    
@@ -446,6 +463,7 @@ if (Meteor.isClient) {
    if (Meteor.isServer) {
       Meteor.startup(function () {
          // code to run on server at startup
+         //console.log(ServiceConfiguration.configurations.remove({}));
       });
       
       Meteor.methods({

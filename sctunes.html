@@ -7,6 +7,24 @@
   {{> renderPage}}
 </body>
 
+<template name="login">
+   <div class="container" style="padding-top:14%; margin-left:-4%">
+      <div class="row">
+         <h1 class="col-sm-4 col-sm-push-4 col-md-4 col-md-push-4 sctunes">scTunes</h1>
+      </div>  
+      <div class="row">
+         <div class="col-sm-6 col-sm-push-6 col-md-6 col-md-push-6 desc">
+            <p>Listen to your soundcloud favorites easier!</p>
+         </div>
+      </div> 
+      <div class="row">
+         <span class="col-sm-6 col-sm-push-6 col-md-6 col-md-push-6">
+            {{> loginButtons}}
+         </span>
+      </div>
+   </div>
+</template>
+
 <template name="app">
    <div class="container">
       <div class="row topRow">
@@ -52,7 +70,7 @@
                   </div>
                {{/if}}
                {{#each tracks}}
-                  <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
+                  <div id={{this.key}} class="trackItem row trackRow {{this.index}}">
                      {{#if uploader}} 
                      <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
                      <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>

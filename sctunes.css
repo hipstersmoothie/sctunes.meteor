@@ -14,6 +14,17 @@
    }
 }
 
+.sctunes {
+   color: whitesmoke;
+   font-size: 150px;
+}
+
+.desc {
+   color: wheat;
+   font-size: large;
+   margin-left: -7%;
+}
+
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
    .topRow {
@@ -68,6 +79,10 @@
 
 #sort {
    padding-left: 20px;
+}
+
+body {
+   background : darkorange;
 }
 
 #topRow {
