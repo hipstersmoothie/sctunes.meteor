@@ -3,22 +3,22 @@ if (Meteor.isClient) {
       Session.set("queue", []);
       Session.set("playlistMode", true);
        Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
-       Mousetrap.bind('p', function() { 
-          $("#playlists").css('visibility', 'visible'); 
+       Mousetrap.bind('p', function() {
+          $("#playlists").css('visibility', 'visible');
           Session.set("playlistMode", true);});
    });
-   
+
    var queueOn = false, addToPlaylistQueue = [], accessTokenS, currentTrack = null, qIndex = 0, tIndex = 0, currentTrackId, madeTracks = false, sortUploader = false, sortArtist = false;
-   
+
    Template.app.create = function() {
       Meteor.loginWithSoundcloud({
-         
+
       }, function (err) {
            if (err)
              Session.set('errorMessage', err.reason || 'Unknown error');
-         });      
+         });
    };
-   
+
   Template.app.loggedIn = function () {
    // update user's profile description
       if(Meteor.user()) {
@@ -30,17 +30,17 @@ if (Meteor.isClient) {
       else
          return false;
   };
-  
+
   Template.app.artist = function () {
    // update user's profile description
       return sortArtist;
   };
-  
+
   Template.app.uploader = function () {
    // update user's profile description
       return sortUploader;
   };
-  
+
   var getArtist = function(tracks) {
      for(var i = 0; i < tracks.length; i++)  {
         tracks[i].playstatus = "notplaying";
@@ -64,7 +64,7 @@ if (Meteor.isClient) {
 
      return tracks;
   }
-  
+
    var getTracks = function () {
       // update user's profile description
          var tracks = [], offset = 0;
@@ -88,14 +88,14 @@ if (Meteor.isClient) {
                 });
             })
      };
-     
+
    var indexTracks = function(tracksToIndex) {
-      for(var i = 0; i < tracksToIndex.length; i++) 
+      for(var i = 0; i < tracksToIndex.length; i++)
         tracksToIndex[i].index = tIndex++;
-      
+
       return tracksToIndex;
    }
-  
+
   Template.app.tracks = function () {
    // update user's profile description
    SC.initialize({
@@ -103,32 +103,32 @@ if (Meteor.isClient) {
      redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
      access_token: accessTokenS
    });
-   $("#ui").css('visibility', 'visible'); 
+   $("#ui").css('visibility', 'visible');
    return Session.get("tracks");
   };
-  
+
   Template.app.playlists = function () {
    // update user's profile description
    if(Session.get("playlistChange"))
       Session.set("playlistChange", false);
    return Session.get("playlists");
   };
-  
+
   Template.app.favorites = function () {
    // update user's profile description
    return Session.get("favoritesView");
   };
-  
+
   Template.app.playlistMode = function () {
    // update user's profile description
    return Session.get("playlistMode");
   };
-  
+
   Template.app.queue = function () {
    // update user's profile description
    return Session.get("queue");
   };
-  
+
   Template.app.titleDoesNotContainUsername = function (title, username) {
    // update user's profile description
       if(title.indexOf(username) == -1)
@@ -136,7 +136,7 @@ if (Meteor.isClient) {
       else
          return false;
   };
-  
+
   var shuffle = function(array) {
      var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -153,15 +153,15 @@ if (Meteor.isClient) {
 
      return array;
    }
-   
+
    var getIds = function(tracks) {
       var ret = [];
-      for(var i = 0; i < tracks.length; i++) 
+      for(var i = 0; i < tracks.length; i++)
          ret.push({id: tracks[i].id});
-      
+
       return ret;
    };
-  
+
   Template.app.events = ({
    // update user's profile description
       'click .trackItem' : function(event) {
@@ -172,7 +172,7 @@ if (Meteor.isClient) {
             node = event.target;
          else
             node = event.target.parentNode;
-         if(event.altKey) {   
+         if(event.altKey) {
             tracks[$("#" + node.id)[0].classList[3]].playstatus = "selected";
             Session.set("tracks", tracks);
             addToPlaylistQueue.push({id: node.id});
@@ -191,7 +191,7 @@ if (Meteor.isClient) {
             }
             tracks[$("#" + node.id)[0].classList[3]].playstatus = "playing";
             Session.set("tracks", tracks);
-            
+
             SC.get("/tracks/" + node.id, function(track){
                var waveform = new Waveform({
                 container: document.getElementById(node.id),
@@ -203,13 +203,13 @@ if (Meteor.isClient) {
                    $("#" + node.id)[0].children[2].remove();
                    playNextTrack();
                 };
-               sound = SC.stream("/tracks/" + node.id, 
+               sound = SC.stream("/tracks/" + node.id,
                                  streamOptions,
                                  function(sound){
                                     currentTrack = sound;
                                     currentTrackId = node.id;
                                     currentTrack.play({onload: function() {
-                                                         if(this.readyState == 2) 
+                                                         if(this.readyState == 2)
                                                             playNextTrack();
                                                       }})
                                  });
@@ -225,7 +225,7 @@ if (Meteor.isClient) {
             }
             tIndex = 0;
             madeTracks = false;
-            Session.set("tracks",indexTracks(tracks.sort(function(a, b){ 
+            Session.set("tracks",indexTracks(tracks.sort(function(a, b){
                                        // console.log(a.user.username);
                                        // console.log(b.user.username);
                                        return (a.user.username).localeCompare(b.user.username);
@@ -242,11 +242,11 @@ if (Meteor.isClient) {
             var tracks = Session.get("tracks");
             if(sortUploader) {
                $(".sortByName").prop('checked', false);
-               sortUploader = false;   
-            } 
+               sortUploader = false;
+            }
             tIndex = 0;
             madeTracks = false;
-            Session.set("tracks",indexTracks(tracks.sort(function(a, b){ 
+            Session.set("tracks",indexTracks(tracks.sort(function(a, b){
                                        // console.log(a.user.username);
                                        // console.log(b.user.username);
                                        return (a.artist).localeCompare(b.artist);
@@ -272,19 +272,19 @@ if (Meteor.isClient) {
          console.log(event);
       },
       'click #newPlaylistSubmit' : function() {
+      SC.connect(function() {
            var tracks = [22448500, 21928809].map(function(id) { return { id: id } });
-           console.log(tracks);
-           SC.post('/playlists', {
-             playlist: { title: 'Test', 
-                         tracks: [{id: 111853048}] }
+           SC.put('/playlists', {
+             playlist: { title: 'My Playlist', tracks: tracks }
            });
+       });
       },
       'click .playlistRow' : function(event) {
            console.log(event.target.id);
            if(addToPlaylistQueue < 1) {
               if(event.target.id.localeCompare("favorites") === 0) {
                  var tracks =  Session.get("origTracks");
-                 for(var i = 0; i < tracks.length; i++)                    
+                 for(var i = 0; i < tracks.length; i++)
                     if(parseInt(tracks[i].id) === parseInt(currentTrackId))
                        tracks[i].playstatus = "playing";
                  Session.set("tracks", tracks);
@@ -292,27 +292,27 @@ if (Meteor.isClient) {
                  tIndex = 0;
                  SC.get('/playlists/' + event.target.id, function(playlist) {
                     var tracks = getArtist(indexTracks(playlist.tracks));
-                    for(var i = 0; i < tracks.length; i++) {                     
+                    for(var i = 0; i < tracks.length; i++) {
                        if(parseInt(tracks[i].id) === parseInt(currentTrackId))
                           tracks[i].playstatus = "playing";
                    }
                     Session.set("tracks", tracks);
                   });
                }
-               
-                  
+
+
            } else {
             SC.get('/me/playlists/' + event.target.id, function(playlist) {
                var oldTracks = getIds(playlist.tracks), tracks = Session.get("tracks");
                oldTracks.push.apply(oldTracks, addToPlaylistQueue);
                console.log($("#" + addToPlaylistQueue[0].id));
-               for(var i = 0; i < addToPlaylistQueue.length; i++) 
+               for(var i = 0; i < addToPlaylistQueue.length; i++)
                   tracks[parseInt($("#" + addToPlaylistQueue[i].id)[0].classList[3])].playstatus = "notplaying";
                addToPlaylistQueue = [];
                Session.set("tracks", tracks);
                 SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function(playlist) {
                    console.log(playlist);
-                });    
+                });
            });
            $("#" + event.target.id).addClass("selected");
            setTimeout(function(){
@@ -323,7 +323,7 @@ if (Meteor.isClient) {
                     $("#" + event.target.id).removeClass("selected");
                  }, 200);
               }, 200);
-           }, 200);           
+           }, 200);
         }
      },
      'click .queueRow' : function(event) {
@@ -341,7 +341,7 @@ if (Meteor.isClient) {
         queue[event.target.classList[1]].qplaystatus = "playing";
         Session.set("queue", queue);
         Session.set("tracks", tracks);
-        sound = SC.stream("/tracks/" + id, 
+        sound = SC.stream("/tracks/" + id,
                           {onfinish: function() {
                              playNextTrack();
                           }},function(sound){
@@ -349,13 +349,13 @@ if (Meteor.isClient) {
                              currentTrackId = id;
                              queueOn = true;
                              currentTrack.play({onload: function() {
-                                                  if(this.readyState == 2) 
+                                                  if(this.readyState == 2)
                                                      playNextTrack();
                                                }})
                           });
      },
   });
-  
+
   var playNextTrack = function() {
      var stream, tracks, nextIndex, currentIndex, nextToPlay, nextId;
      if(!queueOn) {
@@ -405,14 +405,14 @@ if (Meteor.isClient) {
                playNextTrack();
            };
         }
-        
-        sound = SC.stream("/tracks/" + nextId, 
+
+        sound = SC.stream("/tracks/" + nextId,
                           streamOptions,
                           function(sound){
                             currentTrack = sound;
                             currentTrackId = nextId;
                             currentTrack.play({onload: function() {
-                                                 if(this.readyState == 2) 
+                                                 if(this.readyState == 2)
                                                     playNextTrack();
                                               }})
                           });
@@ -421,24 +421,24 @@ if (Meteor.isClient) {
 
   Accounts.ui.config({
      requestPermissions: {
-        soundcloud: [] 
+        soundcloud: []
      },
      passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
    });
-   
+
    Meteor.Router.add({
      '/callback.html': 'callback',
      '/': 'app',
      '*': 'not_found'
    });
-   
+
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
   });
-  
+
   Meteor.methods({
      getAccessToken : function() {
        try {
@@ -485,5 +485,5 @@ if (Meteor.isServer) {
          throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   // 61
        }
     }
-   }); 
+   });
 }

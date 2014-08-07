@@ -9,9 +9,10 @@
 
 <template name="app">
    <div class="container">
-      <div class="row topRow">
-         <span class="col-md-4">
-            {{> loginButtons}}
+      <div class="row topRow text-center">
+         <span class="col-sm-4 col-sm-offset-4">
+            <h1 class="row title">scTunes</h1>
+            <div class="row">{{> loginButtons}}</div>
          </span>
          {{#if loggedIn}}
             <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>

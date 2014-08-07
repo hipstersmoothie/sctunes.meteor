@@ -1,6 +1,8 @@
 /* CSS declarations go here */
 .title {
-   
+   margin-top: 41vh;
+   font-size: 10vh;
+   color: white;
 }
 
 /* Small Devices, Tablets */
@@ -74,4 +76,8 @@
 
 .waveform {
    width: 100%;
+}
+
+body {
+   background-color: #FFAE69;
 }
