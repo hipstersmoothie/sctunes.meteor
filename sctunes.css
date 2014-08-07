@@ -16,6 +16,17 @@
    }
 }
 
+.sctunes {
+   color: whitesmoke;
+   font-size: 150px;
+}
+
+.desc {
+   color: wheat;
+   font-size: large;
+   margin-left: -7%;
+}
+
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
    .topRow {
@@ -29,17 +40,23 @@
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
    .topRow {
-      padding-left: 120px;
+      padding-left: 180px;
    }
    .uploader {
       padding-right: 75px;
    }
 }
 .trackRow {
+   cursor: pointer;
    cursor: hand;
    user-select: none;
    -webkit-user-select: none;
    -moz-user-select: none;
+}
+
+.playlistRow {
+   cursor: pointer;
+   cursor: hand;
 }
 
 .uploader {
@@ -48,6 +65,10 @@
 
 #loadingTracks {
    padding-left: 40%;
+}
+
+#currentTrackPlayer {
+   visibility: hidden;
 }
 
 #ui {
@@ -62,8 +83,12 @@
    padding-left: 20px;
 }
 
+body {
+   background : darkorange;
+}
+
 #topRow {
-   padding-left: 20px;
+   padding-left: 180px;
 }
 
 .options {
@@ -72,6 +97,10 @@
 
 .selected {
    background: darkturquoise;
+}
+
+.selectedForQueue {
+   background: gold;
 }
 
 .waveform {

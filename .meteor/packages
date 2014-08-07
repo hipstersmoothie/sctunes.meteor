@@ -6,9 +6,10 @@
 standard-app-packages
 autopublish
 insecure
-accounts-soundcloud
 router
 accounts-ui
-soundcloud
 bootstrap-3
 mousetrap
+soundcloud
+accounts-soundcloud
+service-configuration
