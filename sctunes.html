@@ -1,5 +1,5 @@
 <head>
-   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>sctunes</title>
 </head>
 
@@ -10,109 +10,158 @@
 <template name="login">
    <div class="container" style="padding-top:14%; margin-left:-4%">
       <div class="row">
-         <h1 class="col-sm-4 col-sm-push-4 col-md-4 col-md-push-4 sctunes">scTunes</h1>
+         <h1 class="col-sm-4 col-sm-push-4 sctunes">scTunes</h1>
       </div>  
       <div class="row">
-         <div class="col-sm-6 col-sm-push-6 col-md-6 col-md-push-6 desc">
+         <div class="col-sm-6 col-sm-push-6 desc">
             <p>Listen to your soundcloud favorites easier!</p>
          </div>
       </div> 
       <div class="row">
-         <span class="col-sm-6 col-sm-push-6 col-md-6 col-md-push-6">
+         <span class="col-sm-6 col-sm-push-6">
             {{> loginButtons}}
          </span>
       </div>
    </div>
 </template>
 
-<template name="app">
-   <div class="container">
-      <div class="row topRow text-center">
-         <span class="col-sm-4 col-sm-offset-4">
-            <h1 class="row title">scTunes</h1>
-            <div class="row">{{> loginButtons}}</div>
-         </span>
-         {{#if loggedIn}}
-            <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>
-            <span id="reset" class="col-md-1"><button type="button">Reset</button></span>
-            <span id="sort" class="col-md-2 sort">
-               <span>Sort By:</span>
-            </span>
-            <span id="sBU" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByName">Uploader</span>
-            <span id="sBA" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByArtist">Artist</span>
-         {{/if}}
-      </div>
-      {{#if loggedIn}} 
-         <h1 id="loadingTracks" class="row"> Loading... </h1>
-         <div class="row" id="ui">
-            {{#if playlistMode}}
-            <div id="playlists" class="col-md-2">
-               <span id="newPlaylist"><button type="button" data-toggle="modal" data-target=".newPlaylistModal">New Playlist</button></span>
-               <br>
-               <div id="favorites" class="playlistRow">Favorites</div>
-               {{#each playlists}}
-                  <div id={{this.id}} class="playlistRow">{{this.title}}</div>
-               {{/each}}
-            </div>
-            {{else}}
-            <div id="queue" class="col-md-2">
-               <br>
-               <h3>Queue</h3>
-               {{#each queue}}
-                  <div id="{{this.id}}-queue" class="queueRow {{this.queueIndex}} {{this.qplaystatus}}">{{this.title}}</div>
-               {{/each}}
-            </div>
-            {{/if}}
-            <div id="tracks" class="col-md-10">
-               {{#if currentTrack}}
-                  <div id="currentTrackPlayer" class="row">
-                     <span id="playpause" class="col-md-1"><button type="button">Play!</button></span>
-                     <span class="col-xs-11 col-sm-11 col-md-11 col-lg-11">{{ctTitle}} {{ctUploader}}</span>                  
-                  </div>
-               {{/if}}
-               {{#each tracks}}
-                  <div id={{this.key}} class="trackItem row trackRow {{this.index}}">
-                     {{#if uploader}} 
-                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
-                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-                     {{else}}
-                     {{#if artist}}
-                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
-                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.artist}}</span>
-                     {{else}}
-                     <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
-                     <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-                     {{/if}}
-                     {{/if}}
-                  </div>
-               {{/each}}
-            </div>
-         </div>
-      {{/if}}
-   </div>
-   <div class="modal fade newPlaylistModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-     <div class="modal-dialog modal-sm container">
-      <div class="modal-content">
-         <div class="modal-header">
-           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-           <h4 class="modal-title">New Playlist</h4>
-         </div>
-         <div class="modal-body">
-           <form>
-             Name: <input id="newName" type="text" name="name"><br>
-           </form>
-         </div>
-         <div class="modal-footer">
-           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           <button id="newPlaylistSubmit" type="button" class="btn btn-primary">Save changes</button>
-         </div>
-         <br>
-   </div>
-     </div>
-   </div>
+<template name="sidebar">
+   <div id="sidebar-wrapper">
+    <ul id="playlists" class="sidebar-nav">
+      <li class="sidebar-brand">
+          <a href="" onclick="return false;">
+              scTunes
+          </a> 
+      </li>
+    {{#if playlistMode}}
+<!--        <span id="newPlaylist"><button type="button" data-toggle="modal" data-target=".newPlaylistModal">New Playlist</button></span> -->
+      <li>
+          <a href="" onclick="return false;">
+              Playlists
+          </a>
+      </li>
+      <li id="favorites" class="playlistRow">
+          <a id="favorites" href="" onclick="return false;">
+              Favorites
+          </a>
+      </li>
+      {{#each playlists}}
+      <li id={{this.id}} class="playlistRow">
+        <a id={{this.id}} href="" onclick="return false;">
+          {{this.title}}
+        </a>
+      </li>
+      {{/each}}
+    {{else}}
+      <li>
+          <a href="" onclick="return false;">
+              Queue
+          </a>
+      </li>
+      {{#each queue}}
+      <li>
+        <a id="{{this.id}}-queue" href="" onclick="return false;" class="queueRow {{this.queueIndex}} {{this.qplaystatus}}">
+          {{this.title}}
+        </a>
+      </li>
+      {{/each}}d
+    {{/if}}
+      <li id="logout">
+          <a href="" onclick="return false;">
+              {{> loginButtons}}
+          </a>
+      </li>
+    </ul>
+  </div>
 </template>
 
+<template name="app">
+  <div id="wrapper">
+    {{#if loggedIn}}
+      {{> sidebar}}
+    {{/if}}
+    <div id="page-content-wrapper">
+      <div class="container">
+        <div class="row topRow text-center">
+           {{#if loggedIn}}
+              <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>
+              <span id="reset" class="col-md-1"><button type="button">Reset</button></span>
+              <span id="sort" class="col-md-2 sort">
+                 <span>Sort By:</span>
+              </span>
+              <span id="sBU" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByName">Uploader</span>
+              <span id="sBA" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByArtist">Artist</span>
+           {{/if}}
+        </div>
+        {{#if loggedIn}} 
+           <h1 id="loadingTracks" class="row"> Loading... </h1>
+           <div class="row" id="ui">
+              <div id="tracks" class="col-md-10">
+                 {{#each tracks}}
+                    <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
+                       {{#if uploader}} 
+                       <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
+                       <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                       {{else}}
+                       {{#if artist}}
+                       <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
+                       <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.artist}}</span>
+                       {{else}}
+                       <span class="col-xs-8 col-sm-8 col-md-8 col-lg-8 title {{this.playstatus}}">{{this.title}}</span>
+                       <span class="col-xs-4 col-sm-4 col-md-4 col-lg-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                       {{/if}}
+                       {{/if}}
+                    </div>
+                 {{/each}}
+              </div>
+           </div>
+        {{/if}}
+        {{> player}}
+     </div> 
+     <div class="modal fade newPlaylistModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-sm container">
+        <div class="modal-content">
+           <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+             <h4 class="modal-title">New Playlist</h4>
+           </div>
+           <div class="modal-body">
+             <form>
+               Name: <input id="newName" type="text" name="name"><br>
+             </form>
+           </div>
+           <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+             <button id="newPlaylistSubmit" type="button" class="btn btn-primary">Save changes</button>
+           </div>
+           <br>
+        </div>
+       </div>
+     </div>
+    </div>
+  </div>
+</template>
 
+<template name="player">
+  {{#if currentTrack}}
+    <div class="player footer navbar-fixed-bottom">
+      <div class="col-xs-2">
+        <span id="prevButton">
+          <span class="glyphicon glyphicon-step-backward"></span>
+        </span>
+        <span id="playpause">
+          <span class="glyphicon glyphicon-play"></span>
+        </span>
+        <span id="nextButton">
+          <span class="glyphicon glyphicon-step-forward"></span>
+        </span>
+      </div>
+      <span class="player-title col-xs-10">{{ctTitle}} - {{ctUploader}}</span>
+      
+      <div id="currentTrackPlayer"></div>
+    </div>
+  {{/if}}                 
+</template>
 
 <template name="callback">
    <body onload="window.opener.setTimeout(window.opener.SC.connectCallback, 1)">

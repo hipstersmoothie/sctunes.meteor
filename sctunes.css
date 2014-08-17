@@ -1,19 +1,5 @@
-/* CSS declarations go here */
-.title {
-   margin-top: 41vh;
-   font-size: 10vh;
-   color: white;
-}
-
-/* Small Devices, Tablets */
-@media only screen and (min-width : 768px) {
-   .topRow {
-      padding-left: 20px;
-   }
-   
-   .uploader {
-      
-   }
+.sctunesDef {
+   display: inline;
 }
 
 .sctunes {
@@ -22,26 +8,13 @@
 }
 
 .desc {
-   color: wheat;
+   color: whitesmoke;
    font-size: large;
    margin-left: -7%;
 }
 
-/* Medium Devices, Desktops */
-@media only screen and (min-width : 992px) {
-   .topRow {
-      padding-left: 80px;
-   }
-   .uploader {
-      
-   }
-}
-
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
-   .topRow {
-      padding-left: 180px;
-   }
    .uploader {
       padding-right: 75px;
    }
@@ -68,7 +41,8 @@
 }
 
 #currentTrackPlayer {
-   visibility: hidden;
+   height: 50px;
+   width: 100%;
 }
 
 #ui {
@@ -85,10 +59,6 @@
 
 body {
    background : darkorange;
-}
-
-#topRow {
-   padding-left: 180px;
 }
 
 .options {
@@ -109,4 +79,19 @@ body {
 
 body {
    background-color: #FFAE69;
+}
+
+#logout {
+   text-indent: 4px;
+}
+
+.player {  
+   color: white;
+   left: 250px;
+   height: 100px;
+   background-color: rgba(0, 0, 0, 0.6);
+}
+
+.player-title {
+   font-size: 20px;
 }
