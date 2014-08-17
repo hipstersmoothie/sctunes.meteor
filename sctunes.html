@@ -29,14 +29,14 @@
    <div id="sidebar-wrapper">
     <ul id="playlists" class="sidebar-nav">
       <li class="sidebar-brand">
-          <a id="brand-title" href="" onclick="return false;">
+          <a id="brand-title" href="">
               scTunes
           </a> 
       </li>
     {{#if playlistMode}}
 <!--        <span id="newPlaylist"><button type="button" data-toggle="modal" data-target=".newPlaylistModal">New Playlist</button></span> -->
       <li>
-          <a href="" onclick="return false;" class="sidebar-title">
+          <a href="" onclick="return false;" class="title">
               Playlists
           </a>
       </li>
@@ -54,7 +54,7 @@
       {{/each}}
     {{else}}
       <li>
-          <a href="" onclick="return false;" class="sidebar-title">
+          <a href="" onclick="return false;" class="title">
               Queue
           </a>
       </li>
@@ -81,8 +81,8 @@
       {{> sidebar}}
     {{/if}}
     <div id="page-content-wrapper">
-      {{#if loaded}}
-        <div class="container">
+        <div class="container-fluid">
+          {{#if loaded}}
           <div class="row topRow text-center">
                 <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>
                 <span id="reset" class="col-md-1"><button type="button">Reset</button></span>
@@ -112,11 +112,11 @@
                  {{/each}}
               </div>
            </div>
+           {{else}}
+             {{> loader}}
+           {{/if}}
            {{> player}}
         </div> 
-        {{else}}
-          {{> loader}}
-        {{/if}}
      {{> newPlayListModal}}
     </div>
   </div>
@@ -148,7 +148,7 @@
 </template>
 
 <template name="loader">
-  <div class="loading">
+  <div class="loading row">
     <div id="loader">
       <div id="d1"></div>
       <div id="d2"></div>

@@ -9,7 +9,6 @@ if (Meteor.isClient) {
 		Session.set("playing", false);
 		Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
 		Mousetrap.bind('p', function() {
-			$("#playlists").css('visibility', 'visible');
 			Session.set("playlistMode", true);
 		});
 	});
@@ -49,11 +48,13 @@ if (Meteor.isClient) {
 	};  
 
 	var setPlayingToCurrent = function(tracks) {
-		for(var i = 0; i < tracks.length; i++)
-			if(tracks[i].id === parseInt(currentTrackId)) {
+		for(var i = 0; i < tracks.length; i++) {
+			if(tracks[i].id === parseInt(currentTrackId)) 
 				tracks[i].playstatus = "playing";
-				return tracks;
-			}
+			else
+				tracks[i].playstatus = "notplaying";
+		}
+	
 		return tracks;
 	};
 
@@ -80,8 +81,8 @@ if (Meteor.isClient) {
 			 });
 		},
 		'click .playlistRow' : function(event) {
-			Session.set("loaded", false);
 			if(addToPlaylistQueue < 1) {
+				Session.set("loaded", false);
 				if(event.target.id.localeCompare("favorites") === 0) {
 					Session.set("tracks", setPlayingToCurrent(Session.get("origTracks")));
 					Session.set("loaded", true);
@@ -96,11 +97,11 @@ if (Meteor.isClient) {
 				SC.get('/me/playlists/' + event.target.id, function(playlist) {
 					var oldTracks = getIds(playlist.tracks), tracks = Session.get("tracks");
 					oldTracks.push.apply(oldTracks, addToPlaylistQueue);
-					for(var i = 0; i < addToPlaylistQueue.length; i++) 
-						tracks[$("#" + addToPlaylistQueue[i].id)[0].classList[3]].playstatus = "notplaying";
+
+					// for(var i = 0; i < addToPlaylistQueue.length; i++) 
+					// 	tracks[$("#" + addToPlaylistQueue[i].id)[0].classList[3]].playstatus = "notplaying";
 					addToPlaylistQueue = [];
-				 	Session.set("tracks", tracks);
-				 	Session.set("loaded", true);
+				 	Session.set("tracks", setPlayingToCurrent(tracks));
 				 	SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function(playlist) {});    
 				});
 			}
@@ -127,6 +128,9 @@ if (Meteor.isClient) {
 				Session.set("queue", queue);
 				Session.set("tracks", tracks);
 				streamTrack(id, true);
+		 },
+		 'click #brand-title' : function() {
+		 		Session.set("playlistMode", !Session.get("playlistMode"));
 		 }
 	});
 
@@ -483,7 +487,6 @@ if (Meteor.isClient) {
 			},
 		 '*': 'not_found'
 	 });
-
 }
 
 if (Meteor.isServer) {
