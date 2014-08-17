@@ -186,32 +186,32 @@ if (Meteor.isClient) {
    };
    
   var getArtist = function(tracks) {
-      var keys = Object.keys(tracks);
-      for(var i = 0; i < keys.lengt; i++)  {
-         tracks[keys[i]].playstatus = "notplaying";
-         if(tracks[keys[i]].title.indexOf(tracks[keys[i]].user.username) === -1 && tracks[keys[i]].title.indexOf('-') > -1) {
-            var checkValid = parseInt(tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'))) || 0;
-           if(checkValid > 0) {
-               tracks[keys[i]].artist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length).indexOf('-'));
-               if(tracks[keys[i]].artist == "")
-                  tracks[keys[i]].artist = tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'));
-           } else
-               tracks[keys[i]].artist = tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-'));
-            tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length);
-        } else {
-            if(tracks[keys[i]].title.indexOf('-') > -1 && tracks[keys[i]].user.username.localeCompare(tracks[keys[i]].title.substr(0, tracks[keys[i]].title.indexOf('-') - 1)) == 0)
-               tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title.substr(tracks[keys[i]].title.indexOf('-') + 1, tracks[keys[i]].title.length);
-           else
-               tracks[keys[i]].titleWithoutArtist = tracks[keys[i]].title;
-            tracks[keys[i]].artist = tracks[keys[i]].user.username;
-        }
-     }
-     return tracks;
+    for(var i = 0; i < tracks.length; i++)  {
+    	var title = tracks[i].title;
+      tracks[i].playstatus = "notplaying";
+      if(title.indexOf(tracks[i].user.username) === -1 && tracks[i].title.indexOf('-') > -1) {
+        var checkValid = parseInt(title.substr(0, title.indexOf('-'))) || 0;
+        if(checkValid > 0) {
+          tracks[i].artist = title.substr(title.indexOf('-') + 1, title.substr(title.indexOf('-') + 1, title.length).indexOf('-'));
+          if(tracks[i].artist == "")
+          tracks[i].artist = title.substr(0, title.indexOf('-'));
+        } else
+          tracks[i].artist = title.substr(0, title.indexOf('-'));
+          tracks[i].titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+      } else {
+        if(title.indexOf('-') > -1 && tracks[i].user.username.localeCompare(title.substr(0, title.indexOf('-') - 1)) == 0)
+          tracks[i].titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+       	else
+          tracks[i].titleWithoutArtist = title;
+        tracks[i].artist = tracks[i].user.username;
+      }
+    }
+    return tracks;
   };
 
   var getTracks = function () {
     // update user's profile description
-    var tracks = {}, offset = 0;
+    var tracks = [], offset = 0;
     if(!madeTracks)
       Meteor.call("getAccessToken", function(error, accessToken){
         accessTokenS = accessToken;
@@ -223,12 +223,11 @@ if (Meteor.isClient) {
               var initializeKeys = tracks ? Object.keys(tracks) : 0;
               var keys = Object.keys(moreTracks);
 
-              for (var x = 0; x < keys.length; x++ ) {
+              for (var x = 0; x < keys.length; x++ ) 
                 tracks[x + initializeKeys.length] = moreTracks[keys[x]];
-              }
+              
               Session.set("tracks", tracks);
               Session.set("origTracks", tracks);
-              //console.log(tracks);
             });
           }
            Meteor.call("getPlaylists", accessToken, function(error, playlists) {
@@ -386,7 +385,9 @@ if (Meteor.isClient) {
                sortArtist = false;
             }
             tIndex = 0;
+            console.log();
             Session.set("tracks",indexTracks(tracks.sort(function(a, b){
+            													console.log(a);
                                        return (a.user.username).localeCompare(b.user.username);
                                     })));
          } else {
@@ -395,6 +396,7 @@ if (Meteor.isClient) {
          sortUploader = !sortUploader;
       },
       'change #sBA' : function(event) {
+      	console.log(sortArtist);
          if(!sortArtist) {
             var tracks = Session.get("tracks");
             if(sortUploader) {
@@ -403,6 +405,7 @@ if (Meteor.isClient) {
             }
             tIndex = 0;
             Session.set("tracks",indexTracks(tracks.sort(function(a, b){
+            														console.log(a);
                                        return (a.artist).localeCompare(b.artist);
                                     })));
          } else {
@@ -414,8 +417,7 @@ if (Meteor.isClient) {
          tIndex = 0;
          $(".sortByName").prop('checked', false);
          $(".sortByArtist").prop('checked', false);
-         console.log(shuffle(Session.get("tracks")));
-         Session.set("tracks", indexTracks(shuffle(Session.get("tracks"))));
+         Session.set("tracks", shuffle(Session.get("tracks")));
       },
       'click #reset' : function() {
          $(".sortByName").prop('checked', false);
