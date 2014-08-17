@@ -117,11 +117,9 @@ if (Meteor.isClient) {
            queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
         }
 
-        console.log(event.target);
         queue[event.target.classList[1]].qplaystatus = "playing";
         Session.set("queue", queue);
         Session.set("tracks", tracks);
-        console.log(id);
         streamTrack(id, true);
      }
   });

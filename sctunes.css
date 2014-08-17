@@ -85,6 +85,10 @@ body {
    text-indent: 4px;
 }
 
+#brand-title {
+   color: darkorange;
+}
+
 .player {  
    color: white;
    left: 250px;
