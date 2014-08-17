@@ -39,8 +39,8 @@
 
 #page-content-wrapper {
     width: 100%;
-    padding: 15px;
-}
+/*    padding: 15px;
+*/}
 
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
@@ -113,8 +113,8 @@
     }
 
     #page-content-wrapper {
-        padding: 20px;
-    }
+/*        padding: 20px;
+*/    }
 
     #wrapper.toggled #page-content-wrapper {
         position: relative;

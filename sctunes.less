@@ -1,0 +1,188 @@
+.sctunesDef {
+   display: inline;
+}
+
+.sctunes {
+   color: whitesmoke;
+   font-size: 150px;
+}
+
+.desc {
+   color: whitesmoke;
+   font-size: large;
+   margin-left: -7%;
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+   .uploader {
+      padding-right: 75px;
+   }
+}
+.trackRow {
+   cursor: pointer;
+   cursor: hand;
+   user-select: none;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+}
+
+.trackRow:hover {
+   background: rgba(238,118,0,0.3);
+}
+
+.playlistRow {
+   cursor: pointer;
+   cursor: hand;
+}
+
+.uploader {
+   text-align: right;
+}
+
+#loadingTracks {
+   padding-left: 40%;
+}
+
+#currentTrackPlayer {
+   height: 50px;
+   width: 100%;
+}
+
+.playing {
+   background : darkorange;
+}
+
+#sort {
+   padding-left: 20px;
+}
+
+body {
+   background : darkorange;
+}
+
+.options {
+   display: inline;
+}
+
+.selected {
+   background: darkturquoise;
+}
+
+.selectedForQueue {
+   background: gold;
+}
+
+.waveform {
+   width: 100%;
+}
+
+body {
+   background-color: #FFAE69;
+}
+
+#logout {
+   text-indent: 4px;
+}
+
+#brand-title {
+   color: darkorange;
+}
+
+.player {  
+   color: white;
+   left: 250px;
+   height: 100px;
+   background-color: rgba(0, 0, 0, 0.6);
+}
+
+.player-title {
+   font-size: 20px;
+}
+
+.controls {
+   display: inline;
+}
+
+.trackItem {
+   border-bottom: 1px solid lightgrey;
+   height: 40px
+}
+
+.title {
+   height: 100%;
+   line-height: 40px;
+}
+
+.uploader {
+   height: 100%;
+   line-height: 40px;
+}
+
+.current-art {
+   padding: 0;
+}
+
+.playerControlButton {
+   cursor: pointer;
+   cursor: hand;
+}
+
+.player-node {
+   padding-left: 0;
+}
+
+.loading {
+   height: 100vh;
+   width: 100%;
+   background-color: #FFAE69; 
+}
+
+.sidebar-title{
+   font-size: 30px;
+}
+
+#loader {
+  width: 100px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  left: 57%;
+  margin: -20px -50px;
+}
+#loader div {
+   width: 20px;
+  height: 20px;
+   background: #FFF;
+  border-radius: 50%;
+  position: absolute; 
+
+}
+#d1 { 
+   -webkit-animation: animate 2s linear infinite;
+   animation: animate 2s linear infinite;
+}
+#d2 { 
+   -webkit-animation: animate 2s linear infinite -.4s;
+   animation: animate 2s linear infinite -.4s; 
+}
+#d3 {
+   -webkit-animation: animate 2s linear infinite -.8s;
+   animation: animate 2s linear infinite -.8s; 
+}
+#d4 { 
+   -webkit-animation: animate 2s linear infinite -1.2s;
+   animation: animate 2s linear infinite -1.2s; }
+
+#d5 { 
+   -webkit-animation: animate 2s linear infinite -1.6s;
+   animation: animate 2s linear infinite -1.6s; 
+}
+@-webkit-keyframes animate {
+  0% { left: 100px; top:0}
+  80% { left: 0; top:0;}
+  85% { left: 0; top: -20px; width: 20px; height: 20px;}
+  90% { width: 40px; height: 15px; }
+  95% { left: 100px; top: -20px; width: 20px; height: 20px;}
+  100% { left: 100px; top:0; }
+}
