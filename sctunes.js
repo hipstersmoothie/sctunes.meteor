@@ -7,6 +7,10 @@ if (Meteor.isClient) {
 		Session.set("ctArt", null);
 		Session.set("loaded", false);
 		Session.set("playing", false);
+		Session.set("sortType", "Like Date");
+		Session.set("otherSortTypes", [{type:"Like Date", className: "likedateSort"}, 
+							 										 {type:"Artist", className: "artistSort"}, 
+							 										 {type:"Uploader", className: "uploaderSort"}]);
 		Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
 		Mousetrap.bind('p', function() {
 			Session.set("playlistMode", true);
@@ -19,9 +23,7 @@ if (Meteor.isClient) {
 			 currentTrack = null, 
 			 qIndex = 0, tIndex = 0, 
 			 currentTrackId, 
-			 madeTracks = false, 
-			 sortUploader = false, 
-			 sortArtist = false;
+			 madeTracks = false;
 
 	Template.app.create = function() {
 		Meteor.loginWithSoundcloud({}, function (err) {
@@ -38,7 +40,6 @@ if (Meteor.isClient) {
 		// update user's profile description
 		return Session.get("playlistMode");
 	};
-
 
 	Template.sidebar.playlists = function () {
 		// update user's profile description
@@ -97,9 +98,6 @@ if (Meteor.isClient) {
 				SC.get('/me/playlists/' + event.target.id, function(playlist) {
 					var oldTracks = getIds(playlist.tracks), tracks = Session.get("tracks");
 					oldTracks.push.apply(oldTracks, addToPlaylistQueue);
-
-					// for(var i = 0; i < addToPlaylistQueue.length; i++) 
-					// 	tracks[$("#" + addToPlaylistQueue[i].id)[0].classList[3]].playstatus = "notplaying";
 					addToPlaylistQueue = [];
 				 	Session.set("tracks", setPlayingToCurrent(tracks));
 				 	SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function(playlist) {});    
@@ -111,17 +109,17 @@ if (Meteor.isClient) {
 				var tracks = Session.get("tracks");
 				var id = event.target.id.substr(0, event.target.id.indexOf("-"));
 				Session.set("playing", true);
-				 if(currentTrackId === id) {
-						currentTrack.togglePause();
-						return;
-				 }
-				 if(currentTrackId > -1) {
-					 currentTrack.stop();
-						$("#currentTrackPlayer")[0].children[0].remove();
-						if(!queueOn)
-					 tracks[$("#" + currentTrackId)[0].classList[3]].playstatus = "notplaying";
-						else
-					 queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
+				if(currentTrackId === id) {
+					currentTrack.togglePause();
+					return;
+				}
+				if(currentTrackId > -1) {
+					currentTrack.stop();
+					$("#currentTrackPlayer")[0].children[0].remove();
+					if(!queueOn)
+					  tracks[$("#" + currentTrackId)[0].classList[3]].playstatus = "notplaying";
+					else
+					  queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
 				}
 
 				queue[event.target.classList[1]].qplaystatus = "playing";
@@ -146,11 +144,6 @@ if (Meteor.isClient) {
 	/*
 		PLayer 
 	 */
-	
-	Template.player.currentTrack = function () {
-			return Session.get("playing");
-	 };
-
 	Template.player.ctTitle = function () {
 			return Session.get("ctTitle");
 	};
@@ -165,7 +158,7 @@ if (Meteor.isClient) {
 
 	Template.player.events = ({
 		'click #playpause' : function() {
-			 currentTrack.togglePause();
+			currentTrack.togglePause();
 		},
 		'click #nextButton' : function() {
 			playNextOrPrevTrack(true);
@@ -179,29 +172,41 @@ if (Meteor.isClient) {
 		App Functions
 	 */
 
+	Template.app.currentTrack = function () {
+		return Session.get("playing");
+	};
+
+	Template.app.sortType = function () {
+		return Session.get("sortType");
+	};
+
+	Template.app.otherSortTypes = function () {
+		return Session.get("otherSortTypes");
+	};
+
 	Template.app.loaded = function () {
 		return Session.get("loaded");
 	};
 
 	Template.app.loggedIn = function () {
-			if(Meteor.user()) {
-				 getTracks();
-				 $('body').css("background", "none");
-				 madeTracks = true;
-				 Session.set("favoritesView", true);
-				 return true;
-			}
-			else
-				 return false;
+		if(Meteor.user()) {
+			getTracks();
+		  $('body').css("background", "none");
+			madeTracks = true;
+			Session.set("favoritesView", true);
+			return true;
+		}
+		else
+			return false;
 	};
 
 	Template.app.artist = function () {
-			return sortArtist;
+		return Session.get("sortType") === "Artist";
 	};
 	 
 	Template.app.uploader = function () {
-			return sortUploader;
-	 };
+		return Session.get("sortType") === "Uploader";
+	};
 	 
 	var getArtist = function(tracks) {
 		for(var i = 0; i < tracks.length; i++)  {
@@ -249,7 +254,6 @@ if (Meteor.isClient) {
 						});
 					}
 					 Meteor.call("getPlaylists", accessToken, function(error, playlists) {
-						console.log('here');
 						 Session.set("loaded", true);
 						 Session.set("playlists", playlists);
 						 Session.set("playlistChange", false);
@@ -391,47 +395,40 @@ if (Meteor.isClient) {
 						streamTrack(tracks[node.classList[3]].id, false);
 				 }
 			},
-			'change #sBU' : function(event) {
-				 if(!sortUploader) {
-						var tracks = Session.get("tracks");
-						if(sortArtist) {
-							 $(".sortByArtist").prop('checked', false);
-							 sortArtist = false;
-						}
-						Session.set("tracks",indexTracks(tracks.sort(function(a, b){
-																			 return (a.user.username).localeCompare(b.user.username);
-																		}), true));
-				 } else {
-						Session.set("tracks", Session.get("origTracks"));
-				 }
-				 sortUploader = !sortUploader;
+			'click .artistSort' : function() {
+				var currentSort = Session.get("sortType");
+				var tracks = Session.get("tracks");
+				if(currentSort === "Artist")
+					Session.set("tracks", tracks.reverse());
+				else
+					Session.set("tracks", indexTracks(tracks.sort(function(a, b){
+						return (a.artist).localeCompare(b.artist);
+					}), true));
+
+				Session.set("sortType", "Artist");
 			},
-			'change #sBA' : function(event) {
-				console.log(sortArtist);
-				 if(!sortArtist) {
-						var tracks = Session.get("tracks");
-						if(sortUploader) {
-							 $(".sortByName").prop('checked', false);
-							 sortUploader = false;
-						}
-						Session.set("tracks",indexTracks(tracks.sort(function(a, b){
-																				console.log(a);
-																			 return (a.artist).localeCompare(b.artist);
-																		}), true));
-				 } else {
-						Session.set("tracks", Session.get("origTracks"));
-				 }
-				 sortArtist = !sortArtist;
+			'click .uploaderSort' : function() {
+				var currentSort = Session.get("sortType");
+				var tracks = Session.get("tracks");
+				if(currentSort === "Uploader")
+					Session.set("tracks", tracks.reverse());
+				else
+					Session.set("tracks", indexTracks(tracks.sort(function(a, b){
+						return (a.user.username).localeCompare(b.user.username);
+					}), true));
+
+				Session.set("sortType", "Uploader");
 			},
 			'click #shuffle' : function() {
-				 $(".sortByName").prop('checked', false);
-				 $(".sortByArtist").prop('checked', false);
-				 Session.set("tracks", shuffle(Session.get("tracks")));
+				Session.set("tracks", shuffle(Session.get("tracks")));
 			},
-			'click #reset' : function() {
-				 $(".sortByName").prop('checked', false);
-				 $(".sortByArtist").prop('checked', false);
-				 Session.set("tracks", Session.get("origTracks"));
+			'click .likedateSort' : function() {
+				if(Session.get("sortType") === "Like Date")
+					Session.set("tracks", Session.get("tracks").reverse());
+				else {
+					Session.set("tracks", Session.get("origTracks"));
+					Session.set("sortType", "Like Date");
+				}
 			}
 	});
 
@@ -440,8 +437,15 @@ if (Meteor.isClient) {
 		 $("#currentTrackPlayer")[0].children[0].remove();
 		 if(!queueOn) {
 				tracks = Session.get("tracks");
-				currentIndex = parseInt($("#" + currentTrackId)[0].classList[3]);
-				nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+				var currentTrackRow = $("#" + currentTrackId)[0];
+				if(currentTrackRow) {
+					currentIndex = parseInt(currentTrackRow.classList[3]);
+					nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+				} else {
+					currentIndex = 0;
+					nextToPlay = 0;
+				}
+				
 				if(nextToPlay === tracks.length)
 					nextToPlay = 0;
 				tracks[currentIndex].playstatus = "notplaying";

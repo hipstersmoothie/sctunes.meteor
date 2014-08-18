@@ -83,29 +83,37 @@
     <div id="page-content-wrapper">
         <div class="container-fluid">
           {{#if loaded}}
-          <div class="row topRow text-center">
-                <span id="shuffle" class="col-md-1"><button type="button">Shuffle!</button></span>
-                <span id="reset" class="col-md-1"><button type="button">Reset</button></span>
-                <span id="sort" class="col-md-2 sort">
-                   <span>Sort By:</span>
-                </span>
-                <span id="sBU" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByName">Uploader</span>
-                <span id="sBA" class="options col-md-2"><input type="checkbox" name="sort" value="sortByName" class="sortByArtist">Artist</span>
+          <div class="row topRow">
+            <span>Sort By:</span>
+            <div class="btn-group">
+              <button type="button" class="{{sortTypeClass}}btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {{sortType}} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {{#each otherSortTypes}}
+                  <li><a href="" class="{{this.className}}">{{this.type}}</a></li>
+                {{/each}}
+              </ul>
+            </div>
+            <span id="shuffle" 
+                  class="">
+              <button class="btn btn-default" type="button">Shuffle!</button>
+            </span>
           </div>
            <div class="row">
-              <div id="tracks" class="col-md-12">
+              <div id="tracks" class="col-md-12 {{#if currentTrack}}player-space{{/if}}">
                  {{#each tracks}}
                     <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
                        {{#if uploader}} 
-                       <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-                       <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                         <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
                        {{else}}
                        {{#if artist}}
-                       <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
-                       <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
+                         <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
+                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
                        {{else}}
-                       <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-                       <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+                         <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
                        {{/if}}
                        {{/if}}
                     </div>
@@ -115,7 +123,9 @@
            {{else}}
              {{> loader}}
            {{/if}}
-           {{> player}}
+           {{#if currentTrack}}
+             {{> player}}
+           {{/if}}        
         </div> 
      {{> newPlayListModal}}
     </div>
@@ -123,7 +133,6 @@
 </template>
 
 <template name="player">
-  {{#if currentTrack}}
     <div class="current-art player footer navbar-fixed-bottom">
       <div class="player-node col-xs-1"><img src="{{ctArt}}"></div>
       <div class="player-node col-xs-11">
@@ -144,7 +153,6 @@
       <div id="currentTrackPlayer" class="col-xs-12"></div>
       </div>
     </div>
-  {{/if}}                 
 </template>
 
 <template name="loader">
