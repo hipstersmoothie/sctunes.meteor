@@ -11,7 +11,9 @@ if (Meteor.isClient) {
 		Session.set("sortType", "Like Date");
 		Session.set("otherSortTypes", [{type:"Like Date", className: "likedateSort"}, 
 							 										 {type:"Artist", className: "artistSort"}, 
-							 										 {type:"Uploader", className: "uploaderSort"}]);
+							 										 {type:"Uploader", className: "uploaderSort"},
+							 										 {type:"Play Count", className: "playcountSort"},
+							 										 {type:"Heart Count", className: "heartcountSort"}]);
 		Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
 		Mousetrap.bind('p', function() {
 			Session.set("playlistMode", true);
@@ -460,6 +462,16 @@ if (Meteor.isClient) {
 		'click .uploaderSort' : function() {
 			sortAndSet("Uploader", function(a, b){
 				return (a.user.username).localeCompare(b.user.username);
+			});
+		},
+		'click .playcountSort' : function() {
+			sortAndSet("Play Count", function(a, b){
+				return b.playback_count - a.playback_count;
+			});
+		},
+		'click .heartcountSort' : function() {
+			sortAndSet("Heart Count", function(a, b){
+				return b.favoritings_count - a.favoritings_count;
 			});
 		},
 		'click #shuffle' : function() {
