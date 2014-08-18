@@ -7,6 +7,7 @@ if (Meteor.isClient) {
 		Session.set("ctArt", null);
 		Session.set("loaded", false);
 		Session.set("playing", false);
+		Session.set("squares", false);
 		Session.set("sortType", "Like Date");
 		Session.set("otherSortTypes", [{type:"Like Date", className: "likedateSort"}, 
 							 										 {type:"Artist", className: "artistSort"}, 
@@ -14,6 +15,10 @@ if (Meteor.isClient) {
 		Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
 		Mousetrap.bind('p', function() {
 			Session.set("playlistMode", true);
+		});
+		Mousetrap.bind('v', function() {
+			console.log("pressed");
+			Session.set("squares", !Session.get("squares"));
 		});
 	});
 
@@ -177,6 +182,18 @@ if (Meteor.isClient) {
 	});
 
 	/*
+		track list
+	 */
+	
+	Template.trackList.squares = function() {
+		return Session.get("squares");
+	};
+
+	Template.app.squares = function() {
+		return Session.get("squares");
+	};
+
+	/*
 		App Functions
 	 */
 
@@ -215,6 +232,8 @@ if (Meteor.isClient) {
 	Template.app.uploader = function () {
 		return Session.get("sortType") === "Uploader";
 	};
+
+
 	 
 	var getArtist = function(tracks) {
 		for(var i = 0; i < tracks.length; i++)  {
@@ -239,6 +258,8 @@ if (Meteor.isClient) {
 					tracks[i].titleWithoutArtist = title;
 				tracks[i].artist = tracks[i].user.username;
 			}
+			if(tracks[i].artwork_url)
+				tracks[i].big_artwork_url = (tracks[i].artwork_url).replace("large", "t300x300");
 		}
 		return tracks;
 	};
@@ -283,7 +304,7 @@ if (Meteor.isClient) {
 		return tracksToIndex;
 	};
 
-	Template.app.tracks = function () {
+	Template.trackList.tracks = function () {
 		SC.initialize({
 			client_id: 'fc6924c8838d01597bab5ab42807c4ae',
 			redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
@@ -372,7 +393,7 @@ if (Meteor.isClient) {
 	var addToQueue = function(node) {
 		blinkRow(node.id, "selectedForQueue");
 		var queue = Session.get("queue");
-		var track = Session.get("tracks")[node.classList[3]];
+		var track = Session.get("tracks")[node.classList[2]];
 		track.queueIndex = qIndex++;
 		queue.push(track);
 		Session.set("queue", queue);
@@ -384,7 +405,7 @@ if (Meteor.isClient) {
 			currentTrack.stop();
 			$("#currentTrackPlayer")[0].children[0].remove();
 			if(currentRow.length)
-				tracks[currentRow[0].classList[3]].playstatus = "notplaying";
+				tracks[currentRow[0].classList[2]].playstatus = "notplaying";
 			if(queueOn && $("#" + currentTrackId + "-queue").length) {
 				var queue = Session.get("queue");
 				queueOn = false;
@@ -408,23 +429,28 @@ if (Meteor.isClient) {
  		// update user's profile description
 		'click .trackItem' : function(event) {
 			var tracks = Session.get("tracks"), node;
+			console.log(event.target.parentNode);
 			if(event.target.classList[0] === "trackItem")
 				node = event.target;
+			else if(event.target.classList[0] === "table")
+				node = event.target.parentNode.parentNode;
+			else if(event.target.parentNode.classList[0] === "table")
+				node = event.target.parentNode.parentNode.parentNode;
 			else
 				node = event.target.parentNode;
-					
+			console.log(node);
 			if(event.altKey) 
-				addToPlaylistClick(tracks, node.classList[3], node.id);
+				addToPlaylistClick(tracks, node.classList[2], node.id);
 			else if (event.shiftKey)
 		 		addToQueue(node);
-			else if(tracks[node.classList[3]].id === currentTrackId) {
+			else if(tracks[node.classList[2]].id === currentTrackId) {
 				currentTrack.togglePause();
 			} else {
 				Session.set("playing", true);
 				stopLastTrack(tracks);
-				tracks[node.classList[3]].playstatus = "playing";
+				tracks[node.classList[2]].playstatus = "playing";
 				Session.set("tracks", tracks);
-				streamTrack(tracks[node.classList[3]].id, false);
+				streamTrack(tracks[node.classList[2]].id, false);
 			}
 		},
 		'click .artistSort' : function() {

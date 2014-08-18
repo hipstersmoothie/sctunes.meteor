@@ -80,7 +80,7 @@
       {{> sidebar}}
     {{/if}}
     <div id="page-content-wrapper">
-        <div class="container-fluid">
+        <div class="container-fluid {{#if squares}}background{{/if}}">
           {{#if loaded}}
           <div class="row topRow">
             <span>Sort By:</span>
@@ -103,23 +103,8 @@
             </div>
           </div>
            <div class="row">
-              <div id="tracks" class="col-md-12 {{#if currentTrack}}player-space{{/if}}">
-                 {{#each tracks}}
-                    <div id={{this.id}} class="trackItem row trackRow {{this.index}}">
-                       {{#if uploader}} 
-                         <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-                       {{else}}
-                       {{#if artist}}
-                         <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
-                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
-                       {{else}}
-                         <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-                         <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-                       {{/if}}
-                       {{/if}}
-                    </div>
-                 {{/each}}
+              <div id="tracks" class="col-sm-12 {{#if currentTrack}}player-space{{/if}}">
+                 {{> trackList}}
               </div>
            </div>
            {{else}}
@@ -132,6 +117,50 @@
      {{> newPlayListModal}}
     </div>
   </div>
+</template>
+
+<template name="trackList">
+  {{#if squares}}
+     <div class="row text-center">
+      <div class="list">
+      {{#each tracks}}
+      <div id={{this.id}} class="trackItem trackRow {{this.index}} square col-sm-2 col-md-4 col-lg-3 square bg" style="background-image:url({{this.big_artwork_url}})">
+        <div class="row overlay">
+          <div class="info col-xs-12">
+            <span class="title">{{this.title}}</span><br>
+            {{this.user.username}}
+          </div>
+        </div>
+        <div class="content">
+            <div class="table">
+              <div class="table-cell">
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+      </div>
+    </div>
+  {{else}}
+    <div class="itunes">
+    {{#each tracks}}
+      <div id={{this.id}} class="trackItem trackRow {{this.index}} row ">
+        {{#if uploader}} 
+          <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+          <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+        {{else}}
+        {{#if artist}}
+          <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
+          <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
+        {{else}}
+          <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+          <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+        {{/if}}
+        {{/if}}
+      </div>
+    {{/each}}
+    </div>
+  {{/if}}
 </template>
 
 <template name="player">
