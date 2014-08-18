@@ -329,7 +329,6 @@ if (Meteor.isClient) {
 
 	var streamTrack = function(id, queue) {
 		SC.get("/tracks/" + id, function(track){
-			Session.set("currentTrack, ");
 			Session.set("ctTitle", track.title);
 			Session.set("ctUploader", track.user.username);
 			Session.set("ctArt", track.artwork_url);
@@ -360,76 +359,83 @@ if (Meteor.isClient) {
 		 	});
 		});
 	};
+
+	var addToPlaylistClick = function(tracks, index, id) {
+		if(tracks[index].playstatus === "selected")
+ 			tracks[index].playstatus = "notplaying";
+ 		else
+			tracks[index].playstatus = "selected";
+		Session.set("tracks", tracks);
+		addToPlaylistQueue.push({id: id});
+	};
+
+	var addToQueue = function(node) {
+		blinkRow(node.id, "selectedForQueue");
+		var queue = Session.get("queue");
+		var track = Session.get("tracks")[node.classList[3]];
+		track.queueIndex = qIndex++;
+		queue.push(track);
+		Session.set("queue", queue);
+	};
+
+	var stopLastTrack = function(tracks) {
+		if(currentTrack) {
+			var currentRow = $("#" + currentTrackId);
+			currentTrack.stop();
+			$("#currentTrackPlayer")[0].children[0].remove();
+			if(currentRow.length)
+				tracks[currentRow[0].classList[3]].playstatus = "notplaying";
+			if(queueOn && $("#" + currentTrackId + "-queue").length) {
+				var queue = Session.get("queue");
+				queueOn = false;
+				queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
+				Session.set("queue", queue);
+			}
+		}
+	};
+
+	var sortAndSet = function(sort, comparator) {
+		var tracks = Session.get("tracks");
+		if(Session.get("sortType") === sort)
+			Session.set("tracks", tracks.reverse());
+		else
+			Session.set("tracks", indexTracks(tracks.sort(comparator), true));
+
+		Session.set("sortType", sort);
+	};
 	 
 	Template.app.events = ({
  		// update user's profile description
 		'click .trackItem' : function(event) {
-			var tracks = Session.get("tracks");
-			var node, queue;
+			var tracks = Session.get("tracks"), node;
 			if(event.target.classList[0] === "trackItem")
 				node = event.target;
 			else
 				node = event.target.parentNode;
 					
-			if(event.altKey) {
-		 		if(tracks[node.classList[3]].playstatus === "selected")
-		 			tracks[node.classList[3]].playstatus = "notplaying";
-		 		else
-					tracks[node.classList[3]].playstatus = "selected";
-				Session.set("tracks", tracks);
-				addToPlaylistQueue.push({id: node.id});
-			} else if (event.shiftKey) {
-		 		blinkRow(node.id, "selectedForQueue");
-				queue = Session.get("queue");
-				var track = Session.get("tracks")[node.classList[3]];
-				track.queueIndex = qIndex++;
-				queue.push(track);
-				Session.set("queue", queue);
-			} else if(tracks[node.classList[3]].id === currentTrackId) {
+			if(event.altKey) 
+				addToPlaylistClick(tracks, node.classList[3], node.id);
+			else if (event.shiftKey)
+		 		addToQueue(node);
+			else if(tracks[node.classList[3]].id === currentTrackId) {
 				currentTrack.togglePause();
 			} else {
 				Session.set("playing", true);
-				if(currentTrack) {
-					var currentRow = $("#" + currentTrackId);
-					currentTrack.stop();
-					$("#currentTrackPlayer")[0].children[0].remove();
-					if(currentRow.length)
-						tracks[currentRow[0].classList[3]].playstatus = "notplaying";
-					if(queueOn && $("#" + currentTrackId + "-queue").length) {
-						queue = Session.get("queue");
-						queueOn = false;
-						queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
-						Session.set("queue", queue);
-					}
-				}
+				stopLastTrack(tracks);
 				tracks[node.classList[3]].playstatus = "playing";
 				Session.set("tracks", tracks);
 				streamTrack(tracks[node.classList[3]].id, false);
 			}
 		},
 		'click .artistSort' : function() {
-			var currentSort = Session.get("sortType");
-			var tracks = Session.get("tracks");
-			if(currentSort === "Artist")
-				Session.set("tracks", tracks.reverse());
-			else
-				Session.set("tracks", indexTracks(tracks.sort(function(a, b){
-					return (a.artist).localeCompare(b.artist);
-				}), true));
-
-			Session.set("sortType", "Artist");
+			sortAndSet("Artist", function(a, b){
+				return (a.artist).localeCompare(b.artist);
+			});
 		},
 		'click .uploaderSort' : function() {
-			var currentSort = Session.get("sortType");
-			var tracks = Session.get("tracks");
-			if(currentSort === "Uploader")
-				Session.set("tracks", tracks.reverse());
-			else
-				Session.set("tracks", indexTracks(tracks.sort(function(a, b){
-					return (a.user.username).localeCompare(b.user.username);
-				}), true));
-
-			Session.set("sortType", "Uploader");
+			sortAndSet("Uploader", function(a, b){
+				return (a.user.username).localeCompare(b.user.username);
+			});
 		},
 		'click #shuffle' : function() {
 			Session.set("tracks", shuffle(Session.get("tracks")));
@@ -468,15 +474,14 @@ if (Meteor.isClient) {
 			tracks = Session.get("queue");
 			currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[1]);
 			nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+			tracks[currentIndex].qplaystatus = "notplaying";
 			if(nextToPlay === tracks.length) {
-				tracks[currentIndex].qplaystatus = "notplaying";
 				stream = Session.get("tracks");
 				stream[0].playstatus = "playing";
 				nextId = stream[0].id;
 				queueOn = false;
 				Session.set("tracks", stream);
 			} else {
-				tracks[currentIndex].qplaystatus = "notplaying";
 				tracks[nextToPlay].qplaystatus = "playing";
 				nextId = tracks[nextToPlay].id;
 			}
