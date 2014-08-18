@@ -13,12 +13,6 @@
    margin-left: -7%;
 }
 
-/* Large Devices, Wide Screens */
-@media only screen and (min-width : 1200px) {
-   .uploader {
-      padding-right: 75px;
-   }
-}
 .trackRow {
    cursor: pointer;
    cursor: hand;
@@ -46,11 +40,15 @@
 
 #currentTrackPlayer {
    height: 50px;
-   width: 100%;
+   width: 95%;
 }
 
 .playing {
    background : darkorange;
+}
+
+.queue-block {
+   text-indent: 20px;
 }
 
 #sort {
@@ -82,7 +80,9 @@ body {
 }
 
 #logout {
-   text-indent: 4px;
+   float: right;
+   padding-right: 15px;
+
 }
 
 #brand-title {
@@ -151,6 +151,11 @@ body {
 #playlists {
    .title {
       font-size: 30px;
+   }
+
+   .description {
+      line-height: 20px;
+      margin-bottom: 0;
    }
 
    .playing {

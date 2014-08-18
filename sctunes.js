@@ -121,7 +121,7 @@ if (Meteor.isClient) {
 					else
 					  queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
 				}
-
+				console.log(event.target);
 				queue[event.target.classList[1]].qplaystatus = "playing";
 				Session.set("queue", queue);
 				Session.set("tracks", tracks);
@@ -158,6 +158,14 @@ if (Meteor.isClient) {
 
 	Template.player.events = ({
 		'click #playpause' : function() {
+			var playPause = $('#playPauseIcon');
+			if(playPause.hasClass('glyphicon-play')) {
+				playPause.removeClass('glyphicon-play');
+				playPause.addClass('glyphicon-pause');
+			} else {
+				playPause.removeClass('glyphicon-pause');
+				playPause.addClass('glyphicon-play');
+			}
 			currentTrack.togglePause();
 		},
 		'click #nextButton' : function() {
@@ -324,6 +332,11 @@ if (Meteor.isClient) {
 				 Session.set("ctTitle", track.title);
 				 Session.set("ctUploader", track.user.username);
 				 Session.set("ctArt", track.artwork_url);
+				 var playPause = $('#playPauseIcon');
+					if(playPause.hasClass('glyphicon-play')) {
+						playPause.removeClass('glyphicon-play');
+						playPause.addClass('glyphicon-pause');
+					}
 				 var waveform = new Waveform({
 						container: document.getElementById("currentTrackPlayer"),
 						innerColor: "#333"
