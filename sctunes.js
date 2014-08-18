@@ -7,7 +7,7 @@ if (Meteor.isClient) {
 		Session.set("ctArt", null);
 		Session.set("loaded", false);
 		Session.set("playing", false);
-		Session.set("squares", false);
+		Session.set("squares", true);
 		Session.set("sortType", "Like Date");
 		Session.set("otherSortTypes", [{type:"Like Date", className: "likedateSort"}, 
 							 										 {type:"Artist", className: "artistSort"}, 
@@ -17,7 +17,6 @@ if (Meteor.isClient) {
 			Session.set("playlistMode", true);
 		});
 		Mousetrap.bind('v', function() {
-			console.log("pressed");
 			Session.set("squares", !Session.get("squares"));
 		});
 	});
@@ -121,12 +120,13 @@ if (Meteor.isClient) {
 				if(currentTrackId > -1) {
 					currentTrack.stop();
 					$("#currentTrackPlayer")[0].children[0].remove();
-					if(!queueOn)
-					  tracks[$("#" + currentTrackId)[0].classList[3]].playstatus = "notplaying";
-					else
+					if(!queueOn) {
+						var row = $("#" + currentTrackId)[0];
+						if(row)
+					  	tracks[row.classList[2]].playstatus = "notplaying";
+					} else
 					  queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
 				}
-				console.log(event.target);
 				queue[event.target.classList[1]].qplaystatus = "playing";
 				Session.set("queue", queue);
 				Session.set("tracks", tracks);
@@ -429,7 +429,6 @@ if (Meteor.isClient) {
  		// update user's profile description
 		'click .trackItem' : function(event) {
 			var tracks = Session.get("tracks"), node;
-			console.log(event.target.parentNode);
 			if(event.target.classList[0] === "trackItem")
 				node = event.target;
 			else if(event.target.classList[0] === "table")
@@ -438,7 +437,7 @@ if (Meteor.isClient) {
 				node = event.target.parentNode.parentNode.parentNode;
 			else
 				node = event.target.parentNode;
-			console.log(node);
+
 			if(event.altKey) 
 				addToPlaylistClick(tracks, node.classList[2], node.id);
 			else if (event.shiftKey)
@@ -483,14 +482,13 @@ if (Meteor.isClient) {
 			tracks = Session.get("tracks");
 			var currentTrackRow = $("#" + currentTrackId)[0];
 			if(currentTrackRow) {
-				currentIndex = parseInt(currentTrackRow.classList[3]);
+				currentIndex = parseInt(currentTrackRow.classList[2]);
 				nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
 			} else {
 				currentIndex = 0;
 				nextToPlay = 0;
 			}
-			
-			if(nextToPlay === tracks.length)
+			if(nextToPlay === tracks.length || nextToPlay < 0)
 				nextToPlay = 0;
 			tracks[currentIndex].playstatus = "notplaying";
 			tracks[nextToPlay].playstatus = "playing";
@@ -501,7 +499,7 @@ if (Meteor.isClient) {
 			currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[1]);
 			nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
 			tracks[currentIndex].qplaystatus = "notplaying";
-			if(nextToPlay === tracks.length) {
+			if(nextToPlay === tracks.length || nextToPlay < 0) {
 				stream = Session.get("tracks");
 				stream[0].playstatus = "playing";
 				nextId = stream[0].id;
