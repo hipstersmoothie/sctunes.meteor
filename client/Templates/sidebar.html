@@ -1,0 +1,53 @@
+<template name="sidebar">
+   <div id="sidebar-wrapper">
+    <ul id="playlists" class="sidebar-nav">
+      <li class="sidebar-brand queue-block">
+          <a id="brand-title" href="">
+              scTunes
+          </a> 
+      </li>
+    {{#if playlistMode}}
+<!--        <span id="newPlaylist">
+        <button type="button" 
+                data-toggle="modal"
+                data-target=".newPlaylistModal"
+                class="btn btn-default">New Playlist</button>
+      </span> -->
+      <li class="queue-block">
+          <a href="" onclick="return false;" class="title">
+              Playlists
+          </a>
+          <p class="description">Hold ALT, click tracks, then click</p>
+          <p class="description">a playlist to add to Playlists</p>
+      </li>
+      <li id="favorites" class="playlistRow queue-block">
+          <a id="favorites" href="" onclick="return false;">
+              Favorites
+          </a>
+      </li>
+      {{#each playlists}}
+      <li id={{this.id}} class="playlistRow  queue-block">
+        <a id={{this.id}} href="" onclick="return false;">
+          {{this.title}}
+        </a>
+      </li>
+      {{/each}}
+    {{else}}
+      <li class="queue-block">
+          <a href="" onclick="return false;" class="title">
+              Queue
+          </a>
+          <p class="description">Hold SHIFT and click tracks to</p>
+          <p class="description">create a Queue</p>
+      </li>
+      {{#each queue}}
+      <li>
+        <a id="{{this.id}}-queue" href="" onclick="return false;" class="queueRow {{this.queueIndex}} {{this.qplaystatus}} col-xs-12 ">
+          {{this.title}}
+        </a>
+      </li>
+      {{/each}}
+    {{/if}}
+    </ul>
+  </div>
+</template>

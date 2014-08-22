@@ -13,7 +13,9 @@ if (Meteor.isClient) {
 							 										 {type:"Artist", className: "artistSort"}, 
 							 										 {type:"Uploader", className: "uploaderSort"},
 							 										 {type:"Play Count", className: "playcountSort"},
-							 										 {type:"Heart Count", className: "heartcountSort"}]);
+							 										 {type:"Heart Count", className: "heartcountSort"},
+							 										 {type:"Creation Date", className: "creationSort"},
+							 										 {type:"Duration", className:"durationSort"}]);
 		Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
 		Mousetrap.bind('p', function() {
 			Session.set("playlistMode", true);
@@ -79,15 +81,8 @@ if (Meteor.isClient) {
 	};
 
 	Template.sidebar.events = ({
-		'click #newPlaylistSubmit' : function() {
-			 SC.connect(function() {
-				 var tracks = [22448500, 21928809].map(function(id) { return { id: id }; });
-				 SC.put('/playlists', {
-					 playlist: { title: 'My Playlist', tracks: tracks }
-				 });
-			 });
-		},
 		'click .playlistRow' : function(event) {
+			Session.set('sortType', 'Like Date');
 			if(addToPlaylistQueue < 1) {
 				Session.set("loaded", false);
 				if(event.target.id.localeCompare("favorites") === 0) {
@@ -137,6 +132,19 @@ if (Meteor.isClient) {
 		 'click #brand-title' : function() {
 		 		Session.set("playlistMode", !Session.get("playlistMode"));
 		 }
+	});
+
+	/*
+		New Playlist Modal
+	 */
+
+	Template.newPlayListModal.events = ({
+	 	'click #newPlaylistSubmit' : function() {
+			var tracks = getIds([22448500, 21928809]);
+			SC.post('/playlists', {
+				playlist: { title: 'My Playlist', tracks: tracks }
+			});
+		},
 	});
 
 	/*
@@ -196,19 +204,54 @@ if (Meteor.isClient) {
 	};
 
 	/*
+	 Options
+	 */
+
+	Template.optionsRow.sortType = function () {
+		return Session.get("sortType");
+	};
+
+	Template.optionsRow.otherSortTypes = function () {
+		return Session.get("otherSortTypes");
+	};
+
+	Template.optionsRow.duration = function () {
+		return Session.get("sortType") === "Duration";
+	};
+
+	var setTime = function() {
+		var minTime    		 = $('#min-length').val() * 60000,
+				maxTime    		 = $('#max-length').val() * 60000,
+				tracks 		 		 = Session.get("tracks"),
+				longTracks 		 = [];
+
+		for(var i = 0, len = tracks.length; i < len; i++)
+			if((minTime && maxTime && tracks[i].duration >= minTime && tracks[i].duration <= maxTime) || (minTime && !maxTime && tracks[i].duration >= minTime) || (maxTime && !minTime && tracks[i].duration <= maxTime)) 
+				longTracks.push(tracks[i]);
+		
+		if(!minTime && !maxTime)
+			Session.set('tracks', tracks);
+		else
+			Session.set('tracks', longTracks);
+	};
+
+	Template.optionsRow.events = ({
+		'keydown #min-length' : function(event) {
+			if(event.keyCode === 13)
+				setTime();
+		},
+		'keydown #max-length' : function(event) {
+			if(event.keyCode === 13)
+				setTime();
+		}
+	});
+
+	/*
 		App Functions
 	 */
 
 	Template.app.currentTrack = function () {
 		return Session.get("playing");
-	};
-
-	Template.app.sortType = function () {
-		return Session.get("sortType");
-	};
-
-	Template.app.otherSortTypes = function () {
-		return Session.get("otherSortTypes");
 	};
 
 	Template.app.loaded = function () {
@@ -474,6 +517,16 @@ if (Meteor.isClient) {
 				return b.favoritings_count - a.favoritings_count;
 			});
 		},
+		'click .creationSort' : function() {
+			sortAndSet("Creation Date", function(a, b){
+				return (a.created_at).localeCompare(b.created_at);
+			});
+		},
+		'click .durationSort' : function() {
+			sortAndSet("Duration", function(a, b){
+				return b.duration - a.duration;
+			});
+		},
 		'click #shuffle' : function() {
 			Session.set("tracks", shuffle(Session.get("tracks")));
 		},
@@ -595,6 +648,19 @@ if (Meteor.isServer) {
 				}).data;                                                                                       
 			} catch (err) {                                                                                  
 				 throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
+			}
+		},
+		newPlaylist : function(accessToken, playlist) {
+			try {                                                                                            
+				return Meteor.http.post("https://api.soundcloud.com/me/playlists", {                                      
+				params: {   
+						data: playlist,                                                                                 
+						oauth_token: accessToken,                                                                  
+						format: "json"                                                                     
+					}                                                                                            
+				}).data;                                                                                       
+			} catch (err) {                                                                                  
+				 throw new Error("Failed to make playlist on Soundcloud. " + err.message);                   
 			}
 		}
 	});

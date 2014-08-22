@@ -1,0 +1,35 @@
+<template name="optionsRow">
+  <div class="row topRow">
+    <div class="col-xs-2">
+      <span>Sort By:</span>
+      <div class="btn-group">
+        <button type="button" class="{{sortTypeClass}}btn btn-default dropdown-toggle" data-toggle="dropdown">
+          {{sortType}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          {{#each otherSortTypes}}
+            <li><a href="" class="{{this.className}}">{{this.type}}</a></li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <span id="shuffle" class="col-xs-2">
+      <button class="btn btn-default" type="button">Shuffle!</button>
+    </span>
+    {{#if duration}}
+      <span class=" col-xs-2">
+        <span>Min:</span>
+        <input id="min-length" name="minlength" class="btn btn-default length" type="text" />
+        minutes
+      </span>
+      <span class=" col-xs-2">
+        <span>Max:</span>
+        <input id="max-length" name="maxlength" class="btn btn-default length" type="text" />
+        minutes
+      </span>
+    {{/if}}
+    <div id="logout"> 
+      {{> loginButtons}}
+    </div>
+  </div>
+</template>
