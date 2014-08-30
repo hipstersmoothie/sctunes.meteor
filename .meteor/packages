@@ -6,11 +6,12 @@
 standard-app-packages
 autopublish
 insecure
-router
+iron:router
+mrt:soundcloud
 accounts-ui
-bootstrap-3
-mousetrap
-soundcloud
-accounts-soundcloud
 service-configuration
+mrt:accounts-soundcloud
 less
+ian:bootstrap-3
+awatson1978:mousetrap
+

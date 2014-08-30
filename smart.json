@@ -1,8 +1,5 @@
 {
   "packages": {
-    "router": {},
-    "bootstrap-3": {},
-    "mousetrap": {},
-    "accounts-soundcloud": {}
+    "iron-router": {}
   }
 }
