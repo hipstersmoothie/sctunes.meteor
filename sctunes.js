@@ -140,7 +140,7 @@ if (Meteor.isClient) {
           if(!queueOn) {
             var row = $("#" + currentTrackId)[0];
             if(row)
-              tracks[row.classList[2]].playstatus = "notplaying";
+              tracks[row.classList[0]].playstatus = "notplaying";
           } else
             queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
         }
@@ -459,7 +459,7 @@ if (Meteor.isClient) {
   var addToQueue = function(node) {
     blinkRow(node.id, "selectedForQueue");
     var queue = Session.get("queue");
-    var track = Session.get("tracks")[node.classList[2]];
+    var track = Session.get("tracks")[node.classList[0]];
     track.queueIndex = qIndex++;
     queue.push(track);
     Session.set("queue", queue);
@@ -471,7 +471,7 @@ if (Meteor.isClient) {
       currentTrack.stop();
       $("#currentTrackPlayer")[0].children[0].remove();
       if(currentRow.length)
-        tracks[currentRow[0].classList[2]].playstatus = "notplaying";
+        tracks[currentRow[0].classList[0]].playstatus = "notplaying";
       if(queueOn && $("#" + currentTrackId + "-queue").length) {
         var queue = Session.get("queue");
         queueOn = false;
@@ -503,19 +503,19 @@ if (Meteor.isClient) {
         node = event.target.parentNode.parentNode.parentNode;
       else
         node = event.target.parentNode;
-
+      console.log(node.classList[0]);
       if(event.altKey) 
-        addToPlaylistClick(tracks, node.classList[2], node.id);
+        addToPlaylistClick(tracks, node.classList[0], node.id);
       else if (event.shiftKey)
         addToQueue(node);
-      else if(tracks[node.classList[2]].id === currentTrackId) {
+      else if(tracks[node.classList[0]].id === currentTrackId) {
         currentTrack.togglePause();
       } else {
         Session.set("playing", true);
         stopLastTrack(tracks);
-        tracks[node.classList[2]].playstatus = "playing";
+        tracks[node.classList[0]].playstatus = "playing";
         Session.set("tracks", tracks);
-        streamTrack(tracks[node.classList[2]].id, false);
+        streamTrack(tracks[node.classList[0]].id, false);
       }
     },
     'click .artistSort' : function() {
@@ -568,7 +568,7 @@ if (Meteor.isClient) {
       tracks = Session.get("tracks");
       var currentTrackRow = $("#" + currentTrackId)[0];
       if(currentTrackRow) {
-        currentIndex = parseInt(currentTrackRow.classList[2]);
+        currentIndex = parseInt(currentTrackRow.classList[0]);
         nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
       } else {
         currentIndex = 0;
