@@ -250,9 +250,9 @@ if (Meteor.isClient) {
         longTracks.push(tracks[i]);
     
     if(!minTime && !maxTime)
-      Session.set('tracks', tracks);
+      Session.set('tracks', indexTracks(tracks, true));
     else
-      Session.set('tracks', longTracks);
+      Session.set('tracks', indexTracks(longTracks, true));
   };
 
   Template.optionsRow.events = ({
@@ -279,7 +279,6 @@ if (Meteor.isClient) {
   };
 
   Template.app.loggedIn = function () {
-    console.log('here');
     if(Meteor.user()) {
       getTracks();
       $('body').css("background", "none");
@@ -484,10 +483,11 @@ if (Meteor.isClient) {
   var sortAndSet = function(sort, comparator) {
     var tracks = Session.get("tracks");
     if(Session.get("sortType") === sort)
-      Session.set("tracks", tracks.reverse());
+      Session.set("tracks", indexTracks(tracks.reverse(), true));
     else
       Session.set("tracks", indexTracks(tracks.sort(comparator), true));
 
+    console.log(Session.get('tracks'));
     Session.set("sortType", sort);
   };
    
