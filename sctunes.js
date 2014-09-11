@@ -56,7 +56,7 @@ if (Meteor.isClient) {
   Template.app.create = function() {
     Meteor.loginWithSoundcloud({}, function (err) {
       if (err)
-         Session.set('errorMessage', err.reason || 'Unknown error');
+        Session.set('errorMessage', err.reason || 'Unknown error');
     });
   };
 
@@ -73,18 +73,15 @@ if (Meteor.isClient) {
     // update user's profile description
     if(Session.get("playlistChange"))
       Session.set("playlistChange", false);
+
     return Session.get("playlists");
   };  
 
   var setPlayingToCurrent = function(tracks) {
-    for(var i = 0; i < tracks.length; i++) {
-      if(tracks[i].id === parseInt(currentTrackId)) 
-        tracks[i].playstatus = "playing";
-      else
-        tracks[i].playstatus = "notplaying";
-    }
-  
-    return tracks;
+    return _.map(tracks, function(track) {
+      track.playstatus = track.id === parseInt(currentTrackId) ? "playing" : "notplaying";
+      return track;
+    });
   };
 
   var blinkRow = function(id, blinkClass) {
@@ -245,9 +242,9 @@ if (Meteor.isClient) {
         tracks         = Session.get("tracks"),
         longTracks     = [];
 
-    for(var i = 0, len = tracks.length; i < len; i++)
-      if((minTime && maxTime && tracks[i].duration >= minTime && tracks[i].duration <= maxTime) || (minTime && !maxTime && tracks[i].duration >= minTime) || (maxTime && !minTime && tracks[i].duration <= maxTime)) 
-        longTracks.push(tracks[i]);
+    longTracks = _.filter(tracks, function(track) {
+      return (minTime && maxTime && track.duration >= minTime && track.duration <= maxTime) || (minTime && !maxTime && track.duration >= minTime) || (maxTime && !minTime && track.duration <= maxTime); 
+    });
     
     if(!minTime && !maxTime)
       Session.set('tracks', indexTracks(tracks, true));
@@ -298,35 +295,33 @@ if (Meteor.isClient) {
     return Session.get("sortType") === "Uploader";
   };
 
-
-   
   var getArtist = function(tracks) {
-    for(var i = 0; i < tracks.length; i++)  {
-      var title = tracks[i].title;
-      tracks[i].playstatus = "notplaying";
-      if(title.indexOf(tracks[i].user.username) === -1 && tracks[i].title.indexOf('-') > -1) {
+    return _.map(tracks, function(track) {
+      var title = track.title;
+      track.playstatus = "notplaying";
+      if(title.indexOf(track.user.username) === -1 && track.title.indexOf('-') > -1) {
         var checkValid = parseInt(title.substr(0, title.indexOf('-'))) || 0;
         if(checkValid > 0) {
-          tracks[i].artist = title.substr(title.indexOf('-') + 1, 
-                                          title.substr(title.indexOf('-') + 1, 
-                                          title.length).indexOf('-'));
-          if(tracks[i].artist === "")
-          tracks[i].artist = title.substr(0, title.indexOf('-'));
+          track.artist = title.substr(title.indexOf('-') + 1, 
+                                      title.substr(title.indexOf('-') + 1, 
+                                      title.length).indexOf('-'));
+          if(track.artist === "")
+            track.artist = title.substr(0, title.indexOf('-'));
         } else
-          tracks[i].artist = title.substr(0, title.indexOf('-'));
-          tracks[i].titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+          track.artist = title.substr(0, title.indexOf('-'));
+        track.titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
       } else {
         if(title.indexOf('-') > -1 && 
-           tracks[i].user.username.localeCompare(title.substr(0, title.indexOf('-') - 1)) === 0)
-          tracks[i].titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+           track.user.username.localeCompare(title.substr(0, title.indexOf('-') - 1)) === 0)
+          track.titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
         else
-          tracks[i].titleWithoutArtist = title;
-        tracks[i].artist = tracks[i].user.username;
+          track.titleWithoutArtist = title;
+        track.artist = track.user.username;
       }
-      if(tracks[i].artwork_url)
-        tracks[i].big_artwork_url = (tracks[i].artwork_url).replace("large", "t300x300");
-    }
-    return tracks;
+      if(track.artwork_url)
+        track.big_artwork_url = (track.artwork_url).replace("large", "t300x300");
+      return track;
+    });
   };
 
   var getTracks = function () {
@@ -338,13 +333,13 @@ if (Meteor.isClient) {
         Meteor.call("getMe", accessToken, function(error, me) {
           for(var i = 0; i < Math.ceil(me.public_favorites_count / 200); i++) {
             Meteor.call("getFavorites", accessToken, i, function(error, favorites) {
-              i += favorites.length;
-              var moreTracks = getArtist(indexTracks(favorites, false));
-              var initializeKeys = tracks ? Object.keys(tracks) : 0;
-              var keys = Object.keys(moreTracks);
+              var moreTracks     = getArtist(indexTracks(favorites, false)),
+                  initializeKeys = tracks ? Object.keys(tracks) : 0;
 
-              for (var x = 0; x < keys.length; x++ ) 
-                tracks[x + initializeKeys.length] = moreTracks[keys[x]];
+              i += favorites.length;
+              _.forEach(moreTracks, function(track, index) {
+                tracks[index + initializeKeys.length] = track;
+              });                
               
               Session.set("tracks", tracks);
               Session.set("origTracks", tracks);
@@ -362,11 +357,11 @@ if (Meteor.isClient) {
   var indexTracks = function(tracksToIndex, newIndex) {
     if(newIndex)
       tIndex = 0;
-
-    for(var i = 0; i < tracksToIndex.length; i++) 
-      tracksToIndex[i].index = tIndex++;
     
-    return tracksToIndex;
+    return _.map(tracksToIndex, function(track) {
+      track.index = tIndex++;
+      return track;
+    });
   };
 
   Template.trackList.tracks = function () {
@@ -376,10 +371,7 @@ if (Meteor.isClient) {
       access_token: accessTokenS
     });
     var tracks = Session.get("tracks");
-    if(tracks) 
-      return Object.keys(tracks).map(function(v) { return tracks[v]; });
-    else 
-      return [];
+    return tracks ? Object.keys(tracks).map(function(v) { return tracks[v]; }) : [];
   };
 
   Template.app.favorites = function () {
@@ -389,10 +381,7 @@ if (Meteor.isClient) {
 
   Template.app.titleDoesNotContainUsername = function (title, username) {
     // update user's profile description
-    if(title.indexOf(username) == -1)
-      return true;
-    else
-      return false;
+    return title.indexOf(username) == -1;
   };
 
   var shuffle = function(array) {
@@ -406,11 +395,9 @@ if (Meteor.isClient) {
   };
 
   var getIds = function(tracks) {
-    var ret = [];
-    for(var i = 0; i < tracks.length; i++)
-      ret.push({id: tracks[i].id});
-
-    return ret;
+    return _.map(tracks, function(track) {
+      return {id: track.id};
+    });
   };
 
   var streamTrack = function(id, queue) {
@@ -487,23 +474,26 @@ if (Meteor.isClient) {
     else
       Session.set("tracks", indexTracks(tracks.sort(comparator), true));
 
-    console.log(Session.get('tracks'));
     Session.set("sortType", sort);
+  };
+
+  var getTargetTrack = function(target) {
+    if(target.classList[0] === "trackItem")
+      return target;
+    else if(target.classList[0] === "table")
+      return target.parentNode.parentNode;
+    else if(target.parentNode.classList[0] === "table")
+      return target.parentNode.parentNode.parentNode;
+    else
+      return target.parentNode;
   };
    
   Template.app.events = ({
     // update user's profile description
     'click .trackItem' : function(event) {
-      var tracks = Session.get("tracks"), node;
-      if(event.target.classList[0] === "trackItem")
-        node = event.target;
-      else if(event.target.classList[0] === "table")
-        node = event.target.parentNode.parentNode;
-      else if(event.target.parentNode.classList[0] === "table")
-        node = event.target.parentNode.parentNode.parentNode;
-      else
-        node = event.target.parentNode;
-      console.log(node.classList[0]);
+      var tracks = Session.get("tracks"), 
+          node = getTargetTrack(event.target);
+
       if(event.altKey) 
         addToPlaylistClick(tracks, node.classList[0], node.id);
       else if (event.shiftKey)
@@ -561,42 +551,56 @@ if (Meteor.isClient) {
     }
   });
 
-  var playNextOrPrevTrack = function(increment) {
-    var stream, tracks, nextIndex, currentIndex, nextToPlay, nextId;
-    $("#currentTrackPlayer")[0].children[0].remove();
-    if(!queueOn) {
-      tracks = Session.get("tracks");
-      var currentTrackRow = $("#" + currentTrackId)[0];
-      if(currentTrackRow) {
-        currentIndex = parseInt(currentTrackRow.classList[0]);
-        nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
-      } else {
-        currentIndex = 0;
-        nextToPlay = 0;
-      }
-      if(nextToPlay === tracks.length || nextToPlay < 0)
-        nextToPlay = 0;
-      tracks[currentIndex].playstatus = "notplaying";
-      tracks[nextToPlay].playstatus = "playing";
-      nextId = tracks[nextToPlay].id;
-      Session.set("tracks", tracks);
-    } else {
-      tracks = Session.get("queue");
-      currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[1]);
+  var setTrackChangeInfo = function(increment) {
+    var tracks          = Session.get("tracks"),
+        currentTrackRow = $("#" + currentTrackId)[0], 
+        currentIndex    = 0, 
+        nextToPlay      = 0;
+
+    if(currentTrackRow) {
+      currentIndex = parseInt(currentTrackRow.classList[0]);
       nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
-      tracks[currentIndex].qplaystatus = "notplaying";
-      if(nextToPlay === tracks.length || nextToPlay < 0) {
-        stream = Session.get("tracks");
-        stream[0].playstatus = "playing";
-        nextId = stream[0].id;
-        queueOn = false;
-        Session.set("tracks", stream);
-      } else {
-        tracks[nextToPlay].qplaystatus = "playing";
-        nextId = tracks[nextToPlay].id;
-      }
-      Session.set("queue", tracks);
+    } 
+
+    if(nextToPlay === tracks.length || nextToPlay < 0)
+      nextToPlay = 0;
+
+    tracks[currentIndex].playstatus = "notplaying";
+    tracks[nextToPlay].playstatus = "playing";
+    Session.set("tracks", tracks);
+
+    return tracks[nextToPlay].id;
+  };
+
+  var setTrackChangeInfoQueue = function (increment) {
+    var tracks = Session.get("queue"),
+        currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[1]),
+        nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
+
+    tracks[currentIndex].qplaystatus = "notplaying";
+    if(nextToPlay === tracks.length || nextToPlay < 0) {
+      stream = Session.get("tracks");
+      stream[0].playstatus = "playing";
+      nextId = stream[0].id;
+      queueOn = false;
+      Session.set("tracks", stream);
+    } else {
+      tracks[nextToPlay].qplaystatus = "playing";
+      nextId = tracks[nextToPlay].id;
     }
+    Session.set("queue", tracks);
+    return nextId;
+  };
+
+  var playNextOrPrevTrack = function(increment) {
+    var nextId;
+
+    $("#currentTrackPlayer")[0].children[0].remove();
+    if(!queueOn)
+      nextId = setTrackChangeInfo(increment);
+    else
+      nextId = setTrackChangeInfoQueue(increment);
+
     streamTrack(nextId, queueOn);
   };
 
