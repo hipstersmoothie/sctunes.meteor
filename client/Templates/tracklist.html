@@ -13,10 +13,17 @@
                 </div>
                 <span class="counts col-xs-12">
                   <span class="playCount">
-                    <span id="playPauseIcon" class="glyphicon glyphicon-play"></span> {{this.playback_count}}
+                    <span class="glyphicon glyphicon-play"></span> 
+                    {{this.playback_count}}
+                  </span>
+                  <span >
+                    <a class="youtube" href=''>
+                      <span id="youtube-{{ this.index }}" class="glyphicon glyphicon-film"></span>
+                    </a>
                   </span>
                   <span class="heartCount">
-                    <span id="playPauseIcon" class="glyphicon glyphicon-heart"></span> {{this.favoritings_count}}
+                    <span class="glyphicon glyphicon-heart"></span> 
+                    {{this.favoritings_count}}
                   </span>
                 </span>
               </div>

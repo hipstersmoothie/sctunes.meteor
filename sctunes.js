@@ -490,12 +490,21 @@ if (Meteor.isClient) {
    
   Template.app.events = ({
     // update user's profile description
+    'click .youtube' : function(event) {
+      var track = Session.get('tracks')[event.target.id.split('-')[1]];
+
+      console.log(event);
+      console.log(event.target.id);
+      console.log(track);
+    },
     'click .trackItem' : function(event) {
       var tracks = Session.get("tracks"), 
           node = getTargetTrack(event.target);
 
       if(event.altKey) 
         addToPlaylistClick(tracks, node.classList[0], node.id);
+      else if(event.target.localName === 'span')
+        return;
       else if (event.shiftKey)
         addToQueue(node);
       else if(tracks[node.classList[0]].id === currentTrackId) {
@@ -505,6 +514,7 @@ if (Meteor.isClient) {
         stopLastTrack(tracks);
         tracks[node.classList[0]].playstatus = "playing";
         Session.set("tracks", tracks);
+        $('#currentTrackRow').modal('show');
         streamTrack(tracks[node.classList[0]].id, false);
       }
     },
