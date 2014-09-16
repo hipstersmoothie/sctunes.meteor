@@ -230,7 +230,6 @@ body {
 
 .background {
    background: rgba(0,0,0,0.3);
-   
 }
 
 #loader {
@@ -281,8 +280,8 @@ body {
 .square {
     float:left;
     position: relative;
-    width: 33.33333333%%;
-    padding-bottom : 33.33333333%%; /* = width for a 1:1 aspect ratio */
+    width: 50%;
+    padding-bottom : 50%; /* = width for a 1:1 aspect ratio */
     background-color:#1E1E1E;
     overflow:hidden;
     font-size: 0px;
@@ -389,6 +388,13 @@ li{
     background-repeat:no-repeat;
     background-size:cover; /* you change this to "contain" if you don't want the images to be cropped */
     color:#fff;
+}
+
+@media only screen and (min-width: 500px) {
+   .square {
+      width: 33.33333333%%;
+      padding-bottom: 33.33333333%%;
+   }
 }
 
 @media only screen and (min-width: 1200px) {
