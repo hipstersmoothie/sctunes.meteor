@@ -21,7 +21,7 @@ Router.map(function() {
 if (Meteor.isClient) {
   Meteor.startup(function() {
     Session.set("queue", []);
-    Session.set("playlistMode", true);
+    Session.set("mode", false);
     Session.set("ctTitle", null);
     Session.set("ctUploader", null);
     Session.set("ctArt", null);
@@ -35,7 +35,8 @@ if (Meteor.isClient) {
                                    {type:"Play Count", className: "playcountSort"},
                                    {type:"Heart Count", className: "heartcountSort"},
                                    {type:"Creation Date", className: "creationSort"},
-                                   {type:"Duration", className:"durationSort"}]);
+                                   {type:"Duration", className:"durationSort"},
+                                   {type:"Search", className:"searchSort"}]);
     Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
     Mousetrap.bind('p', function() {
       Session.set("playlistMode", true);
@@ -66,7 +67,12 @@ if (Meteor.isClient) {
 
   Template.sidebar.playlistMode = function () {
     // update user's profile description
-    return Session.get("playlistMode");
+    return Session.get("mode") === "playlist";
+  };
+
+  Template.sidebar.queueTracks = function () {
+    // update user's profile description
+    return Session.get("queue").length > 0;
   };
 
   Template.sidebar.playlists = function () {
@@ -98,6 +104,12 @@ if (Meteor.isClient) {
   };
 
   Template.sidebar.events = ({
+    'click #playlist-mode' : function() {
+      if(Session.get('mode') == 'playlist')
+        Session.set('mode', 'none');
+      else
+        Session.set('mode', 'playlist');
+    },
     'click .playlistRow' : function(event) {
       Session.set('sortType', 'Like Date');
       if(addToPlaylistQueue < 1) {
@@ -146,8 +158,11 @@ if (Meteor.isClient) {
         Session.set("tracks", tracks);
         streamTrack(id, true);
      },
-     'click #brand-title' : function() {
+     'click .brand-title' : function() {
         Session.set("playlistMode", !Session.get("playlistMode"));
+     },
+     'click #main_icon' : function() {
+        $("#wrapper").toggleClass("active");
      }
   });
 
@@ -236,6 +251,10 @@ if (Meteor.isClient) {
     return Session.get("sortType") === "Duration";
   };
 
+  Template.optionsRow.search = function () {
+    return Session.get("sortType") === "Search";
+  };
+
   var setTime = function() {
     var minTime        = $('#min-length').val() * 60000,
         maxTime        = $('#max-length').val() * 60000,
@@ -252,6 +271,17 @@ if (Meteor.isClient) {
       Session.set('tracks', indexTracks(longTracks, true));
   };
 
+  var search = function(term) {
+    term = term.toLowerCase();
+    Session.set('tracks',  indexTracks(_.filter(Session.get('tracks'), function(track) {
+      console.log(track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1, 
+        track.user.username.toLowerCase(),
+        track.title.toLowerCase(),
+        track.artist.toLowerCase());
+      return track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1
+    }), true));
+  };
+
   Template.optionsRow.events = ({
     'keydown #min-length' : function(event) {
       if(event.keyCode === 13)
@@ -260,6 +290,9 @@ if (Meteor.isClient) {
     'keydown #max-length' : function(event) {
       if(event.keyCode === 13)
         setTime();
+    },
+    'click #searchButton' : function() {
+      search($('#searchInput').val());
     }
   });
 
@@ -542,6 +575,10 @@ if (Meteor.isClient) {
       sortAndSet("Creation Date", function(a, b){
         return (a.created_at).localeCompare(b.created_at);
       });
+    },
+    'click .searchSort' : function() {
+      Session.set("sortType", "Search");
+      
     },
     'click .durationSort' : function() {
       sortAndSet("Duration", function(a, b){
