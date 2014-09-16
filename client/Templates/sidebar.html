@@ -12,12 +12,14 @@
       {{#if playlistMode}}
         <li id="favorites" class="playlistRow queue-block">
           <a id="favorites" href="" onclick="return false;">
-              Favorites
+            <img class="playlist-art">
+            Favorites
           </a>
         </li>
         {{#each playlists}}
-        <li id={{this.id}} class="playlistRow  queue-block">
+        <li id={{this.id}} class="playlistRow queue-block">
           <a id={{this.id}} href="" onclick="return false;">
+            <img src="{{this.artwork_url}}" class="playlist-art">
             {{this.title}}
           </a>
         </li>
@@ -27,7 +29,8 @@
       {{#if queueTracks}}
         {{#each queue}}
         <li>
-          <a id="{{this.id}}-queue" href="" onclick="return false;" class="queueRow {{this.queueIndex}} {{this.qplaystatus}} col-xs-12 ">
+          <a id="{{this.id}}-queue" href="" onclick="return false;" class="queueRow {{this.queueIndex}} {{this.qplaystatus}}">
+            <img src="{{this.artwork_url}}" class="playlist-art">
             {{this.title}}
           </a>
         </li>
