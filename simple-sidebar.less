@@ -123,9 +123,22 @@
   display: inline-block;
 }
 
+@media (min-width:768px) {
+  .background {
+    margin-left: 70px;
+  }
+
+  #wrapper.active {
+      padding-left: 250px;
+
+      .background {
+        margin-left: 0;
+      }
+  }
+}
+
 @media (max-width:767px) {
   #wrapper {
-    padding-left: 70px;
     transition: all .4s ease 0s;
   }
   #sidebar-wrapper {
