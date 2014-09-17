@@ -9,7 +9,7 @@
               <div class="row overlay">
                 <div class="info col-xs-12">
                   <span class="title">{{this.title}}</span><br>
-                  {{this.user.username}}
+                  <a href="" onclick="return false;" id="{{this.user.id}}-artist-profile">{{this.user.username}}</a> 
                 </div>
                 <span class="counts col-xs-12">
                   <span class="playCount">
@@ -21,12 +21,6 @@
                     {{this.favoritings_count}}
                   </span>
                 </span>
-              </div>
-              <div class="content">
-                <div class="table">
-                  <div class="table-cell">
-                  </div>
-                </div>
               </div>
               </div>
             {{/each}}

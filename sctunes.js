@@ -80,10 +80,11 @@ if (Meteor.isClient) {
               allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
               Session.set('tracks', allTracks);
               Session.set('artistFavorites', allTracks);
-              if(i === Math.ceil(artist.public_favorites_count / 200))
-                Session.set("loaded", true);
+              Session.set("loaded", true);
             });
           }
+          if(!artist.public_favorites_count)
+            Session.set("loaded", true);
         }
   }
 
@@ -279,6 +280,26 @@ if (Meteor.isClient) {
   Template.trackList.squares = function() {
     return Session.get("squares");
   };
+
+  Template.trackList.events = ({
+    'click [id*=artist-profile]' : function(event) {
+      Session.set("loaded", false);
+      Meteor.call("getArtist", accessTokenS, event.currentTarget.id.split('-')[0], function(error, info) {
+        var allTracks = [];
+        Session.set('currentArtist', info);
+        for(var i = 0; i < Math.ceil(info.track_count / 200); i++) {
+          Meteor.call("getArtistTracks", accessTokenS, info.id, i, function(error, tracks) {
+            allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
+            Session.set('tracks', allTracks);
+            Session.set('artistTracks', allTracks);
+            console.log(i, Math.ceil(info.track_count / 200));
+            if(i === Math.ceil(info.track_count / 200))
+              Session.set("loaded", true);
+          });
+        }
+      });  
+    }
+  });
 
   Template.app.squares = function() {
     return Session.get("squares");
@@ -566,32 +587,26 @@ if (Meteor.isClient) {
   };
 
   var getTargetTrack = function(target) {
+    console.log(target);
     if(target.classList[0] === "trackItem")
       return target;
-    else if(target.classList[0] === "table")
-      return target.parentNode.parentNode;
-    else if(target.parentNode.classList[0] === "table")
+    if(target.classList[0] === "title") {
       return target.parentNode.parentNode.parentNode;
+    }
     else
-      return target.parentNode;
+      return target.parentNode.parentNode;
   };
    
   Template.app.events = ({
     // update user's profile description
-    'click .youtube' : function(event) {
-      var track = Session.get('tracks')[event.target.id.split('-')[1]];
-
-      console.log(event);
-      console.log(event.target.id);
-      console.log(track);
-    },
-    'click .trackItem' : function(event) {
+    'click .trackItem, click .title' : function(event) {
+      console.log('here');
       var tracks = Session.get("tracks"), 
           node = getTargetTrack(event.target);
 
       if(event.altKey) 
         addToPlaylistClick(tracks, node.classList[0], node.id);
-      else if(event.target.localName === 'span')
+      else if(event.target.localName === 'span' && event.target.classList[0] !== 'title')
         return;
       else if (event.shiftKey)
         addToQueue(node);
