@@ -25,7 +25,7 @@
         </li>
         {{/each}}
       {{/if}}
-      <li><a>Queue<span class="sub_icon glyphicon glyphicon-log-in"></span></a></li>
+      <li><a id='queue-mode'>Queue<span class="sub_icon glyphicon glyphicon-log-in"></span></a></li>
       {{#if queueTracks}}
         {{#each queue}}
         <li>
@@ -36,13 +36,17 @@
         </li>
       {{/each}}
       {{/if}}
+      <li><a id='artist-mode'>Following<span class="sub_icon glyphicon glyphicon-log-in"></span></a></li>
+      {{#if artistMode}}
+        {{#each artists}}
+        <li>
+          <a id="{{this.id}}-artist-profile" href="" onclick="return false;">
+            <img src="{{this.avatar_url}}" class="playlist-art">
+            {{this.username}}
+          </a>
+        </li>
+      {{/each}}
+      {{/if}}
     </ul>
-<!--     <ul id="playlists" class="sidebar-nav">
-      <li class="sidebar-brand queue-block">
-          <a id="brand-title" href="">
-              scTunes
-          </a> 
-      </li>
-    </ul> -->
   </div>
 </template>

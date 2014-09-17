@@ -21,13 +21,16 @@ Router.map(function() {
 if (Meteor.isClient) {
   Meteor.startup(function() {
     Session.set("queue", []);
-    Session.set("mode", false);
+    Session.set("playlistMode", false);
+    Session.set("queueMode", true);
+    Session.set("artistMode", false);
     Session.set("ctTitle", null);
     Session.set("ctUploader", null);
     Session.set("ctArt", null);
     Session.set("loaded", false);
     Session.set("playing", false);
     Session.set("squares", true);
+    Session.set("artistStream", true);
     Session.set("sortType", "Like Date");
     Session.set("otherSortTypes", [{type:"Like Date", className: "likedateSort"}, 
                                    {type:"Artist", className: "artistSort"}, 
@@ -37,12 +40,15 @@ if (Meteor.isClient) {
                                    {type:"Creation Date", className: "creationSort"},
                                    {type:"Duration", className:"durationSort"},
                                    {type:"Search", className:"searchSort"}]);
-    Mousetrap.bind('q', function() { Session.set("playlistMode", false);});
+    Mousetrap.bind('q', function() { Session.set("queueMode", !Session.get("queueMode"))});
     Mousetrap.bind('p', function() {
-      Session.set("playlistMode", true);
+      Session.set("playlistMode", !Session.get("playlistMode"));
     });
     Mousetrap.bind('v', function() {
       Session.set("squares", !Session.get("squares"));
+    });
+    Mousetrap.bind('l', function() {
+      toggleArtistStream();
     });
   });
 
@@ -53,6 +59,33 @@ if (Meteor.isClient) {
       qIndex = 0, tIndex = 0, 
       currentTrackId, 
       madeTracks = false;
+
+  var toggleArtistStream = function() {
+    console.log('here');
+    var artist = Session.get('currentArtist');
+    var favorites = Session.get('artistFavorites');
+    var currentArtist = Session.get('currentArtist');
+    var sessionView = !Session.get('artistStream');
+    Session.set('artistStream', sessionView);
+    Session.set("loaded", false);
+    if(artist) 
+      if(sessionView) {
+        Session.set('tracks', Session.get('artistTracks'));
+        Session.set("loaded", true);
+      }
+      else {
+          var allTracks = [];
+          for(var i = 0; i < Math.ceil(artist.public_favorites_count / 200); i++) {
+            Meteor.call("getArtistFavorites", accessTokenS, artist.id, i, function(error, tracks) {
+              allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
+              Session.set('tracks', allTracks);
+              Session.set('artistFavorites', allTracks);
+              if(i === Math.ceil(artist.public_favorites_count / 200))
+                Session.set("loaded", true);
+            });
+          }
+        }
+  }
 
   Template.app.create = function() {
     Meteor.loginWithSoundcloud({}, function (err) {
@@ -67,12 +100,21 @@ if (Meteor.isClient) {
 
   Template.sidebar.playlistMode = function () {
     // update user's profile description
-    return Session.get("mode") === "playlist";
+    return Session.get("playlistMode");
+  };
+
+  Template.sidebar.artistMode = function () {
+    // update user's profile description
+    return Session.get("artistMode");
+  };
+
+  Template.sidebar.artists = function () {
+    return Session.get("artists");
   };
 
   Template.sidebar.queueTracks = function () {
     // update user's profile description
-    return Session.get("queue").length > 0;
+    return Session.get("queueMode");
   };
 
   Template.sidebar.playlists = function () {
@@ -90,25 +132,32 @@ if (Meteor.isClient) {
     });
   };
 
-  var blinkRow = function(id, blinkClass) {
-    $("#" + id).addClass(blinkClass);
-    setTimeout(function(){
-      $("#" + id).removeClass(blinkClass);
-      setTimeout(function(){
-        $("#" + id).addClass(blinkClass);
-        setTimeout(function(){
-          $("#" + id).removeClass(blinkClass);
-        }, 300);
-      }, 300);
-    }, 300);
-  };
-
   Template.sidebar.events = ({
     'click #playlist-mode' : function() {
-      if(Session.get('mode') == 'playlist')
-        Session.set('mode', 'none');
-      else
-        Session.set('mode', 'playlist');
+      Session.set('playlistMode', !Session.get('playlistMode'));
+    },
+    'click #queue-mode' : function() {
+      Session.set('queueMode', !Session.get('queueMode'));
+    },
+    'click #artist-mode' : function() {
+      Session.set('artistMode', !Session.get('artistMode'));
+    },
+    'click [id*=artist-profile]' : function(event) {
+      Session.set("loaded", false);
+      Meteor.call("getArtist", accessTokenS, event.currentTarget.id.split('-')[0], function(error, info) {
+        var allTracks = [];
+        Session.set('currentArtist', info);
+        for(var i = 0; i < Math.ceil(info.track_count / 200); i++) {
+          Meteor.call("getArtistTracks", accessTokenS, info.id, i, function(error, tracks) {
+            allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
+            Session.set('tracks', allTracks);
+            Session.set('artistTracks', allTracks);
+            console.log(i, Math.ceil(info.track_count / 200));
+            if(i === Math.ceil(info.track_count / 200))
+              Session.set("loaded", true);
+          });
+        }
+      });  
     },
     'click .playlistRow' : function(event) {
       Session.set('sortType', 'Like Date');
@@ -369,7 +418,6 @@ if (Meteor.isClient) {
               var moreTracks     = getArtist(indexTracks(favorites, false)),
                   initializeKeys = tracks ? Object.keys(tracks) : 0;
 
-              i += favorites.length;
               _.forEach(moreTracks, function(track, index) {
                 tracks[index + initializeKeys.length] = track;
               });                
@@ -383,6 +431,14 @@ if (Meteor.isClient) {
              Session.set("playlists", playlists);
              Session.set("playlistChange", false);
            });
+           
+          var allArtists = [];
+          for(var i = 0; i < Math.ceil(me.followings_count / 200); i++) {
+            Meteor.call("getArtists", accessToken, i, function(error, artists) {
+               allArtists = allArtists.concat(artists);
+              Session.set("artists", allArtists);
+            });
+          }
           });
       });
   };
@@ -476,7 +532,6 @@ if (Meteor.isClient) {
   };
 
   var addToQueue = function(node) {
-    blinkRow(node.id, "selectedForQueue");
     var queue = Session.get("queue");
     var track = Session.get("tracks")[node.classList[0]];
     track.queueIndex = qIndex++;
@@ -714,6 +769,60 @@ if (Meteor.isServer) {
         params: {                                                                                    
             oauth_token: accessToken,                                                                  
             format: "json"                                                                     
+          }                                                                                            
+        }).data;                                                                                       
+      } catch (err) {                                                                                  
+         throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
+      }
+    },
+    getArtists : function(accessToken, index) {
+      try {                                                                                            
+        return Meteor.http.get("https://api.soundcloud.com/me/followings", {                                      
+        params: {                                                                                    
+            oauth_token: accessToken,                                                                  
+            format: "json",
+            limit: 200,
+            offset: index * 200                                                                     
+          }                                                                                            
+        }).data;                                                                                       
+      } catch (err) {                                                                                  
+         throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
+      }
+    },
+    getArtist : function(accessToken, id) {
+      try {                                                                                            
+        return Meteor.http.get("https://api.soundcloud.com/users/" + id, {                                      
+        params: {                                                                                    
+            oauth_token: accessToken,                                                                  
+            format: "json"
+          }                                                                                            
+        }).data;                                                                                       
+      } catch (err) {                                                                                  
+         throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
+      }
+    },
+    getArtistTracks : function(accessToken, id, index) {
+      try {                                                                                            
+        return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/tracks", {                                      
+        params: {                                                                                    
+            oauth_token: accessToken,                                                                  
+            format: "json",
+            limit: 200,
+            offset: index * 200 
+          }                                                                                            
+        }).data;                                                                                       
+      } catch (err) {                                                                                  
+         throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
+      }
+    },
+    getArtistFavorites : function(accessToken, id, index) {
+      try {                                                                                            
+        return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/favorites", {                                      
+        params: {                                                                                    
+            oauth_token: accessToken,                                                                  
+            format: "json",
+            limit: 200,
+            offset: index * 200 
           }                                                                                            
         }).data;                                                                                       
       } catch (err) {                                                                                  

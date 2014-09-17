@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+  console.log($('#*-queue'))
+
   $('.overlay').mouseenter(function () {
       console.log('animate');
     $('.overlay').velocity({boxShadowBlur:25},{
