@@ -298,6 +298,21 @@ if (Meteor.isClient) {
           });
         }
       });  
+    },
+    'click .heartCount' : function(event) {
+      if(event.target.classList[1] === 'hearted')
+        SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+      else
+        SC.put('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+      var tracks = Session.get('tracks');
+      var track = _.find(tracks, function(track) {
+        return track.id == event.target.parentNode.parentNode.parentNode.id;
+      })
+            console.log(track);
+
+      track.user_favorite = !track.user_favorite;
+      tracks[track.index] = track;
+      Session.set('tracks', tracks);
     }
   });
 
@@ -590,16 +605,17 @@ if (Meteor.isClient) {
     console.log(target);
     if(target.classList[0] === "trackItem")
       return target;
-    if(target.classList[0] === "title") {
+    else if(target.classList[0] === "title") 
       return target.parentNode.parentNode.parentNode;
-    }
+    else if(target.classList[1] === "overlay") 
+      return target.parentNode;
     else
       return target.parentNode.parentNode;
   };
    
   Template.app.events = ({
     // update user's profile description
-    'click .trackItem, click .title' : function(event) {
+    'click .trackItem' : function(event) {
       console.log('here');
       var tracks = Session.get("tracks"), 
           node = getTargetTrack(event.target);

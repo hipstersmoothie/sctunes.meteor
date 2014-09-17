@@ -16,8 +16,8 @@
                     <span class="glyphicon glyphicon-play"></span> 
                     {{this.playback_count}}
                   </span>
-                  <span class="heartCount">
-                    <span class="glyphicon glyphicon-heart"></span> 
+                  <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
+                    <span class="glyphicon glyphicon-heart {{#if this.user_favorite}}red{{/if}}"></span> 
                     {{this.favoritings_count}}
                   </span>
                 </span>
