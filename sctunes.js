@@ -68,32 +68,37 @@ if (Meteor.isClient) {
     var sessionView = !Session.get('artistStream');
     Session.set('artistStream', sessionView);
     Session.set("loaded", false);
-    if(artist) 
+    if(artist) {
       if(sessionView) {
         Session.set('tracks', Session.get('artistTracks'));
         Session.set("loaded", true);
       }
       else {
-          var allTracks = [];
-          for(var i = 0; i < Math.ceil(artist.public_favorites_count / 200); i++) {
-            Meteor.call("getArtistFavorites", accessTokenS, artist.id, i, function(error, tracks) {
-              allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
-              Session.set('tracks', allTracks);
-              Session.set('artistFavorites', allTracks);
-              Session.set("loaded", true);
-            });
-          }
-          if(!artist.public_favorites_count)
+        var allTracks = [];
+        for(var i = 0; i < Math.ceil(artist.public_favorites_count / 200); i++) {
+          Meteor.call("getArtistFavorites", accessTokenS, artist.id, i, function(error, tracks) {
+            allTracks = allTracks.concat(getArtist(indexTracks(tracks, true)));
+            Session.set('tracks', allTracks);
+            Session.set('artistFavorites', allTracks);
             Session.set("loaded", true);
+          });
         }
+        if(!artist.public_favorites_count){
+          toastr.warning('User has no favorites!');
+          Session.set("loaded", true);
+        }
+      }
+    }
   }
 
-  Template.app.create = function() {
-    Meteor.loginWithSoundcloud({}, function (err) {
-      if (err)
-        Session.set('errorMessage', err.reason || 'Unknown error');
-    });
-  };
+  // Template.app.create = function() {
+  //   Meteor.loginWithSoundcloud({
+  //     loginStyle :  "redirect"
+  //   }, function (err) {
+  //     if (err)
+  //       Session.set('errorMessage', err.reason || 'Unknown error');
+  //   });
+  // };
 
   /*
     Playlist Mode Functions
@@ -737,21 +742,22 @@ if (Meteor.isClient) {
     streamTrack(nextId, queueOn);
   };
 
-  ServiceConfiguration.configurations.remove({
-    service: "soundcloud"
-  });
-  ServiceConfiguration.configurations.insert({
-    service: "soundcloud",
-    clientId: "fc6924c8838d01597bab5ab42807c4ae",
-    secret: "34e89f6e6c855ca21c7b6b881b9e8215"
-  });
+  // ServiceConfiguration.configurations.remove({
+  //   service: "soundcloud"
+  // });
+  // ServiceConfiguration.configurations.insert({
+  //   service: "soundcloud",
+  //   clientId: "fc6924c8838d01597bab5ab42807c4ae",
+  //   secret: "34e89f6e6c855ca21c7b6b881b9e8215"
+  // });
 
-  Accounts.ui.config({
-    requestPermissions: {
-      soundcloud: []
-    },
-    passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
-  });
+  // Accounts.ui.config({
+  //   requestPermissions: {
+  //     soundcloud: []
+  //   },
+  //   loginStyle :  "redirect",
+  //   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
+  // });
 }
 
 if (Meteor.isServer) {
