@@ -76,8 +76,8 @@ Meteor.methods({
     }
   },
   getArtistTracks : function(accessToken, id, index) {
-    try {                                                                                            
-      return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/tracks", {                     
+    try {                                                                           
+      return Meteor.http.get("https://api.soundcloud.com/e1/users/" + id + "/stream", {                     
       params: {                                                                                    
           oauth_token: accessToken,                                                                  
           format: "json",

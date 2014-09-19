@@ -11,6 +11,16 @@
                   <span class="title">{{this.title}}</span><br>
                   <a href="" onclick="return false;" id="{{this.user.id}}-artist-profile">{{this.user.username}}</a> 
                 </div>
+                {{#if this.track_count}}
+                <span class="counts col-xs-12">
+                  <span class="playCount">
+                    Tracks: {{ this.track_count }}
+                  </span>
+                  <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
+                    Length: {{toTime this.duration }}  
+                  </span>
+                </span>
+                {{else}}
                 <span class="counts col-xs-12">
                   <span class="playCount">
                     <span class="glyphicon glyphicon-play"></span> 
@@ -21,6 +31,7 @@
                     {{this.favoritings_count}}
                   </span>
                 </span>
+                {{/if}}
               </div>
               </div>
             {{/each}}
