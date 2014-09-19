@@ -45,6 +45,39 @@
   width: 200px;
 }
 
+.artist-info {
+  text-align: left;
+  background: #272727;
+  color: white;
+
+  .artist-pic {
+    margin: 25px;
+    width: 80%;
+  }
+
+  .artist-title {
+    display: inline-block;
+  }
+
+  .desc {
+    white-space: pre-line;
+  }
+
+  .artist-buttons {
+    text-align: center;
+    margin-top: 4%;
+    padding-bottom: 4%;
+
+    .btn-artist {
+      border-radius: 0;
+      width: 150px;
+      height: 50px;
+      margin-right: 15px;
+    }
+  }
+}
+
+
 .trackRow {
    cursor: pointer;
    cursor: hand;
@@ -201,6 +234,10 @@ body {
    background-color: #FFAE69; 
 }
 
+.loaderContainer {
+  height: 100%;
+}
+
 .topRow {
    background: rgb(0,0,0);
    color: grey;
@@ -233,15 +270,19 @@ body {
    height: 100vh;
 }
 
-#loader {
+#artistLoader {
+  top: 25%;
+}
+
+.loader {
   width: 100px;
   height: 40px;
   position: absolute;
-  top: 50%;
-  left: 57%;
+  top: 45%;
+  left: 50%;
   margin: -20px -50px;
 }
-#loader div {
+.loader div {
    width: 20px;
   height: 20px;
    background: #FFF;

@@ -1,0 +1,22 @@
+<template name='artistInfo'>
+	<div class="row artist-info">
+		<div class="col-xs-12 col-sm-4">
+			<img src="{{artistData.big_avatar}}" class="artist-pic">
+		</div>
+		<div class="col-xs-12 col-sm-8">
+			<h1 class="row artist-title">{{ artistData.username }} <h5 class="artist-title">{{ artistData.city }}, {{ artistData.country }}</h5></h1>
+			<div class="row">
+				<p class="col-xs-12 desc">{{ artistData.description }}</p>
+			</div> 
+			<div class="row artist-buttons">
+				<div class="btn-group">
+				  <button id="artist-tracks" type="button" class="btn btn-artist btn-default">Tracks</button>
+				  <button id="artist-playlists" type="button" class="btn btn-artist btn-default">
+				  	Playlists ({{ artistData.playlist_count }})
+				  </button>
+				  <button id="artist-favorites" type="button" class="btn btn-artist btn-default">Favorites</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

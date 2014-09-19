@@ -17,15 +17,20 @@
     {{/if}}
     <div id="page-content-wrapper">
       <div class="container-fluid {{#if squares}}background{{/if}}">
-        {{#if loaded}}
+        {{#if loggedIn}}
           {{> optionsRow}}
+        {{/if}}      
+        {{#if artistPage}}
+          {{> artistInfo}}
+        {{/if}}
+        {{#if loaded}}
           {{> trackList}}
-         {{else}}
-           {{> loader}}
-         {{/if}}
-         {{#if currentTrack}}
-           {{> player}}
-         {{/if}}        
+        {{else}}
+          {{> loader}}
+        {{/if}}
+        {{#if currentTrack}}
+          {{> player}}
+        {{/if}}        
       </div> 
       {{> currentTrackModal}}
       {{> newPlayListModal}}
