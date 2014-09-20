@@ -321,7 +321,6 @@ Template.player.events = ({
     playNextOrPrevTrack(false);
   },
   'click #time-slider' : function(event) {
-    console.log(event.currentTarget.value);
     currentTrack.setPosition(event.currentTarget.value);
   }
 });
@@ -606,7 +605,7 @@ var addToQueue = function(node) {
 };
 
 var unmountWAV = function() {
-  $("#currentTrackPlayer").empty();
+  _.map(_.rest($("#currentTrackPlayer").children()), function(wav) {wav.remove()});
 };
 
 var stopLastTrack = function(tracks) {
