@@ -20,6 +20,7 @@ Router.map(function() {
 
 Meteor.startup(function() {
   Session.set("queue", []);
+  Session.set("tracks", []);
 
   Session.set("playlistMode", false);
   Session.set("queueMode", true);
@@ -92,9 +93,6 @@ Template.sidebar.helpers({
     return Session.get("queueMode");
   },
   playlists: function () {
-    if(Session.get("playlistChange"))
-      Session.set("playlistChange", false);
-
     return Session.get("playlists");
   },
   queue: function () {
@@ -360,8 +358,7 @@ Template.trackList.helpers({
       redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
       access_token: access_token
     });
-    var tracks = Session.get("tracks");
-    return tracks ? Object.keys(tracks).map(function(v) { return tracks[v]; }) : [];
+    return Session.get("tracks");
   },
   toTime: function(ms) {
     return msToTime(ms);
@@ -377,6 +374,7 @@ Template.trackList.events({
       SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
     else
       SC.put('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+
     var tracks = Session.get('tracks');
     var track = _.find(tracks, function(track) {
       return track.id == event.target.parentNode.parentNode.parentNode.id;
@@ -457,6 +455,7 @@ Template.loader.helpers({
   App Functions
  */
 
+//TODO REFACTOR
 var getArtist = function(tracks) {
   return _.map(tracks, function(track) {
     var title = track.title;
@@ -483,37 +482,45 @@ var getArtist = function(tracks) {
 
     return track;
   });
-};    
+}; 
 
-var getTracks = function () {
-  // update user's profile description
+var getPlaylists = function() {
+  Meteor.call("getPlaylists", function(error, playlists) {
+    Session.set("playlists", playlists);
+  });
+};   
+
+var getTracks = function (me) {
   var tracks = [], offset = 0;
+  for(var i = 0, len = Math.ceil(me.public_favorites_count / 200); i < len; i++) {
+    Meteor.call("getFavorites", i, function(error, favorites) {
+      tracks = tracks.concat(prepareTracks(favorites, false));
+      Session.set("tracks", tracks);
+      Session.set("origTracks", tracks);
+      if(i = len)
+        Session.set('loaded', true);
+    });
+  }
+};
+
+var getFollowedArtists = function(me) {
+  var allArtists = [];
+  for(var i = 0; i < Math.ceil(me.followings_count / 200); i++) {
+    Meteor.call("getArtists", i, function(error, artists) {
+      allArtists = allArtists.concat(artists);
+      Session.set("artists", allArtists);
+    });
+  }
+};
+
+var getMe = function() {
   if(!madeTracks) {
+    madeTracks = true;
     Meteor.call("getAccessToken", function(err, res) { access_token = res });
     Meteor.call("getMe", function(error, me) {
-      console.log(me.public_favorites_count);
-      for(var i = 0; i < Math.ceil(me.public_favorites_count / 200); i++) {
-        console.log(i);
-        Meteor.call("getFavorites", i, function(error, favorites) {
-          console.log(favorites);
-          tracks = tracks.concat(prepareTracks(favorites, false));
-          Session.set("tracks", tracks);
-          Session.set("origTracks", tracks);
-        });
-      }
-       Meteor.call("getPlaylists", function(error, playlists) {
-         Session.set("loaded", true);
-         Session.set("playlists", playlists);
-         Session.set("playlistChange", false);
-       });
-       
-      var allArtists = [];
-      for(var i = 0; i < Math.ceil(me.followings_count / 200); i++) {
-        Meteor.call("getArtists", i, function(error, artists) {
-          allArtists = allArtists.concat(artists);
-          Session.set("artists", allArtists);
-        });
-      }
+      getTracks(me);
+      getPlaylists();       
+      getFollowedArtists(me);
     });
   }
 };
@@ -654,9 +661,7 @@ Template.app.helpers({
   },
   loggedIn: function () {
     if(Meteor.user()) {
-      getTracks();
-      $('body').css("background", "none");
-      madeTracks = true;
+      getMe();
       return true;
     }
     else
@@ -672,13 +677,12 @@ Template.app.helpers({
     return title.indexOf(username) == -1;
   }
 });
-
  
 Template.app.events = ({
   // update user's profile description
   'click .trackItem' : function(event) {
     var tracks = Session.get("tracks"), 
-        node = getTargetTrack(event.target);
+        node   = getTargetTrack(event.target);
 
     if(event.altKey) 
       addToPlaylistClick(tracks, node.classList[0], node.id);
