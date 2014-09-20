@@ -1,6 +1,6 @@
 <template name="player">
     <div class="current-art player footer navbar-fixed-bottom">
-      <div class="player-node col-xs-1"><img src="{{ctArt}}"></div>
+      <div class="player-node col-xs-1"><img src="{{currentTrack.artwork_url}}"></div>
       <div class="player-node col-xs-11">
         <div class="col-xs-12">
           <span class="controls">
@@ -14,9 +14,10 @@
               <span class="glyphicon glyphicon-step-forward"></span>
             </span>
           </span>
-          <span class="player-title">{{ctTitle}} - {{ctUploader}}</span>
+          <span class="player-title">{{currentTrack.title}} - {{currentTrack.user.username}}</span>
         </div>
       <div id="currentTrackPlayer" class="col-xs-12"></div>
+      <input type="range"  min="0" max="100" />
       </div>
     </div>
 </template>

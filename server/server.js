@@ -15,7 +15,7 @@ Meteor.methods({
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me", {                                      
         params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json"                                                                             
         }                                                                                            
       }).data;                                                                                       
@@ -25,9 +25,9 @@ Meteor.methods({
   },
   getFavorites : function(accessToken, offset) {
     try {                                                                                            
-      return Meteor.http.get("https://api.soundcloud.com/me/favorites", {                                      
+      return Meteor.http.get("https://api.soundcloud.com/e1/me/likes", {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json" ,
           limit: 200,
           offset: offset * 200                                                                            
@@ -41,7 +41,7 @@ Meteor.methods({
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me/playlists", {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json"                                                                     
         }                                                                                            
       }).data;                                                                                       
@@ -53,7 +53,7 @@ Meteor.methods({
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me/followings", {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json",
           limit: 200,
           offset: index * 200                                                                     
@@ -67,7 +67,7 @@ Meteor.methods({
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/users/" + id, {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json"
         }                                                                                            
       }).data;                                                                                       
@@ -79,7 +79,7 @@ Meteor.methods({
     try {                                                                           
       return Meteor.http.get("https://api.soundcloud.com/e1/users/" + id + "/stream", {                     
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json",
           limit: 200,
           offset: index * 200 
@@ -91,12 +91,12 @@ Meteor.methods({
   },
   getArtistFavorites : function(accessToken, id, index) {
     try {                                                                                            
-      return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/favorites", {                                      
+      return Meteor.http.get("https://api.soundcloud.com/e1/users/" + id + "/likes", {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json",
-          limit: 200,
-          offset: index * 200 
+          limit: 1000,
+          //offset: index * 200 
         }                                                                                            
       }).data;                                                                                       
     } catch (err) {                                                                                  
@@ -107,7 +107,7 @@ Meteor.methods({
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/playlists", {                                      
       params: {                                                                                    
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json",
           limit: 200,
         }                                                                                            
@@ -121,7 +121,7 @@ Meteor.methods({
       return Meteor.http.post("https://api.soundcloud.com/me/playlists", {                                      
       params: {   
           data: playlist,                                                                                 
-          oauth_token: accessToken,                                                                  
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
           format: "json"                                                                     
         }                                                                                            
       }).data;                                                                                       
