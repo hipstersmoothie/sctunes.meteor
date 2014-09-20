@@ -11,7 +11,7 @@ Meteor.methods({
       return null;
     }
   },
-  getMe : function(accessToken) {
+  getMe : function() {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me", {                                      
         params: {                                                                                    
@@ -23,12 +23,12 @@ Meteor.methods({
       throw new Error("Failed to fetch identity from Soundcloud. " + err.message);                   
     }
   },
-  getFavorites : function(accessToken, offset) {
+  getFavorites : function(offset) {
     try {                                                                                            
-      return Meteor.http.get("https://api.soundcloud.com/e1/me/likes", {                                      
+      return Meteor.http.get("https://api.soundcloud.com/me/favorites", {                                      
       params: {                                                                                    
           oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
-          format: "json" ,
+          format: "json",
           limit: 200,
           offset: offset * 200                                                                            
         }                                                                                            
@@ -37,7 +37,7 @@ Meteor.methods({
        throw new Error("Failed to fetch identity from Soundcloud. " + err.message);                   
      }
   },
-  getPlaylists : function(accessToken) {
+  getPlaylists : function() {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me/playlists", {                                      
       params: {                                                                                    
@@ -49,7 +49,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  getArtists : function(accessToken, index) {
+  getArtists : function(index) {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me/followings", {                                      
       params: {                                                                                    
@@ -63,7 +63,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  getArtist : function(accessToken, id) {
+  getArtist : function(id) {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/users/" + id, {                                      
       params: {                                                                                    
@@ -75,7 +75,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  getArtistTracks : function(accessToken, id, index) {
+  getArtistTracks : function(id, index) {
     try {                                                                           
       return Meteor.http.get("https://api.soundcloud.com/e1/users/" + id + "/stream", {                     
       params: {                                                                                    
@@ -89,7 +89,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  getArtistFavorites : function(accessToken, id, index) {
+  getArtistFavorites : function(id, index) {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/e1/users/" + id + "/likes", {                                      
       params: {                                                                                    
@@ -103,7 +103,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  getArtistPlaylists : function(accessToken, id) {
+  getArtistPlaylists : function(id) {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/users/" + id + "/playlists", {                                      
       params: {                                                                                    
@@ -116,7 +116,7 @@ Meteor.methods({
        throw new Error("Failed to fetch playlists from Soundcloud. " + err.message);                   
     }
   },
-  newPlaylist : function(accessToken, playlist) {
+  newPlaylist : function(playlist) {
     try {                                                                                            
       return Meteor.http.post("https://api.soundcloud.com/me/playlists", {                                      
       params: {   

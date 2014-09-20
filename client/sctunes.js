@@ -125,7 +125,7 @@ var loadArtist = function(id) {
 
     for(var i = 0; i < Math.ceil(info.track_count / 200); i++) {
       Meteor.call("getArtistTracks", info.id, i, function(error, tracks) {
-        allTracks = allTracks.concat(getArtist(indexTracks(extractSongsAndPlaylists(tracks), true)));
+        allTracks = allTracks.concat(prepareTracks(extractSongsAndPlaylists(tracks), true));
         Session.set('tracks', allTracks);
         Session.set('artistTracks', allTracks);
         if(i === Math.ceil(info.track_count / 200)) {
@@ -167,7 +167,7 @@ Template.sidebar.events = ({
         Session.set("loaded", true);
       } else {
         SC.get('/playlists/' + event.target.id, function(playlist) {
-          Session.set("tracks", setPlayingToCurrent(getArtist(indexTracks(playlist.tracks, true))));
+          Session.set("tracks", setPlayingToCurrent(prepareTracks(playlist.tracks, true)));
           Session.set("loaded", true);
         });
       }
@@ -235,6 +235,10 @@ Template.artistInfo.helpers({
   }
 });
 
+var prepareTracks = function(tracks, newIndexes) {
+  return setArt(getArtist(indexTracks(tracks, newIndexes)));
+};
+
 var getFavorites = function(artist) {
   var allTracks = [], currentFavorites = Session.get('artistFavorites');
 
@@ -246,7 +250,7 @@ var getFavorites = function(artist) {
   Session.set("loaded", false);
   for(var i = 0; i < Math.ceil(artist.public_favorites_count / 200); i++) {
     Meteor.call("getArtistFavorites", artist.id, i, function(error, tracks) {
-      allTracks = allTracks.concat(getArtist(indexTracks(extractSongsAndPlaylists(tracks), true)));
+      allTracks = allTracks.concat(prepareTracks(extractSongsAndPlaylists(tracks), true));
       Session.set('tracks', allTracks);
       Session.set('artistFavorites', allTracks);
       Session.set("loaded", true);
@@ -258,12 +262,14 @@ var getFavorites = function(artist) {
   }
 };
 
-var setArt = function(track) {
-  if(track.artwork_url)
-    track.big_artwork_url = (track.artwork_url).replace("large", "t300x300");
-  else
-    track.big_artwork_url = 'noTrack.jpg';
-  return track;
+var setArt = function(tracks) {
+  return _.map(tracks, function(track) {
+    if(track.artwork_url)
+      track.big_artwork_url = (track.artwork_url).replace("large", "t300x300");
+    else
+      track.big_artwork_url = 'noTrack.jpg';
+    return track;
+  })
 };
 
 Template.artistInfo.events({
@@ -283,7 +289,7 @@ Template.artistInfo.events({
     Session.set('loaded', false);
     if(artist.playlist_count > 0) {
       Meteor.call("getArtistPlaylists", artist.id, function(error, playlists) {
-        Session.set('tracks', _,map(playlists, setArt));
+        Session.set('tracks', setArt(playlists));
         Session.set('loaded', true);
       });
     } else {
@@ -475,7 +481,7 @@ var getArtist = function(tracks) {
       track.artist = track.user.username;
     }
 
-    return setArt(track);
+    return track;
   });
 };    
 
@@ -485,9 +491,12 @@ var getTracks = function () {
   if(!madeTracks) {
     Meteor.call("getAccessToken", function(err, res) { access_token = res });
     Meteor.call("getMe", function(error, me) {
+      console.log(me.public_favorites_count);
       for(var i = 0; i < Math.ceil(me.public_favorites_count / 200); i++) {
+        console.log(i);
         Meteor.call("getFavorites", i, function(error, favorites) {
-          tracks = tracks.concat(getArtist(indexTracks(extractSongsAndPlaylists(favorites), false)));
+          console.log(favorites);
+          tracks = tracks.concat(prepareTracks(favorites, false));
           Session.set("tracks", tracks);
           Session.set("origTracks", tracks);
         });
@@ -676,7 +685,7 @@ Template.app.events = ({
     else if(node.classList[node.classList.length - 1] == 'playlist'){
       Session.set("loaded", false);
       SC.get('/playlists/' + node.id, function(playlist) {
-        Session.set("tracks", getArtist(indexTracks(playlist.tracks, true)));
+        Session.set("tracks", prepareTracks(playlist.tracks, true));
         Session.set("loaded", true);
       });
     }
