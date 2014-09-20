@@ -16,8 +16,11 @@
           </span>
           <span class="player-title">{{currentTrack.title}} - {{currentTrack.user.username}}</span>
         </div>
-      <div id="currentTrackPlayer" class="col-xs-12"></div>
-      <input type="range"  min="0" max="100" />
+      <div id="currentTrackPlayer" class="col-xs-12">
+        <div>
+          <input type="range"  min="0" max="{{ currentTrack.duration }}" id="time-slider"/>
+        </div>
+      </div>
       </div>
     </div>
 </template>

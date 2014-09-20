@@ -59,15 +59,6 @@ var queueOn = false,
     madeTracks = false,
     access_token;
 
-// Template.app.create = function() {
-//   Meteor.loginWithSoundcloud({
-//     loginStyle :  "redirect"
-//   }, function (err) {
-//     if (err)
-//       Session.set('errorMessage', err.reason || 'Unknown error');
-//   });
-// };
-
 /*
  Sidebar
  */
@@ -328,6 +319,10 @@ Template.player.events = ({
   },
   'click #prevButton' : function() {
     playNextOrPrevTrack(false);
+  },
+  'click #time-slider' : function(event) {
+    console.log(event.currentTarget.value);
+    currentTrack.setPosition(event.currentTarget.value);
   }
 });
 
