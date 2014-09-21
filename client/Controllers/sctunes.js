@@ -43,6 +43,13 @@ var queueOn = false,
  Sidebar
  */
 
+Template.login.helpers({
+  loggedIn: function() {
+    if(Meteor.user())
+      Router.go(Session.get('ir.loginRedirectRoute'));
+  }
+});
+
 setPlayingToCurrent = function(tracks) {
   return _.map(tracks, function(track) {
     track.playstatus = track.id == currentTrackId ? "playing" : "notplaying";

@@ -5,7 +5,7 @@ Router.configure({
 
 var auth = {
   name: 'login',
-  shouldRoute: true,
+  // shouldRoute: false,
   layout: 'ApplicationLayout'
 };
 
@@ -127,7 +127,7 @@ Router.map(function() {
     onBeforeAction: function() {
       GAnalytics.pageview('login');
       if(Meteor.user())
-        Router.redirect('/');
+        Router.go('/');
     }
   });
 });
