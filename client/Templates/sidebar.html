@@ -25,7 +25,7 @@
         </li>
         {{/each}}
       {{/if}}
-      <li><a id='queue-mode'>Queue<span class="sub_icon glyphicon glyphicon-log-in"></span></a></li>
+      <li><a id='queue-mode'>Queue<span class="sub_icon glyphicon glyphicon-music"></span></a></li>
       {{#if queueTracks}}
         {{#each queue}}
         <li>
@@ -36,7 +36,7 @@
         </li>
       {{/each}}
       {{/if}}
-      <li><a id='artist-mode'>Following<span class="sub_icon glyphicon glyphicon-log-in"></span></a></li>
+      <li><a id='artist-mode'>Following<span class="sub_icon glyphicon glyphicon-user"></span></a></li>
       {{#if artistMode}}
         {{#each artists}}
         <li>
@@ -47,6 +47,12 @@
         </li>
       {{/each}}
       {{/if}}
+      <li>
+        <a>
+          <button id="log-out" class="btn btn-default" type="button">Log Out</button>
+          <span class="sub_icon glyphicon glyphicon-log-out"></span>
+        </a>
+      </li>
     </ul>
   </div>
 </template>

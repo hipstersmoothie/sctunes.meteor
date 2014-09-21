@@ -75,6 +75,7 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id);
+      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -88,6 +89,7 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id, "favorites");
+      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -101,6 +103,7 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id);
+      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -114,6 +117,7 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id, "playlists");
+      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -212,7 +216,6 @@ var getTracks = function (me) {
     Session.set("tracks", tracks);
     Session.set("origTracks", tracks);
     Session.set('loaded', true);
-    console.log('here');
   }, prepareTracks, true);
 };
 
@@ -222,7 +225,7 @@ var getMe = function() {
     Meteor.call("getAccessToken", function(err, res) { access_token = res });
     Meteor.call("getMe", function(error, me) {
       getTracks(me);
-      // getPlaylists();       
+      getPlaylists();       
       // getFollowedArtists(me);
     });
   }

@@ -82,6 +82,9 @@ Template.sidebar.events = ({
   'click #playlist-mode' : function() {
     Session.set('playlistMode', !Session.get('playlistMode'));
   },
+  'click #log-out' : function() {
+    Meteor.logout();
+  },
   'click #queue-mode' : function() {
     Session.set('queueMode', !Session.get('queueMode'));
   },
@@ -117,6 +120,7 @@ Template.sidebar.events = ({
    'click .queueRow' : function(event) {
       var queue = Session.get("queue");
       var tracks = Session.get("tracks");
+      var track;
       var id = event.target.id.substr(0, event.target.id.indexOf("-"));
       Session.set("playing", true);
 
@@ -128,18 +132,16 @@ Template.sidebar.events = ({
         unmountWAV();
         if(!queueOn) {
           var row = $("#" + currentTrackId)[0];
-          if(row)
+          if(row) 
             tracks[row.classList[0]].playstatus = "notplaying";
         } else
           queue[$("#" + currentTrackId + "-queue")[0].classList[0]].qplaystatus = "notplaying";
       }
-      queue[event.target.classList[0]].qplaystatus = "playing";
+      track = queue[event.target.classList[0]];
+      track.qplaystatus = "playing";
       Session.set("queue", queue);
       Session.set("tracks", tracks);
-      streamTrack(id, true);
-   },
-   'click .brand-title' : function() {
-      Session.set("playlistMode", !Session.get("playlistMode"));
+      streamTrack(track, true);
    },
    'click #main_icon' : function() {
       $("#wrapper").toggleClass("active");
@@ -452,11 +454,11 @@ var setTrackChangeInfo = function(increment) {
   currentTrackId = tracks[nextToPlay].id;
   Session.set("tracks", setPlayingToCurrent(tracks));
 
-  return tracks[nextToPlay].id;
+  return tracks[nextToPlay];
 };
 
 var setTrackChangeInfoQueue = function (increment) {
-  var tracks = Session.get("queue"),
+  var tracks = Session.get("queue"), nextTrack,
       currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[0]),
       nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
 
@@ -464,27 +466,27 @@ var setTrackChangeInfoQueue = function (increment) {
   if(nextToPlay === tracks.length || nextToPlay < 0) {
     stream = Session.get("tracks");
     stream[0].playstatus = "playing";
-    nextId = stream[0].id;
+    nextTrack = stream[0];
     queueOn = false;
     Session.set("tracks", stream);
   } else {
     tracks[nextToPlay].qplaystatus = "playing";
-    nextId = tracks[nextToPlay].id;
+    nextTrack = tracks[nextToPlay];
   }
   Session.set("queue", tracks);
-  return nextId;
+  return nextTrack;
 };
 
 playNextOrPrevTrack = function(increment) {
-  var nextId;
+  var nextTrack;
 
   unmountWAV();
   if(!queueOn)
-    nextId = setTrackChangeInfo(increment);
+    nextTrack = setTrackChangeInfo(increment);
   else
-    nextId = setTrackChangeInfoQueue(increment);
+    nextTrack = setTrackChangeInfoQueue(increment);
 
-  streamTrack(nextId, queueOn);
+  streamTrack(nextTrack, queueOn);
 };
 
 // ServiceConfiguration.configurations.remove({
