@@ -1,7 +1,3 @@
-BaseController = RouteController.extend({
-  // specify stuff that every controller should have
-});
-
 Router.configure({
   layoutTemplate: 'ApplicationLayout',
   templateNameConverter: 'upperCamelCase'
@@ -14,6 +10,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: 'login',
     onBeforeAction: function() {
+      GAnalytics.pageview('app');
       getMe();
     },
     yieldTemplates: {
@@ -121,8 +118,9 @@ Router.map(function() {
     path: '/login',
     redirectOnLogin: true,
     onBeforeAction: function() {
+      GAnalytics.pageview('login');
       if(Meteor.user())
-        Router.redirect('/favorites');
+        Router.redirect('/');
     }
   });
 });
