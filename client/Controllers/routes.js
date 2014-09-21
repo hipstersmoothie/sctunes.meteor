@@ -1,14 +1,20 @@
 Router.configure({
-  layoutTemplate: 'ApplicationLayout',
+  layoutTemplate: 'trackLayout',
   templateNameConverter: 'upperCamelCase'
 });
+
+var auth = {
+  name: 'login',
+  shouldRoute: true,
+  layout: 'ApplicationLayout'
+};
 
 Router.map(function() {
   this.route('app', {
     path: '/',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       GAnalytics.pageview('app');
       getMe();
@@ -22,7 +28,7 @@ Router.map(function() {
     path: '/favorites',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       var tracks = Session.get("origTracks");
       Session.set('loaded', false);
@@ -46,7 +52,7 @@ Router.map(function() {
     path: '/likedPlaylists',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       var playlists = Session.get('likedPlaylists');
       $('#my-playlists').addClass('active').siblings().removeClass('active');
@@ -66,7 +72,7 @@ Router.map(function() {
     path: '/artist/:_id',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id);
     },
@@ -79,7 +85,7 @@ Router.map(function() {
     path: '/artist/:_id/favorites',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id, "favorites");
     },
@@ -92,7 +98,7 @@ Router.map(function() {
     path: '/artist/:_id/tracks',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id);
     },
@@ -105,7 +111,7 @@ Router.map(function() {
     path: '/artist/:_id/playlists',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    loginRequired: 'login',
+    loginRequired: auth,
     onBeforeAction: function() {
       loadArtist(this.params._id, "playlists");
     },
@@ -117,6 +123,7 @@ Router.map(function() {
   this.route('login', {
     path: '/login',
     redirectOnLogin: true,
+    layoutTemplate: 'ApplicationLayout',
     onBeforeAction: function() {
       GAnalytics.pageview('login');
       if(Meteor.user())
