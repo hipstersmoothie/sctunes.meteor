@@ -183,6 +183,9 @@ Template.trackList.helpers({
   loaded: function () {
     return Session.get("loaded");
   },
+  currentTrack: function() {
+    return Session.get('currentTrack');
+  }
 });
 
 Template.trackList.events({
