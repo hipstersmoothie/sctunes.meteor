@@ -10,18 +10,16 @@
   </body>
 </template>
 
-<template name="app">
+<!-- <template name="app">
   <div id="wrapper" class="active">
-    {{#if loggedIn}}
-      {{> sidebar}}
-    {{/if}}
+    {{> sidebar}}
     <div id="page-content-wrapper">
       <div class="container-fluid {{#if squares}}background{{/if}}">
-        {{#if loggedIn}}
-          {{> optionsRow}}
-        {{/if}}      
+        {{> optionsRow}}
         {{#if artistPage}}
           {{> artistInfo}}
+        {{else}}
+          {{> myInfo}}
         {{/if}}
         {{#if loaded}}
           {{> trackList}}
@@ -35,4 +33,26 @@
       {{> newPlayListModal}}
     </div>
   </div>
+</template> -->
+
+<template name="trackLayout">
+  <body>
+    <div id="wrapper" class="active">
+      {{> sidebar}}
+      <div id="page-content-wrapper">
+        <div class="container-fluid {{#if squares}}background{{/if}}">
+          {{> optionsRow}}
+          
+          {{> yield region="userTrackChooser"}}
+          
+          {{> yield}}
+
+          {{#if currentTrack}}
+            {{> player}}
+          {{/if}}        
+        </div> 
+        {{> newPlayListModal}}
+      </div>
+    </div>
+  </body>
 </template>

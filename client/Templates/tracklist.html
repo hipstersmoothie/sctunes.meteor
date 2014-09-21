@@ -1,62 +1,66 @@
 <template name="trackList">
-  <div class="row">
-    <div id="tracks" class="col-sm-12 {{#if currentTrack}}player-space{{/if}}">
-      {{#if squares}}
-        <div class="row text-center">
-          <div class="list">
-            {{#each tracks}}
-            <div id={{this.id}} class="trackItem trackRow {{this.index}} col-xs-12 square bg {{this.playstatus}} {{this.kind}}" style="background-image:url({{this.big_artwork_url}})">
-              <div class="row overlay">
-                <div class="info col-xs-12">
-                  <span class="title">{{this.title}}</span><br>
-                  <a href="" onclick="return false;" id="{{this.user.id}}-artist-profile">{{this.user.username}}</a> 
+  {{#if loaded}}
+    <div class="row">
+      <div id="tracks" class="col-sm-12 {{#if currentTrack}}player-space{{/if}}">
+        {{#if squares}}
+          <div class="row text-center">
+            <div class="list">
+              {{#each tracks}}
+              <div id={{this.id}} class="trackItem trackRow {{this.index}} col-xs-12 square bg {{this.playstatus}} {{this.kind}}" style="background-image:url({{this.big_artwork_url}})">
+                <div class="row overlay">
+                  <div class="info col-xs-12">
+                    <span class="title">{{this.title}}</span><br>
+                    <a href="" onclick="return false;" id="{{this.user.id}}-artist-profile">{{this.user.username}}</a> 
+                  </div>
+                  {{#if this.track_count}}
+                  <span class="counts col-xs-12">
+                    <span class="playCount">
+                      Tracks: {{ this.track_count }}
+                    </span>
+                    <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
+                      Length: {{ toTime this.duration }}  
+                    </span>
+                  </span>
+                  {{else}}
+                  <span class="counts col-xs-12">
+                    <span class="playCount">
+                      <span class="glyphicon glyphicon-play"></span> 
+                      {{this.playback_count}}
+                    </span>
+                    <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
+                      <span class="glyphicon glyphicon-heart {{#if this.user_favorite}}red{{/if}}"></span> 
+                      {{this.favoritings_count}}
+                    </span>
+                  </span>
+                  {{/if}}
                 </div>
-                {{#if this.track_count}}
-                <span class="counts col-xs-12">
-                  <span class="playCount">
-                    Tracks: {{ this.track_count }}
-                  </span>
-                  <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
-                    Length: {{toTime this.duration }}  
-                  </span>
-                </span>
-                {{else}}
-                <span class="counts col-xs-12">
-                  <span class="playCount">
-                    <span class="glyphicon glyphicon-play"></span> 
-                    {{this.playback_count}}
-                  </span>
-                  <span class="heartCount {{#if this.user_favorite}}hearted{{/if}}">
-                    <span class="glyphicon glyphicon-heart {{#if this.user_favorite}}red{{/if}}"></span> 
-                    {{this.favoritings_count}}
-                  </span>
-                </span>
-                {{/if}}
-              </div>
-              </div>
-            {{/each}}
+                </div>
+              {{/each}}
+            </div>
           </div>
-        </div>
-      {{else}}
-        <div class="itunes">
-        {{#each tracks}}
-          <div id={{this.id}} class="trackItem trackRow {{this.index}} row ">
-            {{#if uploader}} 
-              <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-              <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-            {{else}}
-            {{#if artist}}
-              <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
-              <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
-            {{else}}
-              <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
-              <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
-            {{/if}}
-            {{/if}}
+        {{else}}
+          <div class="itunes">
+          {{#each tracks}}
+            <div id={{this.id}} class="trackItem trackRow {{this.index}} row ">
+              {{#if uploader}} 
+                <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+                <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+              {{else}}
+              {{#if artist}}
+                <span class="col-xs-8 title {{this.playstatus}}">{{this.titleWithoutArtist}}</span>
+                <span class="col-xs-4 uploader {{this.playstatus}}">{{this.artist}}</span>
+              {{else}}
+                <span class="col-xs-8 title {{this.playstatus}}">{{this.title}}</span>
+                <span class="col-xs-4 uploader {{this.playstatus}}">{{this.user.username}}</span>
+              {{/if}}
+              {{/if}}
+            </div>
+          {{/each}}
           </div>
-        {{/each}}
-        </div>
-      {{/if}}
+        {{/if}}
+      </div>
     </div>
-  </div>
+  {{else}}
+    {{> loader}}
+  {{/if}}
 </template>

@@ -37,6 +37,19 @@ Meteor.methods({
        throw new Error("Failed to fetch identity from Soundcloud. " + err.message);                   
      }
   },
+  getLikedPlaylists : function() {
+    try {                                                                                            
+      return Meteor.http.get("https://api.soundcloud.com/e1/me/playlist_likes", {                                      
+      params: {                                                                                    
+          oauth_token: Meteor.user().services.soundcloud.accessToken,                                                                  
+          format: "json",
+          limit: 200
+        }                                                                                            
+      }).data;                                                                                       
+     } catch (err) {                                                                                  
+       throw new Error("Failed to fetch identity from Soundcloud. " + err.message);                   
+     }
+  },
   getPlaylists : function() {
     try {                                                                                            
       return Meteor.http.get("https://api.soundcloud.com/me/playlists", {                                      
