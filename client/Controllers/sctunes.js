@@ -316,18 +316,6 @@ indexTracks = function(tracksToIndex, newIndex) {
   });
 };
 
-var shuffle = function(array) {
-  Session.set('loaded', false);
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-  Session.set('loaded', true);
-  return indexTracks(array, true);
-};
-
 var getIds = function(tracks) {
   return _.map(tracks, function(track) {
     return {id: track.id};
@@ -404,7 +392,7 @@ var stopLastTrack = function(tracks) {
     if(queueOn && $("#" + currentTrackId + "-queue").length) {
       var queue = Session.get("queue");
       queueOn = false;
-      queue[$("#" + currentTrackId + "-queue")[0].classList[1]].qplaystatus = "notplaying";
+      queue[$("#" + currentTrackId + "-queue")[0].classList[0]].qplaystatus = "notplaying";
       Session.set("queue", queue);
     }
   }
