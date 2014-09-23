@@ -17,6 +17,7 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       GAnalytics.pageview('app');
+      $('#my-tracks').addClass('active').siblings().removeClass('active');
       getMe();
     },
     yieldTemplates: {

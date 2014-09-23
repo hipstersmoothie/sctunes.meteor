@@ -339,7 +339,6 @@ var setUpWav = function(track) {
 var streamTrack = function(track, queue) {
   currentTrackId = track.id;
   Session.set("currentTrack", track);
-  togglePauseIcon();
   setTimeout(function() {
     sound = SC.stream("/tracks/" + track.id, setUpWav(track), function(sound){
     soundManager.stopAll();
