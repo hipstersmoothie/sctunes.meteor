@@ -8,7 +8,14 @@
         </li>
     </ul>
     <ul class="sidebar-nav" id="sidebar">     
-      <li><a id='playlist-mode'>Playlists<span class="sub_icon glyphicon glyphicon-book"></span></a></li>
+      <li>
+        <a id='playlist-mode'>
+          <span class="glyphicon folder-arrow {{#if playlistMode}}glyphicon-chevron-down{{else}}glyphicon-chevron-right{{/if}}">
+          </span>
+          Playlists
+          <span class="sub_icon glyphicon glyphicon-book"></span>
+        </a>
+      </li>
       {{#if playlistMode}}
         <li id="favorites" class="playlistRow queue-block">
           <a id="favorites" href="" onclick="return false;">
@@ -25,7 +32,14 @@
         </li>
         {{/each}}
       {{/if}}
-      <li><a id='queue-mode'>Queue<span class="sub_icon glyphicon glyphicon-music"></span></a></li>
+      <li>
+        <a id='queue-mode'>
+          <span class="glyphicon folder-arrow {{#if queueTracks}}glyphicon-chevron-down{{else}}glyphicon-chevron-right{{/if}}">
+          </span>
+          Queue
+          <span class="sub_icon glyphicon glyphicon-music"></span>
+        </a>
+      </li>
       {{#if queueTracks}}
         {{#each queue}}
         <li>
@@ -36,7 +50,14 @@
         </li>
       {{/each}}
       {{/if}}
-      <li><a id='artist-mode'>Following<span class="sub_icon glyphicon glyphicon-user"></span></a></li>
+      <li>
+        <a id='artist-mode'>
+          <span class="glyphicon folder-arrow {{#if artistMode}}glyphicon-chevron-down{{else}}glyphicon-chevron-right{{/if}}">
+          </span>
+          Following
+          <span class="sub_icon glyphicon glyphicon-user"></span>
+        </a>
+      </li>
       {{#if artistMode}}
         {{#each artists}}
         <li>

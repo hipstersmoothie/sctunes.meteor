@@ -3,7 +3,7 @@ Meteor.startup(function() {
   Session.set("tracks", []);
 
   Session.set("playlistMode", false);
-  Session.set("queueMode", true);
+  Session.set("queueMode", false);
   Session.set("artistMode", false);
 
   Session.set("currentTrack", null);
@@ -31,7 +31,7 @@ Meteor.startup(function() {
   Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")) });
 });
 
-madeTracks = false, currentTrack = null, addToPlaylistQueue = [];
+madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false;
 
 var queueOn = false, 
     qIndex = 0, tIndex = 0, 
@@ -78,11 +78,6 @@ Template.trackList.helpers({
     return Session.get("squares");
   },
   tracks: function () {
-    SC.initialize({
-      client_id: 'fc6924c8838d01597bab5ab42807c4ae',
-      redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
-      access_token: access_token
-    });
     return Session.get("tracks");
   },
   toTime: function(ms) {
@@ -103,8 +98,10 @@ Template.trackList.events({
   'click .heartCount' : function(event) {
     if(event.target.classList[1] === 'hearted')
       SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
-    else
+    else {
+      identityIsValid = false;
       SC.put('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+    }
 
     var tracks = Session.get('tracks');
     var track = _.find(tracks, function(track) {
@@ -263,6 +260,7 @@ var addToPlaylistClick = function(tracks, index, id) {
 var addToQueue = function(node) {
   var queue = Session.get("queue");
   var track = Session.get("tracks")[node.classList[0]];
+  Session.set("queueMode", true)
   track.queueIndex = qIndex++;
   queue.push(track);
   Session.set("queue", queue);
@@ -369,6 +367,15 @@ playNextOrPrevTrack = function(increment) {
 
   streamTrack(nextTrack, queueOn);
 };
+
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+
+Storage.prototype.getObject = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
+}
 
 // ServiceConfiguration.configurations.remove({
 //   service: "soundcloud"
