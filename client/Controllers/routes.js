@@ -9,6 +9,18 @@ var auth = {
   layout: 'ApplicationLayout'
 };
 
+var init = function() {
+  if(!access_token)
+    Meteor.call("getAccessToken", function(err, res) { 
+      access_token = res;
+      SC.initialize({
+        client_id: 'fc6924c8838d01597bab5ab42807c4ae',
+        redirect_uri: 'http://localhost:3000/_oauth/soundcloud?close',
+        access_token: res
+      });
+    });
+}
+
 Router.map(function() {
   this.route('app', {
     path: '/',
@@ -17,7 +29,8 @@ Router.map(function() {
     loginRequired: auth,
     onBeforeAction: function() {
       GAnalytics.pageview('app');
-      $('#my-tracks').addClass('active').siblings().removeClass('active');
+      $('#my-tracks').addClass('active').siblings().removeClass('active');;
+      init();
       getMe();
     },
     yieldTemplates: {
@@ -33,6 +46,7 @@ Router.map(function() {
     onBeforeAction: function() {
       var tracks = Session.get("origTracks");
       Session.set('loaded', false);
+      init();
 
       $('#my-tracks').addClass('active').siblings().removeClass('active');
       if(tracks)
@@ -55,6 +69,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: auth,
     onBeforeAction: function() {
+      init();
       var playlists = Session.get('likedPlaylists');
       $('#my-playlists').addClass('active').siblings().removeClass('active');
       Session.set('loaded', false);
@@ -75,6 +90,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: auth,
     onBeforeAction: function() {
+      init();
       loadArtist(this.params._id);
       getPlaylists();
     },
@@ -89,6 +105,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: auth,
     onBeforeAction: function() {
+      init();
       loadArtist(this.params._id, "favorites");
       getPlaylists();
     },
@@ -103,6 +120,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: auth,
     onBeforeAction: function() {
+      init();
       loadArtist(this.params._id);
       getPlaylists();
     },
@@ -117,6 +135,7 @@ Router.map(function() {
     template: 'trackList',
     loginRequired: auth,
     onBeforeAction: function() {
+      init();
       loadArtist(this.params._id, "playlists");
       getPlaylists();
     },
@@ -130,6 +149,7 @@ Router.map(function() {
     redirectOnLogin: true,
     layoutTemplate: 'ApplicationLayout',
     onBeforeAction: function() {
+      init();
       GAnalytics.pageview('login');
       if(Meteor.user())
         Router.go('/');
@@ -223,7 +243,6 @@ var getTracks = function (me) {
 var getMe = function() {
   if(!madeTracks) {
     madeTracks = true;
-    Meteor.call("getAccessToken", function(err, res) { access_token = res });
     Meteor.call("getMe", function(error, me) {
       getTracks(me);
       getPlaylists();       

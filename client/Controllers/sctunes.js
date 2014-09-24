@@ -31,12 +31,11 @@ Meteor.startup(function() {
   Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")) });
 });
 
-madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false;
+madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false, access_token = null;
 
 var queueOn = false, 
     qIndex = 0, tIndex = 0, 
-    currentTrackId, 
-    access_token;
+    currentTrackId;
 
 /*
  Sidebar
