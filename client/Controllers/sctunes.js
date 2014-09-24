@@ -31,10 +31,9 @@ Meteor.startup(function() {
   Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")) });
 });
 
-madeTracks = false, currentTrack = null;
+madeTracks = false, currentTrack = null, addToPlaylistQueue = [];
 
 var queueOn = false, 
-    addToPlaylistQueue = [], 
     qIndex = 0, tIndex = 0, 
     currentTrackId, 
     access_token;
@@ -56,97 +55,6 @@ setPlayingToCurrent = function(tracks) {
     return track;
   });
 };
-
-Template.sidebar.helpers({
-  playlistMode: function () {
-    return Session.get("playlistMode");
-  },
-  artistMode: function () {
-    return Session.get("artistMode");
-  },
-  artists: function () {
-    return Session.get("artists");
-  },
-  queueTracks: function () {
-    return Session.get("queueMode");
-  },
-  playlists: function () {
-    return Session.get("playlists");
-  },
-  queue: function () {
-    return Session.get("queue");
-  }
-});
-
-Template.sidebar.events = ({
-  'click #playlist-mode' : function() {
-    Session.set('playlistMode', !Session.get('playlistMode'));
-  },
-  'click #log-out' : function() {
-    Meteor.logout();
-  },
-  'click #queue-mode' : function() {
-    Session.set('queueMode', !Session.get('queueMode'));
-  },
-  'click #artist-mode' : function() {
-    Session.set('artistMode', !Session.get('artistMode'));
-  },
-  'click [id*=artist-profile]' : function(event) {
-    Router.go('artist', { _id : event.currentTarget.id.split('-')[0] })
-  },
-  'click .playlistRow' : function(event) {
-    Session.set('sortType', 'Like Date');
-    Session.set('currentArtist', null);
-    Session.set('artistFavorites', null);
-    Session.set('artistTracks', null);
-    if(addToPlaylistQueue < 1) {
-      Session.set("loaded", false);
-      if(event.target.id.localeCompare("favorites") === 0) 
-        Router.go('myFavorites');
-      else 
-        SC.get('/playlists/' + event.target.id, function(playlist) {
-          Session.set("tracks", setPlayingToCurrent(prepareTracks(playlist.tracks, true)));
-          Session.set("loaded", true);
-        });
-    } else 
-      SC.get('/me/playlists/' + event.target.id, function(playlist) {
-        var oldTracks = getIds(playlist.tracks), tracks = Session.get("tracks");
-        oldTracks.push.apply(oldTracks, addToPlaylistQueue);
-        addToPlaylistQueue = [];
-        Session.set("tracks", setPlayingToCurrent(tracks));
-        SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function(playlist) {});    
-      });
-  },
-   'click .queueRow' : function(event) {
-      var queue = Session.get("queue");
-      var tracks = Session.get("tracks");
-      var track;
-      var id = event.target.id.substr(0, event.target.id.indexOf("-"));
-      Session.set("playing", true);
-
-      if(currentTrackId === id) 
-        return currentTrack.togglePause();
-      
-      if(currentTrackId > -1) {
-        currentTrack.stop();
-        unmountWAV();
-        if(!queueOn) {
-          var row = $("#" + currentTrackId)[0];
-          if(row) 
-            tracks[row.classList[0]].playstatus = "notplaying";
-        } else
-          queue[$("#" + currentTrackId + "-queue")[0].classList[0]].qplaystatus = "notplaying";
-      }
-      track = queue[event.target.classList[0]];
-      track.qplaystatus = "playing";
-      Session.set("queue", queue);
-      Session.set("tracks", tracks);
-      streamTrack(track, true);
-   },
-   'click #main_icon' : function() {
-      $("#wrapper").toggleClass("active");
-   }
-});
 
 /*
   track list
@@ -250,17 +158,6 @@ Template.trackList.events({
   Helper Functions
  */
 
-togglePauseIcon = function() {
-  var playPause = $('#playPauseIcon');
-  if(playPause.hasClass('glyphicon-play')) {
-    playPause.removeClass('glyphicon-play');
-    playPause.addClass('glyphicon-pause');
-  } else {
-    playPause.removeClass('glyphicon-pause');
-    playPause.addClass('glyphicon-play');
-  }
-};
-
 prepareTracks = function(tracks, newIndexes, defaultArt) {
   return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
 };
@@ -316,12 +213,6 @@ indexTracks = function(tracksToIndex, newIndex) {
   });
 };
 
-var getIds = function(tracks) {
-  return _.map(tracks, function(track) {
-    return {id: track.id};
-  });
-};
-
 var setUpWav = function(track) {
   console.log(document.getElementById("currentTrackPlayer"));
   var waveform = new Waveform({
@@ -336,7 +227,7 @@ var setUpWav = function(track) {
   return streamOptions;
 };
 
-var streamTrack = function(track, queue) {
+streamTrack = function(track, queue) {
   currentTrackId = track.id;
   Session.set("currentTrack", track);
   setTimeout(function() {
@@ -377,7 +268,7 @@ var addToQueue = function(node) {
   Session.set("queue", queue);
 };
 
-var unmountWAV = function() {
+unmountWAV = function() {
   _.map(_.rest($("#currentTrackPlayer").children()), function(wav) { 
     wav.remove() 
   });

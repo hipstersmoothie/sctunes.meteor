@@ -19,3 +19,14 @@ Template.player.events = ({
     currentTrack.setPosition(event.currentTarget.value);
   }
 });
+
+var togglePauseIcon = function() {
+  var playPause = $('#playPauseIcon');
+  if(playPause.hasClass('glyphicon-play')) {
+    playPause.removeClass('glyphicon-play');
+    playPause.addClass('glyphicon-pause');
+  } else {
+    playPause.removeClass('glyphicon-pause');
+    playPause.addClass('glyphicon-play');
+  }
+};
