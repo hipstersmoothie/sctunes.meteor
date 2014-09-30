@@ -1,6 +1,6 @@
 Template.player.helpers({
   currentTrack: function() {
-    return Session.get("currentTrack");
+    return Session.get('currentTrack');
   }
 });
 

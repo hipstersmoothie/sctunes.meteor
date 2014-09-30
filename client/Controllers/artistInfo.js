@@ -5,7 +5,7 @@ Template.artistInfo.helpers({
 });
 
 Template.artistInfo.events({
-  'click #artist-tracks': function (event) {
+  'click #artist-tracks': function () {
     Router.go('artistTracks', { _id : Session.get('currentArtist').id });
   },
   'click #artist-favorites': function () {

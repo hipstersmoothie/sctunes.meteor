@@ -1,7 +1,7 @@
 var setTime = function() {
   var minTime        = $('#min-length').val() * 60000,
       maxTime        = $('#max-length').val() * 60000,
-      tracks         = Session.get("tracks"),
+      tracks         = Session.get('tracks'),
       longTracks     = [];
 
   longTracks = _.filter(tracks, function(track) {
@@ -17,7 +17,7 @@ var setTime = function() {
 var search = function(term) {
   term = term.toLowerCase();
   Session.set('tracks',  indexTracks(_.filter(Session.get('tracks'), function(track) {
-    return track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1
+    return track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1;
   }), true));
 };
 
@@ -35,16 +35,16 @@ var shuffle = function(array) {
 
 Template.optionsRow.helpers({
   sortType: function () {
-    return Session.get("sortType");
+    return Session.get('sortType');
   },
   otherSortTypes: function () {
-    return Session.get("otherSortTypes");
+    return Session.get('otherSortTypes');
   },
   duration: function () {
-    return Session.get("sortType") === "Duration";
+    return Session.get('sortType') === 'Duration';
   },
   search: function () {
-    return Session.get("sortType") === "Search";
+    return Session.get('sortType') === 'Search';
   }
 });
 
@@ -58,47 +58,47 @@ Template.optionsRow.events = ({
       search($('#searchInput').val());
   },
   'click .artistSort' : function() {
-    sortAndSet("Artist", function(a, b){
+    sortAndSet('Artist', function(a, b){
       return (a.artist).localeCompare(b.artist);
     });
   },
   'click .uploaderSort' : function() {
-    sortAndSet("Uploader", function(a, b){
+    sortAndSet('Uploader', function(a, b){
       return (a.user.username).localeCompare(b.user.username);
     });
   },
   'click .playcountSort' : function() {
-    sortAndSet("Play Count", function(a, b){
+    sortAndSet('Play Count', function(a, b){
       return b.playback_count - a.playback_count;
     });
   },
   'click .heartcountSort' : function() {
-    sortAndSet("Heart Count", function(a, b){
+    sortAndSet('Heart Count', function(a, b){
       return b.favoritings_count - a.favoritings_count;
     });
   },
   'click .creationSort' : function() {
-    sortAndSet("Creation Date", function(a, b){
+    sortAndSet('Creation Date', function(a, b){
       return (a.created_at).localeCompare(b.created_at);
     });
   },
   'click .searchSort' : function() {
-    Session.set("sortType", "Search");
+    Session.set('sortType', 'Search');
   },
   'click .durationSort' : function() {
-    sortAndSet("Duration", function(a, b){
+    sortAndSet('Duration', function(a, b){
       return b.duration - a.duration;
     });
   },
   'click #shuffle' : function() {
-    Session.set("tracks", shuffle(Session.get("tracks")));
+    Session.set('tracks', shuffle(Session.get('tracks')));
   },
   'click .likedateSort' : function() {
-    if(Session.get("sortType") === "Like Date")
-      Session.set("tracks", Session.get("tracks").reverse());
+    if(Session.get('sortType') === 'Like Date')
+      Session.set('tracks', Session.get('tracks').reverse());
     else {
-      Session.set("tracks", Session.get("origTracks"));
-      Session.set("sortType", "Like Date");
+      Session.set('tracks', Session.get('origTracks'));
+      Session.set('sortType', 'Like Date');
     }
   }
 });

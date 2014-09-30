@@ -26,16 +26,15 @@ Meteor.startup(function() {
                                  {type:"Duration", className:"durationSort"},
                                  {type:"Search", className:"searchSort"}]);
 
-  Mousetrap.bind('q', function() { Session.set("queueMode", !Session.get("queueMode")) });
-  Mousetrap.bind('p', function() { Session.set("playlistMode", !Session.get("playlistMode")) });
-  Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")) });
+  Mousetrap.bind('q', function() { Session.set("queueMode", !Session.get("queueMode")); });
+  Mousetrap.bind('p', function() { Session.set("playlistMode", !Session.get("playlistMode")); });
+  Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")); });
 });
 
-madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false, access_token = null;
+madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false, access_token = null, currentTrackId = null;
 
 var queueOn = false, 
-    qIndex = 0, tIndex = 0, 
-    currentTrackId;
+    qIndex = 0, tIndex = 0;
 
 /*
  Sidebar
@@ -60,10 +59,10 @@ setPlayingToCurrent = function(tracks) {
  */
 
 function msToTime(duration) {
-  var milliseconds = parseInt((duration%1000)/100)
-    , seconds = parseInt((duration/1000)%60)
-    , minutes = parseInt((duration/(1000*60))%60)
-    , hours = parseInt((duration/(1000*60*60))%24);
+  var milliseconds = parseInt((duration%1000)/100), 
+      seconds = parseInt((duration/1000)%60),
+      minutes = parseInt((duration/(1000*60))%60),
+      hours = parseInt((duration/(1000*60*60))%24);
 
   hours = (hours < 10) ? "0" + hours : hours;
   minutes = (minutes < 10) ? "0" + minutes : minutes;
@@ -92,20 +91,24 @@ Template.trackList.helpers({
 
 Template.trackList.events({
   'click [id*=artist-profile]' : function(event) {
-    Router.go('artist', { _id : event.currentTarget.id.split('-')[0] })
+    Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
   'click .heartCount' : function(event) {
-    if(event.target.classList[1] === 'hearted')
-      SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
-    else {
-      identityIsValid = false;
-      SC.put('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+    try {
+      if(event.target.classList[1] === 'hearted')
+        SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+      else {
+        identityIsValid = false;
+        SC.put('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
+      }
+    } catch (error) {
+      console.log('ioeno');
     }
 
     var tracks = Session.get('tracks');
     var track = _.find(tracks, function(track) {
       return track.id == event.target.parentNode.parentNode.parentNode.id;
-    })
+    });
     track.user_favorite = !track.user_favorite;
     tracks[track.index] = track;
     Session.set('tracks', tracks);
@@ -167,7 +170,7 @@ setArt = function(defaultArt, tracks) {
       track.artwork_url = defaultArt ? defaultArt : 'noTrack.jpg';
     }
     return track;
-  })
+  });
 };
 
 //TODO REFACTOR
@@ -246,7 +249,7 @@ streamTrack = function(track, queue) {
 var addToPlaylistClick = function(tracks, index, id) {
   if(tracks[index].playstatus === "selected") {
     tracks[index].playstatus = "notplaying";
-    addToPlaylistQueue = _.filter(addToPlaylistQueue, function(track) { return track.id !== id });
+    addToPlaylistQueue = _.filter(addToPlaylistQueue, function(track) { return track.id !== id; });
   }
   else {
     tracks[index].playstatus = "selected";
@@ -259,7 +262,7 @@ var addToPlaylistClick = function(tracks, index, id) {
 var addToQueue = function(node) {
   var queue = Session.get("queue");
   var track = Session.get("tracks")[node.classList[0]];
-  Session.set("queueMode", true)
+  Session.set("queueMode", true);
   track.queueIndex = qIndex++;
   queue.push(track);
   Session.set("queue", queue);
@@ -267,7 +270,7 @@ var addToQueue = function(node) {
 
 unmountWAV = function() {
   _.map(_.rest($("#currentTrackPlayer").children()), function(wav) { 
-    wav.remove() 
+    wav.remove();
   });
 };
 
@@ -369,12 +372,12 @@ playNextOrPrevTrack = function(increment) {
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
-}
+};
 
 Storage.prototype.getObject = function(key) {
     var value = this.getItem(key);
     return value && JSON.parse(value);
-}
+};
 
 // ServiceConfiguration.configurations.remove({
 //   service: "soundcloud"

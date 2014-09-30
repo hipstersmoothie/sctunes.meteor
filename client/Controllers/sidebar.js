@@ -1,21 +1,21 @@
 Template.sidebar.helpers({
   playlistMode: function () {
-    return Session.get("playlistMode");
+    return Session.get('playlistMode');
   },
   artistMode: function () {
-    return Session.get("artistMode");
+    return Session.get('artistMode');
   },
   artists: function () {
-    return Session.get("artists");
+    return Session.get('artists');
   },
   queueTracks: function () {
-    return Session.get("queueMode");
+    return Session.get('queueMode');
   },
   playlists: function () {
-    return Session.get("playlists");
+    return Session.get('playlists');
   },
   queue: function () {
-    return Session.get("queue");
+    return Session.get('queue');
   }
 });
 
@@ -39,7 +39,7 @@ Template.sidebar.events = ({
     Session.set('artistMode', !Session.get('artistMode'));
   },
   'click [id*=artist-profile]' : function(event) {
-    Router.go('artist', { _id : event.currentTarget.id.split('-')[0] })
+    Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
   'click .playlistRow' : function(event) {
     Session.set('sortType', 'Like Date');
@@ -47,29 +47,29 @@ Template.sidebar.events = ({
     Session.set('artistFavorites', null);
     Session.set('artistTracks', null);
     if(addToPlaylistQueue < 1) {
-      Session.set("loaded", false);
-      if(event.target.id.localeCompare("favorites") === 0) 
+      Session.set('loaded', false);
+      if(event.target.id.localeCompare('favorites') === 0) 
         Router.go('myFavorites');
       else 
         SC.get('/playlists/' + event.target.id, function(playlist) {
-          Session.set("tracks", setPlayingToCurrent(prepareTracks(playlist.tracks, true)));
-          Session.set("loaded", true);
+          Session.set('tracks', setPlayingToCurrent(prepareTracks(playlist.tracks, true)));
+          Session.set('loaded', true);
         });
     } else 
       SC.get('/me/playlists/' + event.target.id, function(playlist) {
-        var oldTracks = getIds(playlist.tracks), tracks = Session.get("tracks");
+        var oldTracks = getIds(playlist.tracks), tracks = Session.get('tracks');
         oldTracks.push.apply(oldTracks, addToPlaylistQueue);
         addToPlaylistQueue = [];
-        Session.set("tracks", setPlayingToCurrent(tracks));
-        SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function(playlist) {});    
+        Session.set('tracks', setPlayingToCurrent(tracks));
+        SC.put('/me/playlists/' + event.target.id, { playlist: { tracks: oldTracks } }, function() {});    
       });
   },
    'click .queueRow' : function(event) {
-      var queue = Session.get("queue");
-      var tracks = Session.get("tracks");
+      var queue = Session.get('queue');
+      var tracks = Session.get('tracks');
       var track;
-      var id = event.target.id.substr(0, event.target.id.indexOf("-"));
-      Session.set("playing", true);
+      var id = event.target.id.substr(0, event.target.id.indexOf('-'));
+      Session.set('playing', true);
 
       if(currentTrackId === id) 
         return currentTrack.togglePause();
@@ -78,19 +78,19 @@ Template.sidebar.events = ({
         currentTrack.stop();
         unmountWAV();
         if(!queueOn) {
-          var row = $("#" + currentTrackId)[0];
+          var row = $('#' + currentTrackId)[0];
           if(row) 
-            tracks[row.classList[0]].playstatus = "notplaying";
+            tracks[row.classList[0]].playstatus = 'notplaying';
         } else
-          queue[$("#" + currentTrackId + "-queue")[0].classList[0]].qplaystatus = "notplaying";
+          queue[$('#' + currentTrackId + '-queue')[0].classList[0]].qplaystatus = 'notplaying';
       }
       track = queue[event.target.classList[0]];
-      track.qplaystatus = "playing";
-      Session.set("queue", queue);
-      Session.set("tracks", tracks);
+      track.qplaystatus = 'playing';
+      Session.set('queue', queue);
+      Session.set('tracks', tracks);
       streamTrack(track, true);
    },
    'click #main_icon' : function() {
-      $("#wrapper").toggleClass("active");
+      $('#wrapper').toggleClass('active');
    }
 });
