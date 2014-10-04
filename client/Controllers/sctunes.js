@@ -31,10 +31,16 @@ Meteor.startup(function() {
   Mousetrap.bind('v', function() { Session.set("squares", !Session.get("squares")); });
 });
 
-madeTracks = false, currentTrack = null, addToPlaylistQueue = [], identityIsValid = false, access_token = null, currentTrackId = null;
+madeTracks = false, 
+currentTrack = null, 
+addToPlaylistQueue = [], 
+identityIsValid = false, 
+access_token = null, 
+currentTrackId = null,
+queueOn = false, 
+qIndex = 0;
 
-var queueOn = false, 
-    qIndex = 0, tIndex = 0;
+var tIndex = 0;
 
 /*
  Sidebar
@@ -213,7 +219,6 @@ indexTracks = function(tracksToIndex, newIndex) {
 };
 
 var setUpWav = function(track) {
-  console.log(document.getElementById("currentTrackPlayer"));
   var waveform = new Waveform({
     container: document.getElementById("currentTrackPlayer"),
     innerColor: "#333"

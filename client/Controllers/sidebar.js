@@ -70,11 +70,11 @@ Template.sidebar.events = ({
       var track;
       var id = event.target.id.substr(0, event.target.id.indexOf('-'));
       Session.set('playing', true);
-
+      console.log('cid',currentTrackId);
       if(currentTrackId === id) 
         return currentTrack.togglePause();
       
-      if(currentTrackId > -1) {
+      if(currentTrack && currentTrackId > -1) {
         currentTrack.stop();
         unmountWAV();
         if(!queueOn) {
