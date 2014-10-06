@@ -92,7 +92,6 @@ Router.map(function() {
     onBeforeAction: function() {
       init();
       loadArtist(this.params._id);
-      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -107,7 +106,6 @@ Router.map(function() {
     onBeforeAction: function() {
       init();
       loadArtist(this.params._id, 'favorites');
-      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -122,7 +120,6 @@ Router.map(function() {
     onBeforeAction: function() {
       init();
       loadArtist(this.params._id);
-      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -137,7 +134,6 @@ Router.map(function() {
     onBeforeAction: function() {
       init();
       loadArtist(this.params._id, 'playlists');
-      getPlaylists();
     },
     yieldTemplates: {
       'artistInfo': {to: 'userTrackChooser'}
@@ -194,13 +190,7 @@ var getResource = function(type, artist, resourceCount, processFunc) {
   }
 };
 
-var getPlaylists = function() {
-  Meteor.call('getPlaylists', function(error, playlists) {
-    Session.set('playlists', playlists);
-  });
-};   
-
-var getAll = function(path, calls, callback, prepFunction) {
+getAll = function(path, calls, callback, prepFunction, updateFunction) {
   var args = Array.prototype.slice.apply(arguments);
   var collection = [];
 
@@ -215,12 +205,6 @@ var getAll = function(path, calls, callback, prepFunction) {
         return callback(collection);
     });
   }
-};
-
-var getFollowedArtists = function(me) {
-  getAll('getArtists', Math.ceil(me.followings_count / 200), function(artists) {
-     Session.set('artists', artists);
-  }, null);
 };
 
 var getLikePlaylists = function() {
@@ -244,9 +228,8 @@ var getMe = function() {
   if(!madeTracks) {
     madeTracks = true;
     Meteor.call('getMe', function(error, me) {
-      getTracks(me);
-      getPlaylists();       
-      // getFollowedArtists(me);
+      Session.set('me', me);
+      getTracks(me);       
     });
   }
 };

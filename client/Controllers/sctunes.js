@@ -1,6 +1,7 @@
 Meteor.startup(function() {
   Session.set("queue", []);
   Session.set("tracks", []);
+  Session.set("artists", null);
 
   Session.set("playlistMode", false);
   Session.set("queueMode", false);
@@ -13,6 +14,7 @@ Meteor.startup(function() {
   Session.set('artistFavorites', null);
 
   Session.set("loaded", false);
+  Session.set('artistsLoaded', false);
   Session.set("playing", false);
   Session.set("squares", true);
 

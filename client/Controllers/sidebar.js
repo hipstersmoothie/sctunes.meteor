@@ -25,8 +25,25 @@ var getIds = function(tracks) {
   });
 };
 
+me = null;
+
+var getFollowedArtists = function(me) {
+  getAll('getArtists', Math.ceil(me.followings_count / 200), function(artists) {
+     Session.set('artists', artists);
+  }, null);
+};
+
+var getPlaylists = function() {
+  Meteor.call('getPlaylists', function(error, playlists) {
+    Session.set('playlists', playlists);
+  });
+};
+
 Template.sidebar.events = ({
   'click #playlist-mode' : function() {
+    if(Session.get('artists') === null) 
+      getPlaylists();
+    
     Session.set('playlistMode', !Session.get('playlistMode'));
   },
   'click #log-out' : function() {
@@ -36,6 +53,9 @@ Template.sidebar.events = ({
     Session.set('queueMode', !Session.get('queueMode'));
   },
   'click #artist-mode' : function() {
+    if(Session.get('artists') === null) 
+      getFollowedArtists(Session.get('me'));
+
     Session.set('artistMode', !Session.get('artistMode'));
   },
   'click [id*=artist-profile]' : function(event) {
