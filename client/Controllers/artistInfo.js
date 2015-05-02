@@ -1,5 +1,6 @@
 Template.artistInfo.helpers({
   artistData: function () {
+    console.log(Session.get('currentArtist'));
     return Session.get('currentArtist');
   }
 });

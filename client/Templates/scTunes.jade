@@ -1,0 +1,29 @@
+head
+	meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+	meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
+	title sctunes
+
+template(name="ApplicationLayout")
+	+yield
+
+template(name="trackLayout")
+	+famousContext id="mainCtx"
+		+SequentialLayout direction="X"
+			+Surface class='sidebar' origin="[0,0]" proportions="[0.16,1]"
+				p sidebar   
+			+HeaderFooterLayout origin="[0,0]" proportions="[0.84,1]" headerSize="64" footerSize="0"
+				+Surface target="header" origin="[0,0]" translate="[0,0,100]" template='optionsRow'					
+				+RenderController target="content" transition=getTransition id="mainRC"
+					+yield
+
+template(name='loader')
+	+Surface
+		div(class='loading')
+			div(id='#{artistPage}' class='col-xs-12 loaderContainer')
+				div(class='bigSpin')
+					div(class='rect1')
+					div(class='rect2')
+					div(class='rect3')
+					div(class='rect4')
+					div(class='rect5')
+				p #{loadingText}

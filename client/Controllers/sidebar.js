@@ -40,6 +40,9 @@ var getPlaylists = function() {
 };
 
 Template.sidebar.events = ({
+  'click #compile-artists' : function() {
+      Router.go('findNewArtists');
+  },
   'click #playlist-mode' : function() {
     if(Session.get('artists') === null) 
       getPlaylists();

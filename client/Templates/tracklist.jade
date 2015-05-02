@@ -1,0 +1,54 @@
+template(name='flipper_front')
+	div(id='#{this.id}' class='trackItem square bg #{this.kind}' style='background-image:url(#{this.big_artwork_url})')
+		.overlay
+			.info
+				span.title #{this.title}
+					br
+				a(href='' onclick='return false;' id='#{this.user.id}-artist-profile') #{this.user.username}
+
+template(name='flipper_back')
+	div(id='#{this.id}' class='trackItem trackRow square bg #{this.playstatus} #{this.kind}' style='background-color=gray')
+		.back
+			.info
+				span.title #{this.title}
+					br
+				a(href='' onclick='return false;' id='#{this.user.id}-artist-profile') #{this.user.username}
+			if this.track_count
+				span.counts.col-xs-12
+					span.playCount Tracks: #{this.track_count}
+					button.play play
+					span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+			else
+				span.counts.col-xs-12
+					span.playCount
+						span.glyphicon.glyphicon-play #{this.playback_count}
+					button.play play
+					span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+						span.glyphicon.glyphicon-heart(class='{{#if this.user_favorite}}red{{/if}})') #{this.favoritings_count}
+
+template(name="trackList")
+	+StateModifier
+		+Scrollview translate='[0,0,-1]'
+			if loaded
+				+Surface template='flec' template='myInfo'
+				+FlexGrid marginTop="75" gutterCol="0" gutterRow="0" itemSize="[300,300]" id="famous-track-list"
+					if lots
+						+famousEach tracks
+							+Flipper
+								+Surface target="front" template="flipper_front" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+								+Surface target="back" template="flipper_back" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+					else  
+						+famousEach tracks
+							+ContainerSurface perspective=500
+								+Flipper
+									+Surface target="front" template="flipper_front" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+									+Surface target="back" template="flipper_back" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+			else
+				+loader
+		+player
+			
+template(name='myInfo')
+	.artist-buttons
+		.btn-group
+			button#my-tracks.btn.btn-my.btn-default.activeState(type="button") Favorites
+			button#my-playlists.btn.btn-my.btn-default.activeS(type="button") My Liked Playlists

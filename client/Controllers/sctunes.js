@@ -8,12 +8,14 @@ Meteor.startup(function() {
   Session.set("artistMode", false);
 
   Session.set("currentTrack", null);
+  Session.set("player_orientation", [1,-1]);
 
   Session.set('currentArtist', null);
   Session.set('artistTracks', null);
   Session.set('artistFavorites', null);
 
   Session.set("loaded", false);
+  Session.set('loadingText', "")
   Session.set('artistsLoaded', false);
   Session.set("playing", false);
   Session.set("squares", true);
@@ -79,12 +81,22 @@ function msToTime(duration) {
   return hours + ":" + minutes + ":" + seconds;
 }
 
+Template.findNewArtistsList.helpers({
+  loaded: function () {
+    return Session.get("loaded");
+  }
+});
+
 Template.trackList.helpers({
   squares: function () {
     return Session.get("squares");
   },
   tracks: function () {
     return Session.get("tracks");
+  },
+  lots: function() {
+    console.log(Session.get("tracks").length);
+    return Session.get("tracks").length > 1000;
   },
   toTime: function(ms) {
     return msToTime(ms);
@@ -94,6 +106,9 @@ Template.trackList.helpers({
   },
   currentTrack: function() {
     return Session.get('currentTrack');
+  },
+  playing: function() {
+    return Session.get("playing");
   }
 });
 
@@ -121,32 +136,6 @@ Template.trackList.events({
     tracks[track.index] = track;
     Session.set('tracks', tracks);
   },
-  'click .trackItem' : function(event) {
-    var tracks = Session.get("tracks"), 
-        node   = getTargetTrack(event.target);
-
-    if(event.altKey) 
-      addToPlaylistClick(tracks, node.classList[0], node.id);
-    else if(node.classList[node.classList.length - 1] == 'playlist'){
-      Session.set("loaded", false);
-      SC.get('/playlists/' + node.id, function(playlist) {
-        Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
-        Session.set("loaded", true);
-      });
-    }
-    else if(event.target.localName === 'span' && event.target.classList[0] !== 'title')
-      return;
-    else if (event.shiftKey)
-      addToQueue(node);
-    else if(tracks[node.classList[0]].id === currentTrackId) {
-      currentTrack.togglePause();
-    } else {
-      Session.set("playing", true);
-      stopLastTrack(tracks);
-      streamTrack(tracks[node.classList[0]], false);
-      Session.set("tracks", setPlayingToCurrent(tracks));
-    }
-  },
   artist: function () {
     return Session.get("sortType") === "Artist";
   },
@@ -159,7 +148,7 @@ Template.trackList.events({
   squares: function() {
     return Session.get("squares");
   }
-});
+});  
 
 /*
   Helper Functions
@@ -220,24 +209,26 @@ indexTracks = function(tracksToIndex, newIndex) {
   });
 };
 
-var setUpWav = function(track) {
+var setUpWav = function(track, block) {
   var waveform = new Waveform({
     container: document.getElementById("currentTrackPlayer"),
     innerColor: "#333"
   });
+
   waveform.dataFromSoundCloudTrack(track);
   var streamOptions = waveform.optionsForSyncedStream();
   streamOptions.onfinish = function() {
-    playNextOrPrevTrack(true);
+    playNextOrPrevTrack(true, block);
   };
   return streamOptions;
 };
 
-streamTrack = function(track, queue) {
+streamTrack = function(track, queue, block) {
+  console.log(block)
   currentTrackId = track.id;
   Session.set("currentTrack", track);
-  setTimeout(function() {
-    sound = SC.stream("/tracks/" + track.id, setUpWav(track), function(sound){
+  setTimeout(function() { //why timeout?
+    sound = SC.stream("/tracks/" + track.id, setUpWav(track, block), function(sound){
     soundManager.stopAll();
     currentTrack = sound;
 
@@ -247,7 +238,7 @@ streamTrack = function(track, queue) {
     currentTrack.play({
       onload: function() {
         if(this.readyState == 2) 
-          playNextOrPrevTrack(true);
+          playNextOrPrevTrack(true, block);
       }
     });
   });}, 1);
@@ -268,7 +259,7 @@ var addToPlaylistClick = function(tracks, index, id) {
 
 var addToQueue = function(node) {
   var queue = Session.get("queue");
-  var track = Session.get("tracks")[node.classList[0]];
+  var track = Session.get("tracks")[node.index];
   Session.set("queueMode", true);
   track.queueIndex = qIndex++;
   queue.push(track);
@@ -281,20 +272,6 @@ unmountWAV = function() {
   });
 };
 
-var stopLastTrack = function(tracks) {
-  if(currentTrack) {
-    currentTrack.stop();
-    unmountWAV();
-  
-    if(queueOn && $("#" + currentTrackId + "-queue").length) {
-      var queue = Session.get("queue");
-      queueOn = false;
-      queue[$("#" + currentTrackId + "-queue")[0].classList[0]].qplaystatus = "notplaying";
-      Session.set("queue", queue);
-    }
-  }
-};
-
 var sortAndSet = function(sort, comparator) {
   var tracks = Session.get("tracks");
   if(Session.get("sortType") === sort)
@@ -305,34 +282,23 @@ var sortAndSet = function(sort, comparator) {
   Session.set("sortType", sort);
 };
 
-var getTargetTrack = function(target) {
-  if(target.classList[0] === "trackItem")
-    return target;
-  else if(target.classList[0] === "title") 
-    return target.parentNode.parentNode.parentNode;
-  else if(target.classList[1] === "overlay") 
-    return target.parentNode;
-  else
-    return target.parentNode.parentNode;
-};
-
 Template.trackLayout.helpers({
   currentTrack: function () {
     return Session.get("playing");
   },
   artistPage: function () {
-    return Session.get('currentArtist') != null;
+    return Session.get('currentArtist') != null ? "artistLoader" : "";
   }
 });
 
-var setTrackChangeInfo = function(increment) {
+var setTrackChangeInfo = function(increment, block  ) {
   var tracks          = Session.get("tracks"),
       currentTrackRow = $("#" + currentTrackId)[0], 
       currentIndex    = 0, 
       nextToPlay      = 0;
 
   if(currentTrackRow) {
-    currentIndex = parseInt(currentTrackRow.classList[0]);
+    currentIndex = parseInt(findTrackWithId(tracks, currentTrackRow.id).index);
     nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
   } 
 
@@ -347,7 +313,7 @@ var setTrackChangeInfo = function(increment) {
 
 var setTrackChangeInfoQueue = function (increment) {
   var tracks = Session.get("queue"), nextTrack,
-      currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].classList[0]),
+      currentIndex = parseInt($("#" + currentTrackId + "-queue")[0].index),
       nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
 
   tracks[currentIndex].qplaystatus = "notplaying";
@@ -365,16 +331,25 @@ var setTrackChangeInfoQueue = function (increment) {
   return nextTrack;
 };
 
-playNextOrPrevTrack = function(increment) {
+playNextOrPrevTrack = function(increment, block) {
   var nextTrack;
 
   unmountWAV();
   if(!queueOn)
-    nextTrack = setTrackChangeInfo(increment);
+    nextTrack = setTrackChangeInfo(increment, block);
   else
     nextTrack = setTrackChangeInfoQueue(increment);
 
-  streamTrack(nextTrack, queueOn);
+  if (cTrack != null) {//[nextTrack.index].blazeView.fview.children[0].children[1]
+    cTrack.parent.view.flip({ curve : 'easeOutBounce', duration : 350});
+    cTrack = FView.byId('famous-track-list').children[0].children[nextTrack.index].blazeView.fview.children[0].children[0].children[1];
+    setTimeout(function(){ cTrack.parent.view.flip({ curve : 'easeOutBounce', duration : 500}); }, 400);
+    
+
+    
+  }
+
+  streamTrack(nextTrack, queueOn, block);
 };
 
 Storage.prototype.setObject = function(key, value) {
@@ -385,20 +360,3 @@ Storage.prototype.getObject = function(key) {
     var value = this.getItem(key);
     return value && JSON.parse(value);
 };
-
-// ServiceConfiguration.configurations.remove({
-//   service: "soundcloud"
-// });
-// ServiceConfiguration.configurations.insert({
-//   service: "soundcloud",
-//   clientId: "fc6924c8838d01597bab5ab42807c4ae",
-//   secret: "34e89f6e6c855ca21c7b6b881b9e8215"
-// });
-
-// Accounts.ui.config({
-//   requestPermissions: {
-//     soundcloud: []
-//   },
-//   loginStyle :  "redirect",
-//   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
-// });

@@ -14,9 +14,13 @@ var setTime = function() {
     Session.set('tracks', indexTracks(longTracks, true));
 };
 
+var allTracks = null;
 var search = function(term) {
   term = term.toLowerCase();
-  Session.set('tracks',  indexTracks(_.filter(Session.get('tracks'), function(track) {
+  if (term == "")
+    Session.set('tracks', allTracks);
+
+  Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
     return track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1;
   }), true));
 };
@@ -53,9 +57,11 @@ Template.optionsRow.events = ({
     if(event.keyCode === 13)
       setTime();
   },
-  'click #searchButton, keydown #searchInput' : function(event) {
-    if((event.target.id == 'searchInput' && event.keyCode === 13) || event.target.id == 'searchButton')
-      search($('#searchInput').val());
+  'click #searchButton, keyup #searchInput' : function(event) {
+    if (allTracks == null)
+      allTracks = Session.get('tracks');
+
+    search($('#searchInput').val());
   },
   'click .artistSort' : function() {
     sortAndSet('Artist', function(a, b){

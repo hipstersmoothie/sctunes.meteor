@@ -1,10 +1,35 @@
 Template.player.helpers({
   currentTrack: function() {
     return Session.get('currentTrack');
+  },
+  player_orientation: function() {
+    return {
+      value: Session.get("player_orientation"),
+      transition: { curve: 'easeOutBounce', duration: 300 },
+      halt: true
+    };
   }
 });
 
-Template.player.events = ({
+Template.currentTrackPlayer.helpers({
+  currentTrack: function() {
+    return Session.get('currentTrack');
+  },
+});
+
+Template.currentTrackPlayer.events = ({
+  'click #time-slider' : function(event) {
+    currentTrack.setPosition(event.currentTarget.value);
+  }
+});
+
+Template.controls.helpers({
+  currentTrack: function() {
+    return Session.get('currentTrack');
+  }
+});
+
+Template.controls.events = ({
   'click #playpause' : function() {
     togglePauseIcon();
     currentTrack.togglePause();
@@ -14,9 +39,6 @@ Template.player.events = ({
   },
   'click #prevButton' : function() {
     playNextOrPrevTrack(false);
-  },
-  'click #time-slider' : function(event) {
-    currentTrack.setPosition(event.currentTarget.value);
   }
 });
 

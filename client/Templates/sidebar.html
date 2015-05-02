@@ -1,4 +1,5 @@
 <template name="sidebar">
+  
    <div id="sidebar-wrapper">
     <ul id="sidebar_menu" class="sidebar-nav">
        <li class="sidebar-brand">
@@ -57,7 +58,7 @@
       {{#if queueTracks}}
         {{#each queue}}
         <li>
-          <a id="{{this.id}}-queue" href="" onclick="return false;" class="queueRow {{this.queueIndex}} {{this.qplaystatus}}">
+          <a id="{{this.id}}-queue" index="{{this.index}}" href="" onclick="return false;" class="queueRow {{this.qplaystatus}}">
             <img src="{{this.artwork_url}}" class="playlist-art">
             {{this.title}}
           </a>
@@ -96,6 +97,13 @@
         </li>
         {{/if}}
       {{/if}}
+      <!-- <li>
+        <a id="compile-artists">
+          <span class="">
+          </span>
+          Find New Artists
+        </a>
+      </li> -->
       <li>
         <a>
           <button id="log-out" class="btn btn-default" type="button">Log Out</button>
