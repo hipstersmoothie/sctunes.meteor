@@ -277,7 +277,7 @@ Template.trackLayout.helpers({
   loaded: function () {
     return Session.get("loaded");
   },
-    currentTrack: function() {
+  currentTrack: function() {
     return Session.get('currentTrack');
   },
   getTransition: function() {

@@ -14,7 +14,7 @@ template(name="trackList")
 	if loaded
 		if artist
 			+artistInfo
-		.row
+		.row.trackList
 			each tracks
 				div(id='#{this.id}' class='trackItem trackRow col-xs-12 square bg #{this.kind}' style='background-image:url(#{this.big_artwork_url})')
 					.overlay.row
