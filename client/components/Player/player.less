@@ -1,0 +1,44 @@
+.player {  
+   color: white;
+   height: 100px;
+   background-color: rgba(0, 0, 0, 0.6);
+}
+
+#currentTrackPlayer {
+   height: 50px;
+   width: 95%;
+}
+
+.player-title {
+   font-size: 20px;
+}
+
+.controls {
+   display: inline;
+}
+
+.current-art {
+   padding: 0;
+}
+
+.playerControlButton {
+   cursor: pointer;
+   cursor: hand;
+}
+
+.player-node {
+   display: inline-block;
+
+   &.artwork {
+    width: 100px;
+   }
+
+   &.controls {
+    margin-left: 110px;
+    position: absolute;
+    height: 100%;
+    width: calc(~"100% - 110px");
+    top: 0;
+    left: 0;
+   }
+}
