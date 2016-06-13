@@ -5,7 +5,7 @@ Template.player.helpers({
   player_orientation: function() {
     return {
       value: Session.get("player_orientation"),
-      transition: { curve: 'easeOutBounce', duration: 300 },
+      transition: { curve: 'easeIn', duration: 300 },
       halt: true
     };
   }

@@ -73,6 +73,7 @@ Meteor.methods({
     }
   },
   getFavorites : function(offset) {
+    console.log(Meteor.user().services.soundCloud.accessToken )
     try {                                                                                            
       return {
         index : offset,
@@ -81,7 +82,7 @@ Meteor.methods({
               oauth_token: Meteor.user().services.soundCloud.accessToken,                                                                  
               format: "json",
               limit: 200,
-              offset: offset * 200                                                                            
+              offset: offset                                                                             
             }                                                                                            
           }).data
       };

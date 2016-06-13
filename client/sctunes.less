@@ -116,8 +116,8 @@
 }
 
 #currentTrackPlayer {
-  height: 100%;
-  width: 100%;
+   height: 50px;
+   width: 95%;
 }
 
 .queue-block {
@@ -178,11 +178,6 @@ body {
   background-color: @orange;
 }
 
-.playArt {
-  height:  100%;
-  width: 100%;
-}
-
 #log-out {
   width: 57%;
   border-radius: 0;
@@ -199,10 +194,8 @@ body {
 
 .player {  
    color: white;
-   height: 100%;
-   
-}
-.player-bg {  
+   left: 70px;
+   height: 100px;
    background-color: rgba(0, 0, 0, 0.6);
 }
 
@@ -215,6 +208,7 @@ body {
 }
 
 .trackItem {
+   border-bottom: 1px solid lightgrey;
    height: 40px
 }
 
@@ -338,25 +332,12 @@ body {
 .square {
     float:left;
     position: relative;
-    width: 100%;
-    height: 101%;
-    //padding-bottom : 50%; /* = width for a 1:1 aspect ratio */
+    width: 50%;
+    padding-bottom : 50%; /* = width for a 1:1 aspect ratio */
     background-color:#1E1E1E;
     overflow:hidden;
     font-size: 0px;
-
-    .back {
-      width:100%;
-       height:100%;
-       position:absolute;
-       background-color:#000;
-       opacity:0.8;
-       font-size: 14px;
-
-      .title {
-         font-size: 20px;
-      }
-    }
+    margin-bottom: -1px;
 
     &:hover > .overlay {
        width:100%;
@@ -391,9 +372,7 @@ body {
      }
 
    .info {
-      padding-top: 15%;
-      padding-right: 15px;
-      padding-left: 15px;
+      padding-top: 20%;
    }
 }
 
@@ -425,11 +404,6 @@ body {
   width: 50px;
 }
 
-.play {
-  margin-left: 25%;
-  margin-bottom: 10px;
-}
-
 .content {
     position:absolute;
     height:90%; /* = 100% - 2*5% padding */
@@ -457,9 +431,6 @@ li{
     padding:0;
 }
 
-.sidebar {
-  background-color: darkgray;
-}
 #sidebar {
   .playing {
     background : @orange !important;
@@ -485,33 +456,33 @@ li{
     color:#fff;
 }
 
-// @media only screen and (min-width: 500px) {
-//    .square {
-//       //width: 33.33333333%%;
-//       padding-bottom: 33.33333333%%;
-//    }
-// }
+@media only screen and (min-width: 500px) {
+   .square {
+      width: 33.33333333%%;
+      padding-bottom: 33.33333333%%;
+   }
+}
 
-// @media only screen and (min-width: 1200px) {
-//    .square {
-//       //width: 25%;
-//       padding-bottom: 25%;
-//    }
-// }
+@media only screen and (min-width: 1200px) {
+   .square {
+      width: 25%;
+      padding-bottom: 25%;
+   }
+}
 
-// @media only screen and (min-width: 1500px) {
-//    .square {
-//       //width: 20%;
-//       padding-bottom: 20%;
-//    }
-// }
+@media only screen and (min-width: 1500px) {
+   .square {
+      width: 20%;
+      padding-bottom: 20%;
+   }
+}
 
-// @media only screen and (min-width: 1800px) {
-//    .square {
-//       //width: 16.66666667%;
-//       padding-bottom: 16.66666667%;
-//    }
-// }
+@media only screen and (min-width: 1800px) {
+   .square {
+      width: 16.66666667%;
+      padding-bottom: 16.66666667%;
+   }
+}
 
 input[type='range'] {
      -moz-box-sizing: border-box;
@@ -520,11 +491,10 @@ input[type='range'] {
   -webkit-appearance: none;
 
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 97%;
+  height: 50px;
   background: transparent;
   outline: none;
-  z-index: 1000;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -534,7 +504,6 @@ input[type="range"]::-webkit-slider-thumb {
 
 canvas {
   width: 100%;
-  opacity: 0.9999999;
 }
 
 .bigSpin {
@@ -596,14 +565,6 @@ canvas {
 .spinnerRect .rect2 {
   -webkit-animation-delay: -1.1s;
   animation-delay: -1.1s;
-}
-
-.green-bg {
-  background-color: green;
-}
-
-.red-bg {
-  background-color: red;
 }
 
 .spinnerRect .rect3 {

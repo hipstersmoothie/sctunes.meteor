@@ -1,13 +1,12 @@
 template(name='player')
-  +SequentialLayout size='[undefined, 125]' align='[1,1]' origin=player_orientation direction='X' translate='[0,0,1]' modifier='StateModifier'
-    +Surface origin='[0,0]' size='[125,125]'
-      img(class='playArt player-bg' src='#{currentTrack.artwork_url}')
+  .current-art.player.footer.navbar-fixed-bottom
+    .player-node.col-xs-1
+      img(rc='#{currentTrack.artwork_url}')
       
-    +SequentialLayout origin='[0,0]' direction='Y'
-      +Surface size='[undefined,30]' template='controls'
-      +Modifier proportions='[.9,.8]'
-        +Surface align='[0.5,0.5]' origin='[0.5,0.5]' proportions='[1,1]' class='player-bg' template='blank'
-        +Surface align='[0.5,0.5]' origin='[0.5,0.6]' proportions='[.9,.7]' template='currentTrackPlayer' 
+    .player-node.col-xs-11
+      .col-xs-12
+        +controls
+    +currentTrackPlayer
 
 template(name='currentTrackPlayer')
   #currentTrackPlayer
@@ -22,7 +21,7 @@ template(name='controls')
       span#prevButton.playerControlButton
         span.glyphicon.glyphicon-step-backward
       span#playpause.playerControlButton
-        span#playPauseIcon.glyphiconglyphicon-pause
+        span#playPauseIcon.glyphicon.glyphicon-pause
       span#nextButton.playerControlButton
         span.glyphicon.glyphicon-step-forward
     span.player-title #{currentTrack.title} - #{currentTrack.user.username}

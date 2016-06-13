@@ -4,7 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-platform
 autopublish
 insecure
 iron:router
@@ -16,9 +15,21 @@ accounts-ui
 service-configuration
 quietcreep:accounts-soundcloud
 mrt:soundcloud
-mjn:famous
-gadicohen:famous-views
-pierreeric:fview-flexgrid
-pierreeric:fview-bksurfaceimage
 coffeescript
 mquandalle:jade
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+jquery
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
+standard-minifier-css
+standard-minifier-js
+wenape:soundmanager

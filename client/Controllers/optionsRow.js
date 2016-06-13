@@ -14,6 +14,16 @@ var setTime = function() {
     Session.set('tracks', indexTracks(longTracks, true));
 };
 
+var sortAndSet = function(sort, comparator) {
+  var tracks = Session.get("tracks");
+  if(Session.get("sortType") === sort)
+    Session.set("tracks", indexTracks(tracks.reverse(), true));
+  else
+    Session.set("tracks", indexTracks(tracks.sort(comparator), true));
+
+  Session.set("sortType", sort);
+};
+
 var allTracks = null;
 var search = function(term) {
   term = term.toLowerCase();
@@ -22,6 +32,13 @@ var search = function(term) {
 
   Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
     return track.title.toLowerCase().indexOf(term) > -1 || track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1;
+  }), true));
+};
+
+var videos = function() {
+  Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
+    console.log(track);
+    return track.description.toLowerCase().indexOf('youtu') > -1;
   }), true));
 };
 
@@ -42,7 +59,15 @@ Template.optionsRow.helpers({
     return Session.get('sortType');
   },
   otherSortTypes: function () {
-    return Session.get('otherSortTypes');
+    return [{type:"Like Date", className: "likedateSort"}, 
+             {type:"Artist", className: "artistSort"}, 
+             {type:"Uploader", className: "uploaderSort"},
+             {type:"Play Count", className: "playcountSort"},
+             {type:"Heart Count", className: "heartcountSort"},
+             {type:"Creation Date", className: "creationSort"},
+             {type:"Duration", className:"durationSort"},
+             {type:"Search", className:"searchSort"},
+             {type:"Videos", className:"videoSort"}];
   },
   duration: function () {
     return Session.get('sortType') === 'Duration';
@@ -91,6 +116,23 @@ Template.optionsRow.events = ({
   'click .searchSort' : function() {
     Session.set('sortType', 'Search');
   },
+  'click .videoSort' : function() {
+    Session.set('tracks',  indexTracks(_.filter(Session.get('tracks'), function(track) {
+      if(track.video_url) {
+        console.log(track.video_url)
+        return true;
+      } else if (track.description && track.description.toLowerCase().indexOf('youtu') > -1) {
+        console.log(track.description)
+        return true;
+      }
+      // if(track.description && track.description.toLowerCase().indexOf('youtu') > -1)
+      //   console.log(track.description);
+
+      return false;
+    }), true));
+
+    Session.set('sortType', 'Videos');
+  },
   'click .durationSort' : function() {
     sortAndSet('Duration', function(a, b){
       return b.duration - a.duration;
@@ -106,5 +148,21 @@ Template.optionsRow.events = ({
       Session.set('tracks', Session.get('origTracks'));
       Session.set('sortType', 'Like Date');
     }
+  },
+  'click #log-out' : function() {
+    Meteor.logout();
+  },
+  'click #playlists' : function() {
+    allTracks = null;
+    Router.go('myPlaylists');
+  },
+  'click #favorites' : function() {
+    allTracks = null;
+    Router.go('myFavorites');
+  },
+  'click #following' : function() {
+    allTracks = null;
+    Session.set('currentArtist', null)
+    Router.go('following');
   }
 });
