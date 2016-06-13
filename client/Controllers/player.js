@@ -1,5 +1,6 @@
 Template.player.helpers({
   currentTrack: function() {
+    console.log( Session.get('currentTrack'))
     return Session.get('currentTrack');
   },
   player_orientation: function() {
@@ -13,7 +14,11 @@ Template.player.helpers({
 
 Template.currentTrackPlayer.helpers({
   currentTrack: function() {
-    return Session.get('currentTrack');
+    console.log()
+    return Session.get('currentTrack') || { duration: 100};
+  },
+  trackPosition: function() {
+    return Session.get('trackPosition') || 0;
   },
 });
 

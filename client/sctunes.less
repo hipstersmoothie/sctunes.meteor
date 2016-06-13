@@ -194,7 +194,6 @@ body {
 
 .player {  
    color: white;
-   left: 70px;
    height: 100px;
    background-color: rgba(0, 0, 0, 0.6);
 }
@@ -232,7 +231,20 @@ body {
 }
 
 .player-node {
-   padding-left: 0;
+   display: inline-block;
+
+   &.artwork {
+    width: 100px;
+   }
+
+   &.controls {
+    margin-left: 110px;
+    position: absolute;
+    height: 100%;
+    width: calc(~"100% - 110px");
+    top: 0;
+    left: 0;
+   }
 }
 
 .loading {
@@ -485,22 +497,22 @@ li{
 }
 
 input[type='range'] {
-     -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  -webkit-appearance: none;
+  //    -moz-box-sizing: border-box;
+  // -webkit-box-sizing: border-box;
+  //         box-sizing: border-box;
+  // -webkit-appearance: none;
 
   position: absolute;
   width: 97%;
   height: 50px;
-  background: transparent;
-  outline: none;
+  // background: transparent;
+  // outline: none;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 1px;
-}
+// input[type="range"]::-webkit-slider-thumb {
+//   -webkit-appearance: none;
+//   width: 1px;
+// }
 
 canvas {
   width: 100%;

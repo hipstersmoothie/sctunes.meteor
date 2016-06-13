@@ -1,22 +1,20 @@
 template(name='player')
   .current-art.player.footer.navbar-fixed-bottom
-    .player-node.col-xs-1
-      img(rc='#{currentTrack.artwork_url}')
+    .player-node.artwork
+      img(src='#{currentTrack.artwork_url}')
       
-    .player-node.col-xs-11
-      .col-xs-12
-        +controls
-    +currentTrackPlayer
+    .player-node.controls
+      +controls
+      +currentTrackPlayer
 
 template(name='currentTrackPlayer')
   #currentTrackPlayer
-    div
-      input(type='range' min='0' max='#{ currentTrack.duration }' id='time-slider')
+    input(type='range' min='0' max='#{currentTrack.duration}' value='#{trackPosition}' id='time-slider')
 
 template(name='blank')
 
 template(name='controls')
-  .col-xs-12.player.player-bg
+  div
     span.controls
       span#prevButton.playerControlButton
         span.glyphicon.glyphicon-step-backward
