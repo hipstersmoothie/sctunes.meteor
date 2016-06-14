@@ -1,0 +1,21 @@
+template(name='artistList')
+	//- if loaded
+	//- 	+Scrollview
+	//- 		+FlexGrid marginTop="0" gutterCol="0" gutterRow="0" itemSize="[275,275]"
+	//- 			+famousEach artists
+	//- 				+Flipper
+	//- 					+Surface target="front" template="artist_front" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+	//- 					+Surface target="back" template="flipper_back" size="[undefined,undefined]" align="[.5,.5]" origin="[.5,.5]"
+	//- else
+	//- 	+loader
+
+template(name='artist_front')
+	div(id='#{this.id}' class='trackItem square bg #{this.kind}' style='background-image:url({{big this.avatar_url}})')
+		.overlay
+			.info
+				span.title 
+					a(href='' onclick='return false;' id='#{this.id}-artist-profile') #{this.username}
+					br
+				p #{this.full_name} 
+				p #{this.city}, #{this.country}
+				p #{this.description} 

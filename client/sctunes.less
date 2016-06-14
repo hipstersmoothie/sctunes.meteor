@@ -1,74 +1,5 @@
 @orange: #FFAE69;
 
-.sctunesDef {
-   display: inline;
-}
-
-.sctunes {
-  color: whitesmoke;
-  font-size: 150px;
-  margin-top: 18%;
-}
-
-.desc {
-   color: whitesmoke;
-   font-size: large;
-}
-
-#login-buttons {
-  width: 200px;
-}
-
-.artist-info {
-  text-align: left;
-  background: #272727;
-  color: white;
-
-  .artist-pic {
-    margin: 25px;
-    width: 80%;
-  }
-
-  .artist-title {
-    display: inline-block;
-  }
-
-  .desc {
-    white-space: pre-line;
-  }
-}
-
-.artist-buttons {
-  text-align: center;
-
-  .btn-group {
-    width: 100%;
-  }
-
-  .btn-artist {
-    border-radius: 0;
-    width: 33.3333333333333333%;
-    height: 75px;
-  }
-
-  .btn-my {
-    border-radius: 0;
-    width: 50%;
-    height: 75px;
-  }
-}
-
-
-
-.trackRow {
-   cursor: pointer;
-   cursor: hand;
-   user-select: none;
-   -webkit-user-select: none;
-   -moz-user-select: none;
-}
-
-
 .playlistRow {
    cursor: pointer;
    cursor: hand;
@@ -78,82 +9,18 @@
    text-align: right;
 }
 
-#loadingTracks {
-   padding-left: 40%;
-}
-
-#currentTrackPlayer {
-   height: 50px;
-   width: 95%;
-}
-
 .queue-block {
    text-indent: 20px;
 }
 
-#sort {
-   padding-left: 20px;
-}
-
 body {
    background : @orange;
-}
-
-.options {
-   display: inline;
-}
-
-.selected {
-   background: darkturquoise;
-
-   .overlay {
-       width:100%;
-       height:100%;
-       position:absolute;
-       background-color:darkturquoise;
-       opacity:0.8;
-       font-size: 14px;
-
-      .title {
-         font-size: 20px;
-      }
-   }
-}
-
-.selectedForQueue {
-   background: gold;
-
-   .overlay {
-       width:100%;
-       height:100%;
-       position:absolute;
-       background-color:gold;
-       opacity:0.8;
-       font-size: 14px;
-
-      .title {
-         font-size: 20px;
-      }
-   }
-}
-
-body {
-  background-color: @orange;
-}
-
-#log-out {
-  width: 57%;
-  border-radius: 0;
+   background-color: @orange;
 }
 
 .playlist-art {
   width: 45px;
   margin-right: 5px;
-}
-
-.trackItem {
-   border-bottom: 1px solid lightgrey;
-   height: 40px
 }
 
 .title {
@@ -164,13 +31,6 @@ body {
 .uploader {
    height: 100%;
    line-height: 40px;
-}
-
-.topRow {
-   background: rgb(0,0,0);
-   color: grey;
-   height: 60px;
-   line-height: 60px;
 }
 
 #playlists {
@@ -184,180 +44,28 @@ body {
    }
 }
 
-.background {
-   background: gray;
-   height: 100vh;
-}
-
-#artistLoader {
-  top: 25%;
-}
-
-.active {
-  background: @orange !important;
-  border-color: @orange !important;
-  color: white !important;
-} 
-
-.red {
-  color: red;
-}
-
-.trackList {
-  display: flex;
-  flex-wrap: wrap;
-  padding-bottom: 100px;
-}
-
-.square {
-    // float:left;
-    // position: relative;
-    // width: 50%;
-    flex-basis: 100%;
-    padding-bottom : 100%; /* = width for a 1:1 aspect ratio */
-    background-color:#1E1E1E;
-    overflow:hidden;
-    font-size: 0px;
-    margin-bottom: -1px;
-
-    &:hover > .overlay {
-       width:100%;
-       height:100%;
-       position:absolute;
-       background-color:#000;
-       opacity:0.8;
-       font-size: 14px;
-
-      .title {
-         font-size: 20px;
-      }
-   }
-
-   .counts {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        line-height: 30px;
-
-        .playCount {
-           float: left;
-        }
-
-        .youtube {
-          font-size: 30px;
-        }
-
-        .heartCount {
-           float: right;
-        }
-     }
-
-   .info {
-      padding-top: 20%;
-   }
-}
-
-.player-space {
-  padding-bottom: 100px;
-}
-
 .folder-arrow {
   float: left;
   padding-top: 11px;
 }
 
-.playing {
-   .overlay {
-       width:100%;
-       height:100%;
-       position:absolute;
-       background-color:rgba(238,118,0,1);
-       opacity:0.8;
-       font-size: 14px;
-
-      .title {
-         font-size: 20px;
-      }
-   }
-}
-
-.length {
-  width: 50px;
-}
-
-.content {
-    position:absolute;
-    height:90%; /* = 100% - 2*5% padding */
-    width:90%; /* = 100% - 2*5% padding */
-    padding: 5%;
-    
-}
-.table{
-    display:table;
-    width:100%;
-    height:100%;
-}
-.table-cell{
-    display:table-cell;
-    vertical-align:middle;
-}
 /*  For list */
-ul{
+ul {
     text-align:left;
     margin:5% 0 0;
     padding:0;
     list-style-position:inside;
 }
-li{
+li 
+{
     padding:0;
 }
 
 /*  For responsive images as background */
 
-.bg{
+.bg {
     background-position:center center;
     background-repeat:no-repeat;
     background-size:cover; /* you change this to "contain" if you don't want the images to be cropped */
     color:#fff;
-}
-
-@media only screen and (min-width: 250px) {
-   .square {
-      flex-basis: 50%;
-      padding-bottom: 50%;
-   }
-}
-
-@media only screen and (min-width: 500px) {
-   .square {
-      flex-basis: 33.33333333%;
-      padding-bottom: 33.33333333%;
-   }
-}
-
-@media only screen and (min-width: 1000px) {
-   .square {
-      flex-basis: 25%;
-      padding-bottom: 25%;
-   }
-}
-
-@media only screen and (min-width: 1200px) {
-   .square {
-      flex-basis: 20%;
-      padding-bottom: 20%;
-   }
-}
-
-@media only screen and (min-width: 1800px) {
-   .square {
-      flex-basis: 16.66666667%;
-      padding-bottom: 16.66666667%;
-   }
-}
-
-input[type='range'] {
-  position: absolute;
-  width: 97%;
-  height: 50px;
 }

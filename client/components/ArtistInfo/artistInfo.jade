@@ -1,0 +1,9 @@
+template(name='artistInfo')
+	h1.row.artist-title #{artistData.username}
+		h5.artist-title #{ artistData.city }, #{ artistData.country }
+	.row
+		p.col-xs-12.desc #{artistData.description}
+	.btn-group
+		button#artist-tracks.btn.btn-artist.btn-default(type="button") Tracks
+		button#artist-playlists.btn.btn-artist.btn-default(type="button") Playlists (#{ artistData.playlist_count })
+		button#artist-favorites.btn.btn-artist.btn-default(type="button") Favorites

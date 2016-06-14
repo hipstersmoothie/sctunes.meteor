@@ -1,0 +1,24 @@
+template(name="trackList")
+	if loaded
+		if artist
+			+artistInfo
+		.row.trackList
+			each tracks
+				div(id='#{this.id}' class='trackItem trackRow col-xs-12 square bg #{this.kind}' style='background-image:url(#{this.big_artwork_url})')
+					.overlay.row
+						.info.col-xs-12
+							span.title #{this.title}
+								br
+							p #{this.user.username}
+						if this.track_count
+							span.counts.col-xs-12
+								span.playCount Tracks: #{this.track_count}
+								span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+						else
+							span.counts.col-xs-12
+								span.playCount
+									span.glyphicon.glyphicon-play #{this.playback_count}
+								span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+									span.glyphicon.glyphicon-heart(class='{{#if this.user_favorite}}red{{/if}})') #{this.favoritings_count}
+	else
+		+loader
