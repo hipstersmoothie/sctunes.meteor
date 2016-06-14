@@ -46,6 +46,7 @@ setArt = function(defaultArt, tracks) {
 
 setPlayingToCurrent = function(tracks) {
   return _.map(tracks, function(track) {
+    console.log(track.id == currentTrackId)
     track.playstatus = track.id == currentTrackId ? "playing" : "notplaying";
     return track;
   });
@@ -91,7 +92,7 @@ indexTracks = function(tracksToIndex, newIndex) {
 };
 
 streamTrack = function(track, queue) {
-  	currentTrackId = track.id;
+  currentTrackId = track.id;
 	Session.set("currentTrack", track);
 
 	soundManager.stopAll();

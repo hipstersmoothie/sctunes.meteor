@@ -4,7 +4,7 @@ template(name="trackList")
 			+artistInfo
 		.row.trackList
 			each tracks
-				div(id='#{this.id}' class='trackItem trackRow col-xs-12 square bg #{this.kind}' style='background-image:url(#{this.big_artwork_url})')
+				div(id='#{this.id}' class='trackItem trackRow col-xs-12 square bg #{this.kind} #{this.playstatus}' style='background-image:url(#{this.big_artwork_url})')
 					.overlay.row
 						.info.col-xs-12
 							span.title #{this.title}

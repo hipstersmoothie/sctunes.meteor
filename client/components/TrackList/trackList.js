@@ -23,31 +23,34 @@ Template.trackList.helpers(listHelpers);
 Template.likeList.helpers(listHelpers);
 
 var listEvents = {
-    'click .trackItem' : function(event) {
-      var tracks = Session.get("tracks"), 
-          node   = getTargetTrack(event.target);
+  'click .trackItem' : function(event) {
+    var tracks = Session.get("tracks");
 
-      if(event.altKey)
-        addToPlaylistClick(tracks, node.index, node.id);
-      else if(node.classList[node.classList.length - 1] == 'playlist'){
-        Session.set("loaded", false);
-        SC.get('/playlists/' + node.id, function(playlist) {
-          Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
-          Session.set("loaded", true);
-        });
-      } else if(event.target.localName === 'span' && event.target.index !== 'title') 
-        return;
-      else if (event.shiftKey)
-        addToQueue(node);
-      else if(node.id == currentTrackId)
-        currentTrack.togglePause();
-      else { 
-        Session.set("playing", true);
-        stopLastTrack(tracks);
-        streamTrack(findTrackWithId(tracks, node.id), false);
-        Session.set("tracks", setPlayingToCurrent(tracks));
-      }
-    },
+    // if(event.altKey)
+    //   addToPlaylistClick(tracks, this.index, this.id);
+    ///puth this back!!!!!!!!!
+    // else if(this.classList[this.classList.length - 1] == 'playlist'){
+    //   Session.set("loaded", false);
+    //   SC.get('/playlists/' + this.id, function(playlist) {
+    //     Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
+    //     Session.set("loaded", true);
+    //   });
+    // }
+    //  else if(event.target.localName === 'span' && event.target.index !== 'title') {
+    //   console.log('hell')
+    //   return;
+    // }
+    if (event.shiftKey)
+      addToQueue(this);
+    else if(this.id == currentTrackId)
+      currentTrack.togglePause();
+    else { 
+      Session.set("playing", true);
+      stopLastTrack();
+      streamTrack(findTrackWithId(tracks, this.id), false);
+      Session.set("tracks", setPlayingToCurrent(tracks));
+    }
+  },
   'click [id*=artist-profile]' : function(event) {
     Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
@@ -84,19 +87,6 @@ var listEvents = {
 Template.trackList.events(listEvents);  
 Template.likeList.helpers(listEvents);
 
-var getTargetTrack = function(target) {
-  if(target.index === "trackItem")
-    return target;
-  else if(target.index === "title") 
-    return target.parentNode.parentNode.parentNode;
-  else if(target.classList.value.indexOf("overlay") > -1 ) 
-    return target.parentNode;
-  else if(target.classList.value.indexOf("play") > -1 ) 
-    return target.parentNode.parentNode.parentNode;
-  else 
-    return target.parentNode.parentNode;
-};
-
 var addToQueue = function(node) {
   var queue = Session.get("queue");
   var track = Session.get("tracks")[node.index];
@@ -106,7 +96,7 @@ var addToQueue = function(node) {
   Session.set("queue", queue);
 };
 
-var stopLastTrack = function(tracks) {
+var stopLastTrack = function() {
   if(currentTrack) {
     Session.set('trackPosition', 0);
     currentTrack.stop();
