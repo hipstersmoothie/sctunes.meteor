@@ -52,6 +52,7 @@ var listEvents = {
     }
   },
   'click [id*=artist-profile]' : function(event) {
+    console.log('event')
     Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
   'click .heartCount' : function(event) {
