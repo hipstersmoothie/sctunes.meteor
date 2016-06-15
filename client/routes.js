@@ -151,7 +151,7 @@ var getFollowedArtists = function(me) {
   getAll('getArtists', Math.ceil(me.followings_count / 200), function(artists) {
     Session.set('artists', artists);
     Session.set('loaded', true);
-  }, null);
+  }, null, false, updateArtistCount);
 };
 
 var getTracks = function (me) {
@@ -166,6 +166,10 @@ var getTracks = function (me) {
 
 var updateTrackCount = function(tracks) {
   Session.set('loadingText', "Got " + tracks.length + " tracks of " + Session.get("me").public_favorites_count);
+};
+
+var updateArtistCount = function(artists) {
+  Session.set('loadingText', "Got " + artists.length + " artists of " + Session.get("me").followings_count);
 };
 
 getAll = function(path, calls, callback, prepFunction, updateFunction, loaderText) {
@@ -195,6 +199,7 @@ getAll = function(path, calls, callback, prepFunction, updateFunction, loaderTex
 
 var likedPlaylists = null;
 var getLikePlaylists = function() {
+  Session.set('loadingText', "Getting liked playlists.... ");
   Meteor.call('getLikedPlaylists', function(err, playlist) {
     var playlists = setArt(playlist.artwork_url, extractSongsAndPlaylists(playlist));
     likedPlaylists = playlists;
@@ -217,6 +222,7 @@ var extractSongsAndPlaylists = function(tracks) {
 var loadArtist = function(id, resource) {
   var currentArtist = Session.get('currentArtist');
   Session.set('loaded', false);
+  Session.set('loadingText', "Getting user's profile...");
 
   if(currentArtist && currentArtist.id == id) {
     if(resource === 'favorites') 
