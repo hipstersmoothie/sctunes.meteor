@@ -1,4 +1,5 @@
 Meteor.startup(function() {
+  Session.set("me", null); 
   Session.set("queue", []); 
   Session.set("tracks", []);
   Session.set("origTracks", []);
