@@ -1,4 +1,4 @@
-var listHelpers = {
+Template.trackList.helpers({
   tracks: function () {
     return Session.get("tracks");
   },
@@ -17,30 +17,28 @@ var listHelpers = {
   artist: function() {
     return Session.get('currentArtist') != null;
   }
-};
+});
 
-Template.trackList.helpers(listHelpers);
-Template.likeList.helpers(listHelpers);
-
-var listEvents = {
+Template.trackList.events({
   'click .trackItem' : function(event) {
+    console.log(1)
     var tracks = Session.get("tracks");
 
     // if(event.altKey)
     //   addToPlaylistClick(tracks, this.index, this.id);
-    ///puth this back!!!!!!!!!
-    // else if(this.classList[this.classList.length - 1] == 'playlist'){
-    //   Session.set("loaded", false);
-    //   SC.get('/playlists/' + this.id, function(playlist) {
-    //     Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
-    //     Session.set("loaded", true);
-    //   });
-    // }
+    // /puth this back!!!!!!!!!
+    if(this.kind == 'playlist'){
+      Session.set("loaded", false);
+      SC.get('/playlists/' + this.id, function(playlist) {
+        Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
+        Session.set("loaded", true);
+      });
+    }
     //  else if(event.target.localName === 'span' && event.target.index !== 'title') {
     //   console.log('hell')
     //   return;
     // }
-    if (event.shiftKey)
+    else if (event.shiftKey)
       addToQueue(this);
     else if(this.id == currentTrackId)
       currentTrack.togglePause();
@@ -52,7 +50,7 @@ var listEvents = {
     }
   },
   'click [id*=artist-profile]' : function(event) {
-    console.log('event')
+    event.stopPropagation()
     Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
   'click .heartCount' : function(event) {
@@ -83,10 +81,7 @@ var listEvents = {
   titleDoesNotContainUsername: function (title, username) {
     return title.indexOf(username) == -1;
   }
-};
-
-Template.trackList.events(listEvents);  
-Template.likeList.helpers(listEvents);
+});  
 
 var addToQueue = function(node) {
   var queue = Session.get("queue");

@@ -68,10 +68,9 @@ Router.map(function() {
         else
           getFollowedArtists(Session.get('me'));
       } else {
-        Session.set('loaded', true)
+        Session.set('loaded', true);
       }
 
-      // $($('#following')[0].wparentNode).addClass('orange').siblings().removeClass('orange');
       this.next();
     }
   });
@@ -79,21 +78,18 @@ Router.map(function() {
   this.route('myPlaylists', {
     path: '/likedPlaylists',
     layoutTemplate: 'trackLayout',
-    template: 'likeList',
+    template: 'trackList',
     onBeforeAction: function() {
       Session.set('loaded', false);
-      // $($('#playlists')[0].parentNode).addClass('orange').siblings().removeClass('orange');
       Session.set('currentArtist', null);
-      console.log('liked')
+
       if(likedPlaylists) {
         Session.set('tracks', likedPlaylists); 
         Session.set('loaded', true);
       } else
         getLikePlaylists();
+
       this.next();
-    },
-    yieldTemplates: {
-      'myInfo': {to: 'userTrackChooser'}
     }
   });
 
@@ -104,9 +100,6 @@ Router.map(function() {
     onBeforeAction: function() {
       loadArtist(this.params._id);
       this.next();
-    },
-    yieldTemplates: {
-      'artistInfo': {to: 'userTrackChooser'}
     }
   });
 
@@ -117,9 +110,6 @@ Router.map(function() {
     onBeforeAction: function() {
       loadArtist(this.params._id, 'favorites');
       this.next();
-    },
-    yieldTemplates: {
-      'artistInfo': {to: 'userTrackChooser'}
     }
   });
 
@@ -130,9 +120,6 @@ Router.map(function() {
     onBeforeAction: function() {
       loadArtist(this.params._id);
       this.next();
-    },
-    yieldTemplates: {
-      'artistInfo': {to: 'userTrackChooser'}
     }
   });
 
@@ -143,9 +130,6 @@ Router.map(function() {
     onBeforeAction: function() {
       loadArtist(this.params._id, 'playlists');
       this.next();
-    },
-    yieldTemplates: {
-      'artistInfo': {to: 'userTrackChooser'}
     }
   });
 
