@@ -22,45 +22,29 @@ Router.configure({
   authenticate: 'login'
 });
 
+var initRoot = function() {
+  if(Session.get('origTracks').length)
+    Session.set('tracks', Session.get('origTracks'));
+  else
+    getMe();
+  // $($('#favorites')[0].parentNode).addClass('orange').siblings().removeClass('orange');
+  Session.set('currentArtist', null);
+  this.next();
+};
+
 Router.map(function() {
   this.route('app', {
     path: '/',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {      
-      getMe();
-      this.next();
-    }
+    onBeforeAction: initRoot
   });
 
   this.route('myFavorites', {
     path: '/favorites',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
-      //setTracks(this);
-      // var tracks = Session.get("origTracks");
-      // if(tracks)
-      //   Session.set('tracks', tracks);
-      // else
-      //   Meteor.call('getMe', function(error, me) {
-      //     Session.set('me', me);
-      //     mii = me;
-
-      //     getMoreTracks();
-      //   });
-      // if (mii == null)
-      Session.set('loaded', false);
-      Meteor.call('getMe', function(error, me) {
-        Session.set('me', me);
-        mii = me;
-
-        Session.set('tracks', allTracks);
-      });
-      $($('#favorites')[0].parentNode).addClass('orange').siblings().removeClass('orange');
-      Session.set('currentArtist', null);
-      this.next();
-    },
+    onBeforeAction: initRoot,
     yieldTemplates: {
       'myInfo': {to: 'userTrackChooser'}
     }
@@ -92,7 +76,7 @@ Router.map(function() {
     template: 'likeList',
     onBeforeAction: function() {
       Session.set('loaded', false);
-      $($('#playlists')[0].parentNode).addClass('orange').siblings().removeClass('orange');
+      // $($('#playlists')[0].parentNode).addClass('orange').siblings().removeClass('orange');
       Session.set('currentArtist', null);
       console.log('liked')
       if(likedPlaylists) {

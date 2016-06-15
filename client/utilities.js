@@ -1,6 +1,7 @@
 Meteor.startup(function() {
   Session.set("queue", []); 
   Session.set("tracks", []);
+  Session.set("origTracks", []);
   Session.set("artists", null);
 
   Session.set("currentTrack", null);
