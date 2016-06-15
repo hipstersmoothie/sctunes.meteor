@@ -4,22 +4,20 @@
   top: 25%;
 }
 
-.loading {
-   height: 100vh;
-   background-color: @orange; 
-}
-
 .loaderContainer {
-  height: 100%;
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(~"100vh - 50px");
 
-canvas {
-  width: 100%;
+  p {
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 15px;
+  }
 }
 
 .bigSpin {
-  margin: 20% 44%;
-  width: 130px;
   height: 75px;
   text-align: center;
   font-size: 10px;
