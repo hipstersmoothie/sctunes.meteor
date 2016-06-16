@@ -3,12 +3,36 @@
 .navbar {
   margin-bottom: 0px;
   border-radius: 0px;
-}
 
-.navbar-nav {
-  li {
-    text-align: center;
-    margin: 0;
+  .navbar-nav {
+    display: flex;
+    justify-content: space-between;
+
+    li {
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  .navDescriptiom {
+    display: none;
+  }
+
+  @media screen and (max-width: 767px) {
+    .navDescriptiom {
+      display: inline;
+    }
+
+    .navbar-center {
+      li {
+        width: 100%;
+
+        .navbar-form {
+          width: 80%;
+          display: inline-block;
+        }
+      }
+    }
   }
 }
 
