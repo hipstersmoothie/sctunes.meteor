@@ -5,7 +5,6 @@ import { $ } from 'meteor/jquery';
 import { playNextOrPrevTrack } from '../../utilities';
 
 Template.player.helpers({
-  currentTrack: () => Session.get('currentTrack'),
   player_orientation: () => {
     return {
       value: Session.get('player_orientation'),
@@ -23,10 +22,6 @@ Template.currentTrackPlayer.helpers({
 Template.currentTrackPlayer.events = {
   'click #time-slider' : event => currentSound.setPosition(event.currentTarget.value)
 };
-
-Template.controls.helpers({
-  currentTrack: () => Session.get('currentTrack')
-});
 
 var togglePauseIcon = () => {
   var playPause = $('#playPauseIcon');

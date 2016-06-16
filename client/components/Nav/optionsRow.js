@@ -42,7 +42,6 @@ function search(term) {
     Session.set('tracks', allTracks);
 
   Session.set('tracks',  indexTracks(_.filter(allTracks, track => {
-    console.log(track)
     return track.title.toLowerCase().indexOf(term) > -1 || track.artist && track.artist.toLowerCase().indexOf(term) > -1 || track.user.username.toLowerCase().indexOf(term) > -1;
   }), true));
 }
