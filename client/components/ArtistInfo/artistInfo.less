@@ -3,17 +3,39 @@
   background: #272727;
   color: white;
 
-  .artist-pic {
-    margin: 25px;
-    width: 80%;
+  .artist-pic-container {
+    padding: 0 15px;
+    text-align: center;
+
+    .artist-pic {
+      margin: 25px 7%;
+      width: 80%;
+    }
   }
 
-  .artist-title {
-    display: inline-block;
-  }
+  .artist-data {
+    padding: 0 15px 20px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-  .desc {
-    white-space: pre-line;
+    .artist-title {
+      text-align: center;
+      margin: 0;
+
+      h5 {
+        margin-top: 5px;
+        float: right;
+        margin-top: 20px;
+        margin-right: 20px; 
+      }
+    }
+
+    .desc {
+      white-space: pre-line;
+      margin: 25px 15px 30px 15px;
+      word-wrap: break-word;
+    }
   }
 }
 
@@ -34,5 +56,39 @@
     border-radius: 0;
     width: 50%;
     height: 75px;
+  }
+}
+
+@media only screen and (min-width: 500px) {  
+  .artist-info {
+    display: flex;
+
+    .artist-pic-container {
+      width: 40%;
+      height: 80%;
+      padding: 0;
+
+      .artist-pic {
+        height: 80%;
+      }
+    }
+
+    .artist-data {
+      width: 60%;
+      padding: 20px 0;
+  
+      .artist-title {
+        text-align: left;
+
+        h5 {
+          float: right;
+        }
+      }
+
+      .desc {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
   }
 }

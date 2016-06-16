@@ -1,6 +1,14 @@
 Template.artistInfo.helpers({
   artistData: function () {
     return Session.get('currentArtist');
+  },
+  description: function() {
+    let text = Session.get('currentArtist').description;
+    console.log(Session.get('currentArtist'))
+    if(text)
+      return text.trim();
+
+    return text;
   }
 });
 

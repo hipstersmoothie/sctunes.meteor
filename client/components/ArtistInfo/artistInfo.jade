@@ -1,9 +1,19 @@
 template(name='artistInfo')
-	h1.row.artist-title #{artistData.username}
-		h5.artist-title #{ artistData.city }, #{ artistData.country }
-	.row
-		p.col-xs-12.desc #{artistData.description}
-	.btn-group
-		button#artist-tracks.btn.btn-artist.btn-default(type="button") Tracks
-		button#artist-playlists.btn.btn-artist.btn-default(type="button") Playlists (#{ artistData.playlist_count })
-		button#artist-favorites.btn.btn-artist.btn-default(type="button") Favorites
+	.row.artist-info
+		.artist-pic-container
+			img.artist-pic(src="#{artistData.big_avatar}")
+		.artist-data
+			h1.artist-title #{artistData.username}
+				if artistData.city
+					h5.artist-title #{ artistData.city }
+						if artistData.country
+							|, #{ artistData.country }
+				else if artistData.country
+					h5.artist-title #{ artistData.country }
+			if description
+				p.desc #{description}
+	.row.artist-buttons
+		.btn-group
+			button#artist-tracks.btn.btn-artist.btn-default(type="button") Tracks (#{ artistData.track_count })
+			button#artist-playlists.btn.btn-artist.btn-default(type="button") Playlists (#{ artistData.playlist_count })
+			button#artist-favorites.btn.btn-artist.btn-default(type="button") Favorites (#{ artistData.public_favorites_count })
