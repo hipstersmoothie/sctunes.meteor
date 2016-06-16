@@ -1,0 +1,51 @@
+{
+  "globals": {
+    "Session": true,
+    "Router": true,
+    "Meteor": true,
+    "Template": true,
+    "_": true,
+    "soundManager": true,
+    "SC": true,
+    "findTrackWithId": true,
+    "$": true,
+
+    "currentTrack": true,
+    "prepareTracks": true, //func
+    "setArt": true, //func
+    "indexTracks": true, //func
+    "currentTrackId": true, 
+    "setPlayingToCurrent": true, //func
+    "streamTrack": true, //func
+    "queueOn": true,
+    "playNextOrPrevTrack": true //func
+  },
+  "env": {
+    // I write for browser
+    "browser": true,
+    // in CommonJS
+    "node": true
+  },
+  // To give you an idea how to override rule options:
+  "rules": {
+    // Tons of rules you can use, for example...
+    "quotes": [1, "single"],
+    "comma-dangle": 1,
+    "no-cond-assign": 2,
+    "no-dupe-args": 2,
+    "no-dupe-keys": 2,
+    "no-duplicate-case": 2,
+    "no-empty": 2,
+    "no-extra-boolean-cast": 1,
+    "no-extra-parens": 1, 
+    "no-extra-semi": 1,
+    "no-func-assign": 2,
+    "no-unreachable": 1,
+    "no-constant-condition": 2,
+    "block-scoped-var": 2,
+    "no-redeclare": 1,
+    "no-use-before-define": 2,
+    "no-unused-vars": 2,
+    "no-undef": 2
+  }
+}

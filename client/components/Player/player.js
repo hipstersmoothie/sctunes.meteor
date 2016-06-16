@@ -5,7 +5,7 @@ Template.player.helpers({
   },
   player_orientation: function() {
     return {
-      value: Session.get("player_orientation"),
+      value: Session.get('player_orientation'),
       transition: { curve: 'easeIn', duration: 300 },
       halt: true
     };
@@ -19,31 +19,18 @@ Template.currentTrackPlayer.helpers({
   },
   trackPosition: function() {
     return Session.get('trackPosition') || 0;
-  },
+  }
 });
 
-Template.currentTrackPlayer.events = ({
+Template.currentTrackPlayer.events = {
   'click #time-slider' : function(event) {
     currentTrack.setPosition(event.currentTarget.value);
   }
-});
+};
 
 Template.controls.helpers({
   currentTrack: function() {
     return Session.get('currentTrack');
-  }
-});
-
-Template.controls.events = ({
-  'click #playpause' : function() {
-    togglePauseIcon();
-    currentTrack.togglePause();
-  },
-  'click #nextButton' : function() {
-    playNextOrPrevTrack(true);
-  },
-  'click #prevButton' : function() {
-    playNextOrPrevTrack(false);
   }
 });
 
@@ -55,5 +42,18 @@ var togglePauseIcon = function() {
   } else {
     playPause.removeClass('glyphicon-pause');
     playPause.addClass('glyphicon-play');
+  }
+};
+
+Template.controls.events = {
+  'click #playpause' : function() {
+    togglePauseIcon();
+    currentTrack.togglePause();
+  },
+  'click #nextButton' : function() {
+    playNextOrPrevTrack(true);
+  },
+  'click #prevButton' : function() {
+    playNextOrPrevTrack(false);
   }
 };

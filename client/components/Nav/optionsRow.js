@@ -5,7 +5,7 @@ var setTime = function() {
       longTracks     = [];
 
   longTracks = _.filter(tracks, function(track) {
-    return (minTime && maxTime && track.duration >= minTime && track.duration <= maxTime) || (minTime && !maxTime && track.duration >= minTime) || (maxTime && !minTime && track.duration <= maxTime); 
+    return minTime && maxTime && track.duration >= minTime && track.duration <= maxTime || minTime && !maxTime && track.duration >= minTime || maxTime && !minTime && track.duration <= maxTime; 
   });
   
   if(!minTime && !maxTime)
@@ -15,19 +15,19 @@ var setTime = function() {
 };
 
 var sortAndSet = function(sort, comparator) {
-  var tracks = Session.get("tracks");
-  if(Session.get("sortType") === sort)
-    Session.set("tracks", indexTracks(tracks.reverse(), true));
+  var tracks = Session.get('tracks');
+  if(Session.get('sortType') === sort)
+    Session.set('tracks', indexTracks(tracks.reverse(), true));
   else
-    Session.set("tracks", indexTracks(tracks.sort(comparator), true));
+    Session.set('tracks', indexTracks(tracks.sort(comparator), true));
 
-  Session.set("sortType", sort);
+  Session.set('sortType', sort);
 };
 
 var allTracks = null;
 var search = function(term) {
   term = term.toLowerCase();
-  if (term == "")
+  if (term == '')
     Session.set('tracks', allTracks);
 
   Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
@@ -35,12 +35,12 @@ var search = function(term) {
   }), true));
 };
 
-var videos = function() {
-  Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
-    console.log(track);
-    return track.description.toLowerCase().indexOf('youtu') > -1;
-  }), true));
-};
+// var videos = function() {
+//   Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
+//     console.log(track);
+//     return track.description.toLowerCase().indexOf('youtu') > -1;
+//   }), true));
+// };
 
 var shuffle = function(array) {
   Session.set('loaded', false);
@@ -59,15 +59,15 @@ Template.optionsRow.helpers({
     return Session.get('sortType');
   },
   otherSortTypes: function () {
-    return [{type:"Like Date", className: "likedateSort"}, 
-             {type:"Artist", className: "artistSort"}, 
-             {type:"Uploader", className: "uploaderSort"},
-             {type:"Play Count", className: "playcountSort"},
-             {type:"Heart Count", className: "heartcountSort"},
-             {type:"Creation Date", className: "creationSort"},
-             {type:"Duration", className:"durationSort"},
-             {type:"Search", className:"searchSort"},
-             {type:"Videos", className:"videoSort"}];
+    return [{type:'Like Date', className: 'likedateSort'}, 
+             {type:'Artist', className: 'artistSort'}, 
+             {type:'Uploader', className: 'uploaderSort'},
+             {type:'Play Count', className: 'playcountSort'},
+             {type:'Heart Count', className: 'heartcountSort'},
+             {type:'Creation Date', className: 'creationSort'},
+             {type:'Duration', className:'durationSort'},
+             {type:'Search', className:'searchSort'},
+             {type:'Videos', className:'videoSort'}];
   },
   duration: function () {
     return Session.get('sortType') === 'Duration';
@@ -77,12 +77,12 @@ Template.optionsRow.helpers({
   }
 });
 
-Template.optionsRow.events = ({
+Template.optionsRow.events = {
   'keydown #min-length, keydown #max-length' : function(event) {
     if(event.keyCode === 13)
       setTime();
   },
-  'click #searchButton, keyup #searchInput' : function(event) {
+  'click #searchButton, keyup #searchInput' : function() {
     if (allTracks == null)
       allTracks = Session.get('tracks');
 
@@ -90,12 +90,12 @@ Template.optionsRow.events = ({
   },
   'click .artistSort' : function() {
     sortAndSet('Artist', function(a, b){
-      return (a.artist).localeCompare(b.artist);
+      return a.artist.localeCompare(b.artist);
     });
   },
   'click .uploaderSort' : function() {
     sortAndSet('Uploader', function(a, b){
-      return (a.user.username).localeCompare(b.user.username);
+      return a.user.username.localeCompare(b.user.username);
     });
   },
   'click .playcountSort' : function() {
@@ -110,7 +110,7 @@ Template.optionsRow.events = ({
   },
   'click .creationSort' : function() {
     sortAndSet('Creation Date', function(a, b){
-      return (a.created_at).localeCompare(b.created_at);
+      return a.created_at.localeCompare(b.created_at);
     });
   },
   'click .searchSort' : function() {
@@ -165,4 +165,4 @@ Template.optionsRow.events = ({
     Session.set('currentArtist', null)
     Router.go('following');
   }
-});
+};

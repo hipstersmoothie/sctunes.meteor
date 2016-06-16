@@ -1,3 +1,145 @@
+var getAll = function(path, requests, prepFunction, loaderText, callback) {
+  var args = Array.prototype.slice.apply(arguments);
+  var collection = [];
+
+  for(var i = 0; i < requests; i++) {
+    Meteor.call(path, i, function(error, data){
+      var index = data['index'];
+      data = data['data'].collection || data['data'];
+
+      if(prepFunction)
+        collection = collection.concat(prepFunction(data, args[args.length]));
+      else
+        collection = collection.concat(data);
+
+      if (loaderText) 
+        loaderText(collection)
+
+      if (index === requests - 1) {
+        callback(collection);
+        Session.set('loaded', true);
+      }
+    });
+  }
+};
+
+var getFollowedArtists = function(me) {
+  var loadingText = 'Getting followed tracks';
+  Session.set('loadingText', loadingText + '...');
+
+  getAll('getArtists', Math.ceil(me.followings_count / 200), null, function(artists) {
+    Session.set('loadingText', loadingText + ': ' + artists.length + ' of ' + Session.get('me').followings_count);
+  }, function(artists) {
+    Session.set('artists', artists);
+  });
+};
+
+var getTracks = function () {
+  var loadingText = 'Getting favorite tracks';
+  Session.set('loadingText', loadingText + '...');
+
+  getAll('getFavorites', 1, prepareTracks, function(tracks) {
+    Session.set('loadingText', loadingText + ': ' + tracks.length + ' of ' + Session.get('me').public_favorites_count);
+  }, function(tracks) {
+    Session.set('tracks', tracks);
+    Session.set('origTracks', tracks);   
+  });
+};
+
+var extractSongsAndPlaylists = function(tracks) {
+  return _.map(_.filter(tracks, function(track) {
+    return track.track || track.playlist;
+  }), function(track) {
+    if(track.track)
+      return track.track;
+    if(track.playlist)
+      return track.playlist;
+  });
+};
+
+var likedPlaylists = null;
+var getLikePlaylists = function() {
+  Session.set('loadingText', 'Getting liked playlists.... ');
+  
+  Meteor.call('getLikedPlaylists', function(err, playlist) {
+    var playlists = setArt(playlist.artwork_url, extractSongsAndPlaylists(playlist));
+    likedPlaylists = playlists;
+    Session.set('tracks', playlists); 
+    Session.set('loaded', true);
+  });
+};
+
+var splitData = function(artist, data) {
+  return prepareTracks(extractSongsAndPlaylists(data), true, artist.avatar_url);
+};
+
+var getResource = function(type, artist, resourceCount, processFunc) {
+  var currentData = Session.get('artist' + type);
+
+  $('#artist-' + type.toLowerCase()).addClass('active').siblings().removeClass('active');
+
+  if(currentData) {
+    Session.set('tracks', setPlayingToCurrent(currentData));
+    return Session.set('loaded', true);
+  }
+
+  Session.set('loaded', false);
+  for(var i = 0; i < Math.ceil(artist[resourceCount] / 200); i++) {
+    Meteor.call('getArtist' + type, artist.id, function(error, data) {
+      data  = setPlayingToCurrent(processFunc(data));
+      Session.set('tracks', data);
+      Session.set('artist' + type, data);
+      if(i === Math.ceil(artist[resourceCount] / 200)) 
+        Session.set('loaded', true);
+    });
+  }
+  if(artist[resourceCount] < 1) {
+    // toastr.error('User has no' + type + '!');
+    Session.set('loaded', true);
+  }
+};
+
+var getArtistPlaylists = function(artist) {
+  getResource('Playlists', artist, 'playlist_count', _.bind(setArt, this, artist));
+};
+
+var getFavorites = function(artist) {                
+  getResource('Favorites', artist, 'public_favorites_count', _.bind(splitData, this, artist));
+};
+
+var getArtistTracks = function(artist) {
+  getResource('Tracks', artist, 'track_count', _.bind(splitData, this, artist));
+};
+
+
+var loadArtist = function(id, resource) {
+  var currentArtist = Session.get('currentArtist');
+  Session.set('loadingText', 'Getting user\'s profile...');
+
+  if(currentArtist && currentArtist.id == id) {
+    if(resource === 'favorites') 
+      return getFavorites(currentArtist);
+    else if(resource === 'playlists')
+      return getArtistPlaylists(currentArtist);
+    else
+      return getArtistTracks(currentArtist);
+  }
+
+  Meteor.call('getArtist', id, function(error, info) {    
+    info.big_avatar = info.avatar_url.replace('large', 't300x300');
+    Session.set('currentArtist', info);
+    Session.set('artistFavorites', null);
+    Session.set('artistTracks', null);
+
+    if(resource === 'favorites' || info.track_count === 0)
+      getFavorites(info);
+    else if(resource === 'playlists')
+      getArtistPlaylists(info);
+    else
+      getArtistTracks(info);
+  });  
+};
+
 Router.configure({
   layoutTemplate: 'trackLayout',
   templateNameConverter: 'upperCamelCase'
@@ -146,146 +288,3 @@ Router.map(function() {
     }
   });
 });
-
-var compilingArtist = false;
-
-var getFollowedArtists = function(me) {
-  var loadingText = "Getting followed tracks";
-  Session.set('loadingText', loadingText + '...');
-
-  getAll('getArtists', Math.ceil(me.followings_count / 200), null, function(artists) {
-    Session.set('loadingText', loadingText + ": " + artists.length + " of " + Session.get("me").followings_count);
-  }, function(artists) {
-    Session.set('artists', artists);
-  });
-};
-
-var getTracks = function (me) {
-  var loadingText = "Getting favorite tracks";
-  Session.set('loadingText', loadingText + '...');
-
-  getAll('getFavorites', 1, prepareTracks, function(tracks) {
-    Session.set('loadingText', loadingText + ": " + tracks.length + " of " + Session.get("me").public_favorites_count);
-  }, function(tracks) {
-    Session.set('tracks', tracks);
-    Session.set('origTracks', tracks);   
-  });
-};
-
-var getAll = function(path, requests, prepFunction, loaderText, callback) {
-  var args = Array.prototype.slice.apply(arguments);
-  var collection = [];
-
-  for(var i = 0; i < requests; i++) {
-    Meteor.call(path, i, function(error, data){
-      var index = data["index"];
-      data = data['data'].collection || data['data'];
-
-      if(prepFunction)
-        collection = collection.concat(prepFunction(data, args[args.length]));
-      else
-        collection = collection.concat(data);
-
-      if (loaderText) 
-        loaderText(collection)
-
-      if (index === requests - 1) {
-        callback(collection);
-        Session.set('loaded', true);
-      }
-    });
-  }
-};
-
-var likedPlaylists = null;
-var getLikePlaylists = function() {
-  Session.set('loadingText', "Getting liked playlists.... ");
-  
-  Meteor.call('getLikedPlaylists', function(err, playlist) {
-    var playlists = setArt(playlist.artwork_url, extractSongsAndPlaylists(playlist));
-    likedPlaylists = playlists;
-    Session.set('tracks', playlists); 
-    Session.set('loaded', true);
-  });
-};
-
-var extractSongsAndPlaylists = function(tracks) {
-  return _.map(_.filter(tracks, function(track) {
-    return track.track || track.playlist;
-  }), function(track) {
-    if(track.track)
-      return track.track;
-    if(track.playlist)
-      return track.playlist;
-  });
-};
-
-var loadArtist = function(id, resource) {
-  var currentArtist = Session.get('currentArtist');
-  Session.set('loadingText', "Getting user's profile...");
-
-  if(currentArtist && currentArtist.id == id) {
-    if(resource === 'favorites') 
-      return getFavorites(currentArtist);
-    else if(resource === 'playlists')
-      return getArtistPlaylists(currentArtist);
-    else
-      return getArtistTracks(currentArtist);
-  }
-
-  Meteor.call('getArtist', id, function(error, info) {    
-    info.big_avatar = (info.avatar_url).replace('large', 't300x300');
-    Session.set('currentArtist', info);
-    Session.set('artistFavorites', null);
-    Session.set('artistTracks', null);
-
-    if(resource === 'favorites' || info.track_count === 0)
-      getFavorites(info);
-    else if(resource === 'playlists')
-      getArtistPlaylists(info);
-    else
-      getArtistTracks(info);
-  });  
-};
-
-var splitData = function(artist, data) {
-  return prepareTracks(extractSongsAndPlaylists(data), true, artist.avatar_url);
-};
-
-var getArtistPlaylists = function(artist) {
-  getResource('Playlists', artist, 'playlist_count', _.bind(setArt, this, artist));
-};
-
-var getFavorites = function(artist) {                
-  getResource('Favorites', artist, 'public_favorites_count', _.bind(splitData, this, artist));
-};
-
-var getArtistTracks = function(artist) {
-  getResource('Tracks', artist, 'track_count', _.bind(splitData, this, artist));
-};
-
-var getResource = function(type, artist, resourceCount, processFunc) {
-  var currentData = Session.get('artist' + type);
-
-  $('#artist-' + type.toLowerCase()).addClass('active').siblings().removeClass('active');
-
-  if(currentData) {
-    Session.set('tracks', setPlayingToCurrent(currentData));
-    return Session.set('loaded', true);
-  }
-
-  Session.set('loaded', false);
-  for(var i = 0; i < Math.ceil(artist[resourceCount] / 200); i++) {
-    Meteor.call('getArtist' + type, artist.id, function(error, data) {
-      data  = setPlayingToCurrent(processFunc(data));
-      Session.set('tracks', data);
-      Session.set('artist' + type, data);
-      if(i === Math.ceil(artist[resourceCount] / 200)) 
-        Session.set('loaded', true);
-    });
-  }
-  if(artist[resourceCount] < 1) {
-    toastr.error('User has no' + type + '!');
-    Session.set('loaded', true);
-  }
-};
