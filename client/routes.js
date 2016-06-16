@@ -23,16 +23,18 @@ Router.configure({
 });
 
 var initRoot = function() {
-  if(Session.get('origTracks').length)
+  Session.set('loaded', false);
+
+  if(Session.get('origTracks').length) {
     Session.set('tracks', Session.get('origTracks'));
-  else if(!madeTracks) {
-    madeTracks = true;
+    Session.set('loaded', true);
+  } else {
     Meteor.call('getMe', function(error, me) {
       Session.set('me', me);
       getTracks(me);
     });
   }
-  // $($('#favorites')[0].parentNode).addClass('orange').siblings().removeClass('orange');
+
   Session.set('currentArtist', null);
   this.next();
 };
@@ -148,35 +150,33 @@ Router.map(function() {
 var compilingArtist = false;
 
 var getFollowedArtists = function(me) {
-  getAll('getArtists', Math.ceil(me.followings_count / 200), function(artists) {
+  var loadingText = "Getting followed tracks";
+  Session.set('loadingText', loadingText + '...');
+
+  getAll('getArtists', Math.ceil(me.followings_count / 200), null, function(artists) {
+    Session.set('loadingText', loadingText + ": " + artists.length + " of " + Session.get("me").followings_count);
+  }, function(artists) {
     Session.set('artists', artists);
-    Session.set('loaded', true);
-  }, null, false, updateArtistCount);
+  });
 };
 
 var getTracks = function (me) {
-  Session.set('loaded', false);
+  var loadingText = "Getting favorite tracks";
+  Session.set('loadingText', loadingText + '...');
 
-  getAll('getFavorites',  1, function(tracks) {
+  getAll('getFavorites', 1, prepareTracks, function(tracks) {
+    Session.set('loadingText', loadingText + ": " + tracks.length + " of " + Session.get("me").public_favorites_count);
+  }, function(tracks) {
     Session.set('tracks', tracks);
     Session.set('origTracks', tracks);   
-    Session.set('loaded', true); 
-  }, prepareTracks, true, updateTrackCount);
+  });
 };
 
-var updateTrackCount = function(tracks) {
-  Session.set('loadingText', "Got " + tracks.length + " tracks of " + Session.get("me").public_favorites_count);
-};
-
-var updateArtistCount = function(artists) {
-  Session.set('loadingText', "Got " + artists.length + " artists of " + Session.get("me").followings_count);
-};
-
-getAll = function(path, calls, callback, prepFunction, updateFunction, loaderText) {
+var getAll = function(path, requests, prepFunction, loaderText, callback) {
   var args = Array.prototype.slice.apply(arguments);
   var collection = [];
 
-  for(var i = 0; i < calls; i++) {
+  for(var i = 0; i < requests; i++) {
     Meteor.call(path, i, function(error, data){
       var index = data["index"];
       data = data['data'].collection || data['data'];
@@ -189,9 +189,9 @@ getAll = function(path, calls, callback, prepFunction, updateFunction, loaderTex
       if (loaderText) 
         loaderText(collection)
 
-      if (index === calls - 1) {
-        Session.set('loaded', updateFunction);
-        return callback(collection);
+      if (index === requests - 1) {
+        callback(collection);
+        Session.set('loaded', true);
       }
     });
   }
@@ -200,6 +200,7 @@ getAll = function(path, calls, callback, prepFunction, updateFunction, loaderTex
 var likedPlaylists = null;
 var getLikePlaylists = function() {
   Session.set('loadingText', "Getting liked playlists.... ");
+  
   Meteor.call('getLikedPlaylists', function(err, playlist) {
     var playlists = setArt(playlist.artwork_url, extractSongsAndPlaylists(playlist));
     likedPlaylists = playlists;
@@ -221,7 +222,6 @@ var extractSongsAndPlaylists = function(tracks) {
 
 var loadArtist = function(id, resource) {
   var currentArtist = Session.get('currentArtist');
-  Session.set('loaded', false);
   Session.set('loadingText', "Getting user's profile...");
 
   if(currentArtist && currentArtist.id == id) {

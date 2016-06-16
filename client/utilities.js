@@ -19,7 +19,6 @@ Meteor.startup(function() {
   Session.set("sortType", "Like Date");
 });
 
-madeTracks = false, 
 currentTrack = null, 
 addToPlaylistQueue = [], 
 access_token = null, 

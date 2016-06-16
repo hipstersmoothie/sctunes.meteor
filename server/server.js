@@ -54,7 +54,6 @@ Meteor.startup(function () {
 Meteor.methods({
   getAccessToken : function() {
     try {
-      console.log(Meteor.user().services.soundCloud)
       return Meteor.user().services.soundCloud.accessToken;
     } catch(e) {
       return null;
@@ -73,7 +72,6 @@ Meteor.methods({
     }
   },
   getFavorites : function(offset) {
-    console.log(Meteor.user().services.soundCloud.accessToken )
     try {                                                                                            
       return {
         index : offset,
@@ -91,14 +89,14 @@ Meteor.methods({
      }
   },
   getLikedPlaylists : function() {
-    try {                                                                                            
+    try {    
       return Meteor.http.get("https://api.soundcloud.com/e1/me/playlist_likes", {                                      
-      params: {                                                                                    
-          oauth_token: Meteor.user().services.soundCloud.accessToken,                                                                  
-          format: "json",
-          limit: 200
-        }                                                                                            
-      }).data;                                                                                       
+        params: {                                                                                    
+            oauth_token: Meteor.user().services.soundCloud.accessToken,                                                                  
+            format: "json",
+            limit: 200
+          }                                                                                            
+        }).data;                                                                                       
      } catch (err) {                                                                                  
        throw new Error("Failed to fetch identity from Soundcloud. " + err.message);                   
      }

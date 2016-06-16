@@ -21,24 +21,18 @@ Template.trackList.helpers({
 
 Template.trackList.events({
   'click .trackItem' : function(event) {
-    console.log(1)
+    console.log(event)
     var tracks = Session.get("tracks");
 
     // if(event.altKey)
     //   addToPlaylistClick(tracks, this.index, this.id);
-    // /puth this back!!!!!!!!!
     if(this.kind == 'playlist'){
       Session.set("loaded", false);
       SC.get('/playlists/' + this.id, function(playlist) {
         Session.set("tracks", prepareTracks(playlist.tracks, true, playlist.artwork_url));
         Session.set("loaded", true);
       });
-    }
-    //  else if(event.target.localName === 'span' && event.target.index !== 'title') {
-    //   console.log('hell')
-    //   return;
-    // }
-    else if (event.shiftKey)
+    } else if (event.shiftKey)
       addToQueue(this);
     else if(this.id == currentTrackId)
       currentTrack.togglePause();
