@@ -68,6 +68,12 @@ var shuffle = function(array) {
   return indexTracks(array, true);
 };
 
+function handleRouteChange(route) {
+  allTracks = null;
+  $('.navbar-toggle').click();
+  Router.go(route);
+}
+
 Template.optionsRow.helpers({
   sortType: () => Session.get('sortType'),
   otherSortTypes: () => [
@@ -125,16 +131,7 @@ Template.optionsRow.events = {
     }
   },
   'click #log-out' : () => Meteor.logout(),
-  'click #playlists' : () => {
-    allTracks = null;
-    Router.go('myPlaylists');
-  },
-  'click #favorites' : () => {
-    allTracks = null;
-    Router.go('myFavorites');
-  },
-  'click #following' : () => {
-    allTracks = null;
-    Router.go('following');
-  }
+  'click #playlists' : () => handleRouteChange('myPlaylists'),
+  'click #favorites' : () => handleRouteChange('myFavorites'),
+  'click #following' : () => handleRouteChange('following')
 };
