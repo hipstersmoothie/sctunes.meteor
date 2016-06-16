@@ -158,7 +158,6 @@ function setTrackChangeInfoQueue(increment) {
   return nextTrack;
 }
 
-/** global playNextOrPrevTrack */
 export function playNextOrPrevTrack(increment) {
   let nextTrack;
   let queueOn = Session.get('queuePlaying');
