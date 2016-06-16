@@ -1,9 +1,8 @@
+import { playNextOrPrevTrack } from '../../utilities';
+
 Template.player.helpers({
-  currentTrack: function() {
-    console.log( Session.get('currentTrack'))
-    return Session.get('currentTrack');
-  },
-  player_orientation: function() {
+  currentTrack: () => Session.get('currentTrack'),
+  player_orientation: () => {
     return {
       value: Session.get('player_orientation'),
       transition: { curve: 'easeIn', duration: 300 },
@@ -13,28 +12,19 @@ Template.player.helpers({
 });
 
 Template.currentTrackPlayer.helpers({
-  currentTrack: function() {
-    console.log()
-    return Session.get('currentTrack') || { duration: 100};
-  },
-  trackPosition: function() {
-    return Session.get('trackPosition') || 0;
-  }
+  currentTrack: () => Session.get('currentTrack') || { duration: 100},
+  trackPosition: () => Session.get('trackPosition') || 0
 });
 
 Template.currentTrackPlayer.events = {
-  'click #time-slider' : function(event) {
-    currentTrack.setPosition(event.currentTarget.value);
-  }
+  'click #time-slider' : event => currentTrack.setPosition(event.currentTarget.value)
 };
 
 Template.controls.helpers({
-  currentTrack: function() {
-    return Session.get('currentTrack');
-  }
+  currentTrack: () => Session.get('currentTrack')
 });
 
-var togglePauseIcon = function() {
+var togglePauseIcon = () => {
   var playPause = $('#playPauseIcon');
   if(playPause.hasClass('glyphicon-play')) {
     playPause.removeClass('glyphicon-play');
@@ -45,15 +35,11 @@ var togglePauseIcon = function() {
   }
 };
 
-Template.controls.events = {
-  'click #playpause' : function() {
+Template.controls.events({
+  'click #playpause' :() => {
     togglePauseIcon();
     currentTrack.togglePause();
   },
-  'click #nextButton' : function() {
-    playNextOrPrevTrack(true);
-  },
-  'click #prevButton' : function() {
-    playNextOrPrevTrack(false);
-  }
-};
+  'click #nextButton' :() => playNextOrPrevTrack(true),
+  'click #prevButton' :() => playNextOrPrevTrack(false)
+});

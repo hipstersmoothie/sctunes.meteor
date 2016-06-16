@@ -1,10 +1,10 @@
 Template.artistInfo.helpers({
-  artistData: function () {
+  artistData() {
     return Session.get('currentArtist');
   },
-  description: function() {
-    var text = Session.get('currentArtist').description;
-    console.log(Session.get('currentArtist'))
+  description() {
+    let text = Session.get('currentArtist').description;
+
     if(text)
       return text.trim();
 
@@ -13,13 +13,7 @@ Template.artistInfo.helpers({
 });
 
 Template.artistInfo.events({
-  'click #artist-tracks': function () {
-    Router.go('artistTracks', { _id : Session.get('currentArtist').id });
-  },
-  'click #artist-favorites': function () {
-    Router.go('artistFavorites', { _id : Session.get('currentArtist').id });
-  },
-  'click #artist-playlists': function () {
-    Router.go('artistPlaylists', { _id : Session.get('currentArtist').id });
-  }
+  'click #artist-tracks': () => Router.go('artistTracks', { _id : Session.get('currentArtist').id }),
+  'click #artist-favorites': () => Router.go('artistFavorites', { _id : Session.get('currentArtist').id }),
+  'click #artist-playlists': () => Router.go('artistPlaylists', { _id : Session.get('currentArtist').id })
 });

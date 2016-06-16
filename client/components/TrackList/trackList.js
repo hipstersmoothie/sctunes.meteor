@@ -1,26 +1,30 @@
-var qIndex = 0;
-var addToQueue = function(node) {
-  var queue = Session.get('queue');
-  var track = Session.get('tracks')[node.index];
+import { streamTrack, setPlayingToCurrent, prepareTracks, findTrackWithId } from '../../utilities'
+
+let qIndex = 0;
+
+function addToQueue(node) {
+  let queue = Session.get('queue');
+  let track = Session.get('tracks')[node.index];
+
   Session.set('queueMode', true);
   track.queueIndex = qIndex++;
   queue.push(track);
   Session.set('queue', queue);
-};
+}
 
-var stopLastTrack = function() {
+function stopLastTrack() {
   if(currentTrack) {
     Session.set('trackPosition', 0);
     currentTrack.stop();
 
     if(queueOn && $('#' + currentTrackId + '-queue').length) {
-      var queue = Session.get('queue');
+      let queue = Session.get('queue');
       queueOn = false;
       queue[$('#' + currentTrackId + '-queue')[0].index].qplaystatus = 'notplaying';
       Session.set('queue', queue);
     }
   }
-};
+}
 
 function msToTime(duration) {
   var seconds = parseInt(duration/1000 % 60),
@@ -35,29 +39,17 @@ function msToTime(duration) {
 }
 
 Template.trackList.helpers({
-  tracks: function() {
-    return Session.get('tracks');
-  },
-  lots: function() {
-    return Session.get('me').public_favorites_count > 1000;
-  },
-  toTime: function(ms) {
-    return msToTime(ms);
-  },
-  loaded: function () {
-    return Session.get('loaded');
-  },
-  currentTrack: function() {
-    return Session.get('currentTrack');
-  },
-  artist: function() {
-    return Session.get('currentArtist') != null;
-  }
+  tracks:() => Session.get('tracks'),
+  lots:() => Session.get('me').public_favorites_count > 1000,
+  toTime:(ms) => msToTime(ms),
+  loaded: () => Session.get('loaded'),
+  currentTrack:() => Session.get('currentTrack'),
+  artist:() => Session.get('currentArtist') != null
 });
 
 Template.trackList.events({
   'click .trackItem' : function(event) {
-    var tracks = Session.get('tracks');
+    let tracks = Session.get('tracks');
 
     // if(event.altKey)
     //   addToPlaylistClick(tracks, this.index, this.id);
@@ -78,11 +70,11 @@ Template.trackList.events({
       Session.set('tracks', setPlayingToCurrent(tracks));
     }
   },
-  'click [id*=artist-profile]' : function(event) {
+  'click [id*=artist-profile]' : event => {
     event.stopPropagation()
     Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
   },
-  'click .heartCount' : function(event) {
+  'click .heartCount' : event => {
     try {
       if(event.target.classList[1] === 'hearted')
         SC.delete('/me/favorites/' + event.target.parentNode.parentNode.parentNode.id);
@@ -93,22 +85,15 @@ Template.trackList.events({
       console.log('ioeno');
     }
 
-    var tracks = Session.get('tracks');
-    var track = _.find(tracks, function(track) {
-      return track.id == event.target.parentNode.parentNode.parentNode.id;
-    });
+    let tracks = Session.get('tracks');
+    let track = _.find(tracks, track => track.id == event.target.parentNode.parentNode.parentNode.id);
+
     track.user_favorite = !track.user_favorite;
     tracks[track.index] = track;
     Session.set('tracks', tracks);
   },
-  artist: function () {
-    return Session.get('sortType') === 'Artist';
-  },
-  uploader: function () {
-    return Session.get('sortType') === 'Uploader';
-  },
-  titleDoesNotContainUsername: function (title, username) {
-    return title.indexOf(username) == -1;
-  }
+  artist: () => Session.get('sortType') === 'Artist',
+  uploader: () => Session.get('sortType') === 'Uploader',
+  titleDoesNotContainUsername: (title, username) => title.indexOf(username) == -1
 });  
 

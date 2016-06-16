@@ -1,4 +1,4 @@
-Meteor.startup(function() {
+Meteor.startup(() => {
   Session.set('me', null); 
   Session.set('queue', []); 
   Session.set('tracks', []);
@@ -28,12 +28,13 @@ var tIndex = 0;
   Helper Functions
  */
 //TODO REFACTOR
-var getArtist = function(tracks) {
-  return _.map(tracks, function(track) {
-    var title = track.title;
+function getArtist(tracks) {
+  return _.map(tracks, track => {
+    let title = track.title;
     track.playstatus = 'notplaying';
+
     if(title.indexOf(track.user.username) === -1 && track.title.indexOf('-') > -1) {
-      var checkValid = parseInt(title.substr(0, title.indexOf('-'))) || 0;
+      let checkValid = parseInt(title.substr(0, title.indexOf('-'))) || 0;
       if(checkValid > 0) {
         track.artist = title.substr(title.indexOf('-') + 1, 
                                     title.substr(title.indexOf('-') + 1, 
@@ -54,41 +55,40 @@ var getArtist = function(tracks) {
 
     return track;
   });
-}; 
+}
 
-indexTracks = function(tracksToIndex, newIndex) {
+export function indexTracks(tracksToIndex, newIndex) {
   if(newIndex)
     tIndex = 0;
   
-  return _.map(tracksToIndex, function(track) {
+  return _.map(tracksToIndex, track => {
     track.index = tIndex++;
     return track;
   });
-};
+}
 
-prepareTracks = function(tracks, newIndexes, defaultArt) {
-  return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
-};
-
-setArt = function(defaultArt, tracks) {
-  return _.map(tracks, function(track) {
+export function setArt(defaultArt, tracks) {
+  return _.map(tracks, track => {
     if(track.artwork_url)
       track.big_artwork_url = track.artwork_url.replace('large', 't300x300');
     else
       track.big_artwork_url = track.user.avatar_url.replace('large', 't300x300');
     return track;
   });
-};
+}
 
-setPlayingToCurrent = function(tracks) {
-  return _.map(tracks, function(track) {
-    console.log(track.id == currentTrackId)
+export function prepareTracks(tracks, newIndexes, defaultArt) {
+  return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
+}
+
+export function setPlayingToCurrent(tracks) {
+  return _.map(tracks, track => {
     track.playstatus = track.id == currentTrackId ? 'playing' : 'notplaying';
     return track;
   });
-};
+}
 
-streamTrack = function(track, queue) {
+export function streamTrack(track, queue) {
   currentTrackId = track.id;
 	Session.set('currentTrack', track);
 
@@ -105,27 +105,21 @@ streamTrack = function(track, queue) {
 	currentTrack.play({
 	  onload: function() {
 	    if(this.readyState == 2) 
-	      playNextOrPrevTrack(true);
+	      playNextOrPrevTrack(true); // eslint-disable-line no-use-before-define
 	  }, 
-	  whileplaying: function() {
-	  	Session.set('trackPosition', this.position);
-	  },
-	  onfinish: function() {
-	    playNextOrPrevTrack(true);
-	  }
+	  whileplaying: function() { 
+      Session.set('trackPosition', this.position) 
+    },
+	  onfinish:() => playNextOrPrevTrack(true) // eslint-disable-line no-use-before-define
 	});
-};
-
-
-findTrackWithId = function(tracks, id) {
-  for (track in tracks) {
-    var data = tracks[track];
-    if(data.id == id) 
-      return data;
-  }
 }
 
-var setTrackChangeInfo = function(increment) {
+
+export function findTrackWithId(tracks, id) {
+  return _.find(tracks, track => track.id == id)
+}
+
+function setTrackChangeInfo(increment) {
   var tracks          = Session.get('tracks'),
       currentTrackRow = $('#' + currentTrackId)[0], 
       currentIndex    = 0, 
@@ -142,9 +136,9 @@ var setTrackChangeInfo = function(increment) {
   currentTrackId = tracks[nextToPlay].id;
   Session.set('tracks', setPlayingToCurrent(tracks));
   return tracks[nextToPlay];
-};
+}
 
-var setTrackChangeInfoQueue = function (increment) {
+function setTrackChangeInfoQueue(increment) {
   var tracks = Session.get('queue'), nextTrack,
       currentIndex = parseInt($('#' + currentTrackId + '-queue')[0].index),
       nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
@@ -162,9 +156,10 @@ var setTrackChangeInfoQueue = function (increment) {
   }
   Session.set('queue', tracks);
   return nextTrack;
-};
+}
 
-playNextOrPrevTrack = function(increment) {
+/** global playNextOrPrevTrack */
+export function playNextOrPrevTrack(increment) {
   var nextTrack;
 
   if(!queueOn)
@@ -173,7 +168,7 @@ playNextOrPrevTrack = function(increment) {
     nextTrack = setTrackChangeInfoQueue(increment);
 
   streamTrack(nextTrack, queueOn);
-};
+}
 
 Template.trackLayout.helpers({
   loaded: function () {

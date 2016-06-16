@@ -1,3 +1,5 @@
+import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
+
 var getAll = function(path, requests, prepFunction, loaderText, callback) {
   var args = Array.prototype.slice.apply(arguments);
   var collection = [];

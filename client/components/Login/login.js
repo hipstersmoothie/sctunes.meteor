@@ -1,5 +1,5 @@
 Template.login.helpers({
-  loggedIn: function() {
+  loggedIn: () => {
     if(Meteor.user())
       Router.go(Session.get('ir.loginRedirectRoute'));
   }
