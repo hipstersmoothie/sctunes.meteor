@@ -1,19 +1,10 @@
 {
   "parser": "babel-eslint",
   "globals": {
-    "Session": true,
-    "Router": true,
-    "Meteor": true,
-    "Template": true,
-    "_": true,
     "soundManager": true,
     "SC": true,
-    "findTrackWithId": true,
-    "$": true,
 
-    "currentTrack": true,
-    "currentTrackId": true, 
-    "queueOn": true,
+    "currentTrack": true
   },
   "env": {
     // I write for browser

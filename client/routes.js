@@ -1,3 +1,9 @@
+import { Session } from 'meteor/session';
+import { Meteor } from 'meteor/meteor';
+import { Router } from 'meteor/iron:router';
+import { $ } from 'meteor/jquery';
+import _ from 'lodash';
+
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
 
 var getAll = function(path, requests, prepFunction, loaderText, callback) {

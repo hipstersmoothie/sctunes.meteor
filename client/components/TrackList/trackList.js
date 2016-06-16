@@ -1,7 +1,12 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Router } from 'meteor/iron:router';
+import { $ } from 'meteor/jquery';
+import _ from 'lodash';
+
 import { streamTrack, setPlayingToCurrent, prepareTracks, findTrackWithId } from '../../utilities'
 
 let qIndex = 0;
-
 function addToQueue(node) {
   let queue = Session.get('queue');
   let track = Session.get('tracks')[node.index];
@@ -17,10 +22,10 @@ function stopLastTrack() {
     Session.set('trackPosition', 0);
     currentTrack.stop();
 
-    if(queueOn && $('#' + currentTrackId + '-queue').length) {
+    if(Session.get('queuePlaying') && $('#' + Session.get('currentTrack').id + '-queue').length) {
       let queue = Session.get('queue');
-      queueOn = false;
-      queue[$('#' + currentTrackId + '-queue')[0].index].qplaystatus = 'notplaying';
+      Session.set('queuePlaying', false);
+      queue[$('#' + Session.get('currentTrack').id + '-queue')[0].index].qplaystatus = 'notplaying';
       Session.set('queue', queue);
     }
   }
@@ -55,13 +60,14 @@ Template.trackList.events({
     //   addToPlaylistClick(tracks, this.index, this.id);
     if(this.kind == 'playlist'){
       Session.set('loaded', false);
+      console.log(SC)
       SC.get('/playlists/' + this.id, function(playlist) {
         Session.set('tracks', prepareTracks(playlist.tracks, true, playlist.artwork_url));
         Session.set('loaded', true);
       });
     } else if (event.shiftKey)
       addToQueue(this);
-    else if(this.id == currentTrackId)
+    else if(this.id == Session.get('currentTrack').id)
       currentTrack.togglePause();
     else { 
       Session.set('playing', true);

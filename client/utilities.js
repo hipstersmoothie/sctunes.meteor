@@ -1,6 +1,12 @@
+import { Session } from 'meteor/session';
+import { Meteor } from 'meteor/meteor';
+import { $ } from 'meteor/jquery';
+import _ from 'lodash';
+
 Meteor.startup(() => {
   Session.set('me', null); 
   Session.set('queue', []); 
+  Session.set('queuePlaying', false);
   Session.set('tracks', []);
   Session.set('origTracks', []);
   Session.set('artists', null);
@@ -20,13 +26,7 @@ Meteor.startup(() => {
 });
 
 currentTrack = null, 
-currentTrackId = null,
-queueOn = false;
-var tIndex = 0;
 
-/*
-  Helper Functions
- */
 //TODO REFACTOR
 function getArtist(tracks) {
   return _.map(tracks, track => {
@@ -57,6 +57,7 @@ function getArtist(tracks) {
   });
 }
 
+let tIndex = 0;
 export function indexTracks(tracksToIndex, newIndex) {
   if(newIndex)
     tIndex = 0;
@@ -82,14 +83,15 @@ export function prepareTracks(tracks, newIndexes, defaultArt) {
 }
 
 export function setPlayingToCurrent(tracks) {
+  let currentTrack = Session.get('currentTrack');
+
   return _.map(tracks, track => {
-    track.playstatus = track.id == currentTrackId ? 'playing' : 'notplaying';
+    track.playstatus = track.id == currentTrack.id ? 'playing' : 'notplaying';
     return track;
   });
 }
 
 export function streamTrack(track, queue) {
-  currentTrackId = track.id;
 	Session.set('currentTrack', track);
 
 	soundManager.stopAll();
@@ -100,7 +102,7 @@ export function streamTrack(track, queue) {
 	});
 
 	if(queue)
-	  queueOn = true;
+	  Session.set('queuePlaying', true);
 
 	currentTrack.play({
 	  onload: function() {
@@ -114,14 +116,13 @@ export function streamTrack(track, queue) {
 	});
 }
 
-
 export function findTrackWithId(tracks, id) {
   return _.find(tracks, track => track.id == id)
 }
 
 function setTrackChangeInfo(increment) {
   var tracks          = Session.get('tracks'),
-      currentTrackRow = $('#' + currentTrackId)[0], 
+      currentTrackRow = $('#' + Session.get('currentTrack').id)[0], 
       currentIndex    = 0, 
       nextToPlay      = 0;
 
@@ -133,14 +134,13 @@ function setTrackChangeInfo(increment) {
   if(nextToPlay === tracks.length || nextToPlay < 0)
     nextToPlay = 0;
   
-  currentTrackId = tracks[nextToPlay].id;
   Session.set('tracks', setPlayingToCurrent(tracks));
   return tracks[nextToPlay];
 }
 
 function setTrackChangeInfoQueue(increment) {
   var tracks = Session.get('queue'), nextTrack,
-      currentIndex = parseInt($('#' + currentTrackId + '-queue')[0].index),
+      currentIndex = parseInt($('#' + Session.get('currentTrack').id + '-queue')[0].index),
       nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
 
   tracks[currentIndex].qplaystatus = 'notplaying';
@@ -148,7 +148,7 @@ function setTrackChangeInfoQueue(increment) {
     stream = Session.get('tracks');
     stream[0].playstatus = 'playing';
     nextTrack = stream[0];
-    queueOn = false;
+    Session.set('queuePlaying', false);
     Session.set('tracks', stream);
   } else {
     tracks[nextToPlay].qplaystatus = 'playing';
@@ -160,7 +160,8 @@ function setTrackChangeInfoQueue(increment) {
 
 /** global playNextOrPrevTrack */
 export function playNextOrPrevTrack(increment) {
-  var nextTrack;
+  let nextTrack;
+  let queueOn = Session.get('queuePlaying');
 
   if(!queueOn)
     nextTrack = setTrackChangeInfo(increment);
@@ -169,16 +170,3 @@ export function playNextOrPrevTrack(increment) {
 
   streamTrack(nextTrack, queueOn);
 }
-
-Template.trackLayout.helpers({
-  loaded: function () {
-    return Session.get('loaded');
-  },
-  currentTrack: function() {
-    return Session.get('currentTrack');
-  },
-  getTransition: function() {
-    var useForPages = Session.get('transitionPages');
-    return useForPages ? Session.get('currentTransition') : 'opacity';
-  }
-});

@@ -1,3 +1,8 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Router } from 'meteor/iron:router';
+import { $ } from 'meteor/jquery';
+
 Template.artistList.helpers({
   artists: () => Session.get('artists'),
   loaded: () => Session.get('loaded'),

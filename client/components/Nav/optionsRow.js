@@ -1,3 +1,12 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Meteor } from 'meteor/meteor';
+import { Router } from 'meteor/iron:router';
+import { $ } from 'meteor/jquery';
+import _ from 'lodash';
+
+import { indexTracks } from '../../utilities';
+
 function setTime() {
   const minTime = $('#min-length').val() * 60000,
         maxTime = $('#max-length').val() * 60000,
@@ -54,7 +63,7 @@ var shuffle = function(array) {
     array[i] = array[j];
     array[j] = temp;
   }
-  
+
   Session.set('loaded', true);
   return indexTracks(array, true);
 };
