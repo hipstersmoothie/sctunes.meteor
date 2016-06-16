@@ -16,7 +16,7 @@ Template.player.helpers({
 });
 
 Template.currentTrackPlayer.helpers({
-  currentTrack: () => Session.get('currentTrack') || { duration: 100},
+  currentTrack: () => Session.get('currentTrack') || { duration: 100 },
   trackPosition: () => Session.get('trackPosition') || 0
 });
 

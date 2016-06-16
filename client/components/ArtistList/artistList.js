@@ -4,9 +4,7 @@ import { Router } from 'meteor/iron:router';
 import { $ } from 'meteor/jquery';
 
 Template.artistList.helpers({
-  artists: () => Session.get('artists'),
-  loaded: () => Session.get('loaded'),
-  lots: () => Session.get('artists').length > 1000
+  artists: () => Session.get('artists')
 });
 
 Template.artist_front.helpers({

@@ -45,12 +45,11 @@ function msToTime(duration) {
 
 Template.trackList.helpers({
   tracks:() => Session.get('tracks'),
-  lots:() => Session.get('me').public_favorites_count > 1000,
   toTime:(ms) => msToTime(ms),
-  loaded: () => Session.get('loaded'),
-  currentTrack:() => Session.get('currentTrack'),
   artist:() => Session.get('currentArtist') != null
 });
+Template.registerHelper('loaded', () => Session.get('loaded'));
+Template.registerHelper('currentTrack', () => Session.get('currentTrack'));
 
 Template.trackList.events({
   'click .trackItem' : function(event) {

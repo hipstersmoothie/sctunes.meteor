@@ -11,5 +11,5 @@ template(name="trackLayout")
 	#wrapper.active
 		.container-fluid					
 			+yield
-			if currentTrack
+			if currentTrack.id
 				+player

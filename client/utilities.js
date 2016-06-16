@@ -3,6 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
 import _ from 'lodash';
 
+currentSound = null;
+
 Meteor.startup(() => {
   Session.set('me', null); 
   Session.set('queue', []); 
@@ -11,7 +13,7 @@ Meteor.startup(() => {
   Session.set('origTracks', []);
   Session.set('artists', null);
 
-  Session.set('currentTrack', null);
+  Session.set('currentTrack', {});
   Session.set('player_orientation', [1,-1]);
 
   Session.set('currentArtist', null);
@@ -25,7 +27,26 @@ Meteor.startup(() => {
   Session.set('sortType', 'Like Date');
 });
 
-currentSound = null, 
+let tIndex = 0;
+export function indexTracks(tracksToIndex, newIndex) {
+  if(newIndex)
+    tIndex = 0;
+  
+  return _.map(tracksToIndex, track => {
+    track.index = tIndex++;
+    return track;
+  });
+}
+
+export function setArt(defaultArt, tracks) {
+  return _.map(tracks, track => {
+    if(track.artwork_url)
+      track.big_artwork_url = track.artwork_url.replace('large', 't300x300');
+    else
+      track.big_artwork_url = track.user.avatar_url.replace('large', 't300x300');
+    return track;
+  });
+}
 
 //TODO REFACTOR
 function getArtist(tracks) {
@@ -53,27 +74,6 @@ function getArtist(tracks) {
       track.artist = track.user.username;
     }
 
-    return track;
-  });
-}
-
-let tIndex = 0;
-export function indexTracks(tracksToIndex, newIndex) {
-  if(newIndex)
-    tIndex = 0;
-  
-  return _.map(tracksToIndex, track => {
-    track.index = tIndex++;
-    return track;
-  });
-}
-
-export function setArt(defaultArt, tracks) {
-  return _.map(tracks, track => {
-    if(track.artwork_url)
-      track.big_artwork_url = track.artwork_url.replace('large', 't300x300');
-    else
-      track.big_artwork_url = track.user.avatar_url.replace('large', 't300x300');
     return track;
   });
 }
