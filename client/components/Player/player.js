@@ -21,7 +21,7 @@ Template.currentTrackPlayer.helpers({
 });
 
 Template.currentTrackPlayer.events = {
-  'click #time-slider' : event => currentTrack.setPosition(event.currentTarget.value)
+  'click #time-slider' : event => currentSound.setPosition(event.currentTarget.value)
 };
 
 Template.controls.helpers({
@@ -42,7 +42,7 @@ var togglePauseIcon = () => {
 Template.controls.events({
   'click #playpause' :() => {
     togglePauseIcon();
-    currentTrack.togglePause();
+    currentSound.togglePause();
   },
   'click #nextButton' :() => playNextOrPrevTrack(true),
   'click #prevButton' :() => playNextOrPrevTrack(false)

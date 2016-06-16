@@ -4,7 +4,7 @@
     "soundManager": true,
     "SC": true,
 
-    "currentTrack": true
+    "currentSound": true
   },
   "env": {
     // I write for browser

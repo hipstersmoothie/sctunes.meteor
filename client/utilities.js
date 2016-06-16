@@ -25,7 +25,7 @@ Meteor.startup(() => {
   Session.set('sortType', 'Like Date');
 });
 
-currentTrack = null, 
+currentSound = null, 
 
 //TODO REFACTOR
 function getArtist(tracks) {
@@ -95,7 +95,7 @@ export function streamTrack(track, queue) {
 	Session.set('currentTrack', track);
 
 	soundManager.stopAll();
-	currentTrack = soundManager.createSound({
+	currentSound = soundManager.createSound({
 	    id: track.id,
 	    url: track.stream_url + '?client_id=628c0d8bc773cd70e1a32d0236cb79ce',
 	    stream: true
@@ -104,7 +104,7 @@ export function streamTrack(track, queue) {
 	if(queue)
 	  Session.set('queuePlaying', true);
 
-	currentTrack.play({
+	currentSound.play({
 	  onload: function() {
 	    if(this.readyState == 2) 
 	      playNextOrPrevTrack(true); // eslint-disable-line no-use-before-define

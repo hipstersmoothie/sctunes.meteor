@@ -18,9 +18,9 @@ function addToQueue(node) {
 }
 
 function stopLastTrack() {
-  if(currentTrack) {
+  if(currentSound) {
     Session.set('trackPosition', 0);
-    currentTrack.stop();
+    currentSound.stop();
 
     if(Session.get('queuePlaying') && $('#' + Session.get('currentTrack').id + '-queue').length) {
       let queue = Session.get('queue');
@@ -68,7 +68,7 @@ Template.trackList.events({
     } else if (event.shiftKey)
       addToQueue(this);
     else if(this.id == Session.get('currentTrack').id)
-      currentTrack.togglePause();
+      currentSound.togglePause();
     else { 
       Session.set('playing', true);
       stopLastTrack();
