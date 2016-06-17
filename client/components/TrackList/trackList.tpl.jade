@@ -1,0 +1,24 @@
+if loaded
+	if artist
+		+artistInfo
+	.row.trackList
+		each tracks
+			div(id='#{this.id}' class='col-xs-12 trackItem square bg #{this.kind} #{this.playstatus}' style='background-image:url(#{this.big_artwork_url})')
+				.overlay.row.text-center
+					.col-xs-12
+						span.title #{this.title}
+					.user
+						a(href='#' id='#{this.user.id}-artist-profile') #{this.user.username}
+					if this.track_count
+						span.counts.col-xs-12
+							span.playCount Tracks: #{this.track_count}
+							span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+					else
+						span.counts.col-xs-12
+							span.playCount
+								span.glyphicon.glyphicon-play #{this.playback_count}
+							span.heartCount(class='{{#if this.user_favorite}}hearted{{/if}}')
+								span.glyphicon.glyphicon-heart(class='{{#if this.user_favorite}}red{{/if}}') 
+								span #{this.favoritings_count}
+else
+	+loader
