@@ -4,14 +4,11 @@ import { Router } from 'meteor/iron:router';
 import { $ } from 'meteor/jquery';
 
 Template.artistList.helpers({
-  artists: () => Session.get('artists')
-});
-
-Template.artist_front.helpers({
+  artists: () => Session.get('artists'),
   big: (artwork_url)  => artwork_url.replace('large', 't300x300')
 });
 
-Template.artist_front.events({
+Template.artistList.events({
   'click [id*=artist-profile]' : (event) => {
     $($('#following')[0].parentNode).addClass('orange').siblings().removeClass('orange');
     Router.go('artist', { _id : event.currentTarget.id.split('-')[0] });
