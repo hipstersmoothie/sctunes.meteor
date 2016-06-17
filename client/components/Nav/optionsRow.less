@@ -4,6 +4,10 @@
   margin-bottom: 0px;
   border-radius: 0px;
 
+  .dropdownLabel {
+    padding-right: 10px;
+  }
+
   .navbar-nav {
     display: flex;
     justify-content: space-between;
@@ -28,8 +32,48 @@
       }
     }
   }
+
+  a {
+      color: #9d9d9d;
+  }
+
+  .rightButtons {
+    display: inline-flex;
+  }
 }
 
+@media screen and (min-width: 525px) {
+  .navbar .rightButtons {
+    position: absolute;
+    right: 0;
+  }
+
+  navbar-nav {
+    margin-top: 9px;
+    margin-bottom: 0;
+  }
+
+  .navbar-center {
+    height: 9px;
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 0;
+
+    .navbar-left #searchInput {
+      width: 80%;
+      margin-left: 84px;
+    }
+  }
+  
+  .navbar-right {
+    height: 50px;
+
+    .leftButtons {
+      position: absolute;
+      left: 0;
+    }
+  }
+}
 @media screen and (min-width: 768px) {
   .navbar .navDescriptiom {
     display: none;
