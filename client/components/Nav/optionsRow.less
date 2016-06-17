@@ -48,7 +48,7 @@
     right: 0;
   }
 
-  navbar-nav {
+  .navbar-nav {
     margin-top: 9px;
     margin-bottom: 0;
   }
@@ -77,6 +77,35 @@
 @media screen and (min-width: 768px) {
   .navbar .navDescriptiom {
     display: none;
+  }
+
+  .navbar-nav {
+    margin-top: 0;
+
+    .leftButtons, .rightButtons {
+      position: initial;
+    }
+  }
+
+  .navbar .navbar-center li .navbar-form {
+    width: 100%;
+  }
+
+  .navbar-center .navbar-left #searchInput {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .navbar-center {
+    flex-grow: 2;
+
+    .form-group {
+      width: 100%;
+    }
+  }
+
+  .navbar-inverse .navbar-collapse {
+    display: flex !important;
   }
 }
 

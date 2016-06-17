@@ -9,19 +9,20 @@ nav.navbar.navbar-inverse
       a.navbar-brand(href="#") ScTunes
 
     .collapse.navbar-collapse
-      ul.nav.navbar-nav
-        li.orange
-          a#favorites(href="#" onclick="return false;")
-            span.glyphicon.glyphicon-star(aria-hidden="true")
-            span.navDescriptiom Favorites
-        li
-          a#playlists(href="#" onclick="return false;")
-            span.glyphicon.glyphicon-tasks(aria-hidden="true")
-            span.navDescriptiom Playlists
-        li
-          a#following(href="#" onclick="return false;")
-            span.glyphicon.glyphicon-user(aria-hidden="true")
-            span.navDescriptiom Following
+      .left
+        ul.nav.navbar-nav
+          li.orange
+            a#favorites(href="#" onclick="return false;")
+              span.glyphicon.glyphicon-star(aria-hidden="true")
+              span.navDescriptiom Favorites
+          li
+            a#playlists(href="#" onclick="return false;")
+              span.glyphicon.glyphicon-tasks(aria-hidden="true")
+              span.navDescriptiom Playlists
+          li
+            a#following(href="#" onclick="return false;")
+              span.glyphicon.glyphicon-user(aria-hidden="true")
+              span.navDescriptiom Following
 
       ul.nav.navbar-nav.navbar-center
         if duration
