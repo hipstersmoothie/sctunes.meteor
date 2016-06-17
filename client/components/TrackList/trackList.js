@@ -18,7 +18,7 @@ function addToQueue(node) {
     .to(queueMessage, duration, {backgroundColor: orange, opacity: 1})
     .to(queueMessage, duration, {backgroundColor: origColor})
     .to(queueMessage, duration, {backgroundColor: orange})
-    .to(queueMessage, duration, {backgroundColor: origColor, clearProps: 'all'})
+    .to(queueMessage, duration, {backgroundColor: origColor, clearProps: 'all'});
 
   let queue = Session.get('queue');
   let track = Session.get('tracks')[node.index];

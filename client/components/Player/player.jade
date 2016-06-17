@@ -6,6 +6,7 @@ template(name='player')
     .player-node.controls
       +controls
       +currentTrackPlayer
+  +queue
 
 template(name='currentTrackPlayer')
   #currentTrackPlayer
@@ -21,4 +22,4 @@ template(name='controls')
       span#nextButton.playerControlButton
         span.glyphicon.glyphicon-step-forward
     span.player-title #{currentTrack.title} - #{currentTrack.user.username}
-
+    
