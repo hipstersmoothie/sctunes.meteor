@@ -91,7 +91,7 @@ export function setPlayingToCurrent(tracks) {
   });
 }
 
-export function streamTrack(track, queue) {
+export function streamTrack(track) {
 	Session.set('currentTrack', track);
 
 	soundManager.stopAll();
@@ -101,7 +101,7 @@ export function streamTrack(track, queue) {
 	    stream: true
 	});
 
-	if(queue)
+	if(Session.get('queuePlaying').length)
 	  Session.set('queuePlaying', true);
 
 	currentSound.play({
@@ -138,34 +138,56 @@ function setTrackChangeInfo(increment) {
   return tracks[nextToPlay];
 }
 
-function setTrackChangeInfoQueue(increment) {
-  var tracks = Session.get('queue'), nextTrack,
-      currentIndex = parseInt($('#' + Session.get('currentTrack').id + '-queue')[0].index),
-      nextToPlay = increment ? currentIndex + 1 : currentIndex - 1, stream;
+function findCurrentTrackIndex(array) {
+  let cid = Session.get('currentTrack').id;
+  let current;
 
-  tracks[currentIndex].qplaystatus = 'notplaying';
-  if(nextToPlay === tracks.length || nextToPlay < 0) {
-    stream = Session.get('tracks');
-    stream[0].playstatus = 'playing';
-    nextTrack = stream[0];
+  _.forEach(array, (item, index) => {
+    if(item.id == cid) {
+      current = index;
+      return false;
+    }
+  });
+
+  return current;
+}
+
+function setTrackChangeInfoQueue(increment, queue) {
+  var nextTrack, 
+      currentIndex = findCurrentTrackIndex(queue), 
+      nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+
+  if(nextToPlay === queue.length || nextToPlay < 0) {
     Session.set('queuePlaying', false);
-    Session.set('tracks', stream);
+    let indexOnPage = findCurrentTrackIndex(Session.get('tracks'))
+
+    if(indexOnPage > -1)
+      nextTrack = Session.get('tracks')[indexOnPage + 1];
+    else
+      nextTrack = Session.get('tracks')[0];
+    
+    queue = [];
+  } else if(currentIndex > -1) {
+    queue[currentIndex].qplaystatus = 'notplaying';
+    queue[nextToPlay].qplaystatus = 'playing';
+    nextTrack = queue[nextToPlay];
   } else {
-    tracks[nextToPlay].qplaystatus = 'playing';
-    nextTrack = tracks[nextToPlay];
+    queue[0].qplaystatus = 'playing';
+    nextTrack = queue[0];
   }
-  Session.set('queue', tracks);
+
+  Session.set('queue', queue);
   return nextTrack;
 }
 
 export function playNextOrPrevTrack(increment) {
   let nextTrack;
-  let queueOn = Session.get('queuePlaying');
-
-  if(!queueOn)
+  let queue = Session.get('queue');
+  console.log(queue)
+  if(!queue.length)
     nextTrack = setTrackChangeInfo(increment);
   else
-    nextTrack = setTrackChangeInfoQueue(increment);
+    nextTrack = setTrackChangeInfoQueue(increment, queue);
 
-  streamTrack(nextTrack, queueOn);
+  streamTrack(nextTrack);
 }

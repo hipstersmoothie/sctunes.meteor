@@ -11,7 +11,6 @@ function addToQueue(node) {
   let queue = Session.get('queue');
   let track = Session.get('tracks')[node.index];
 
-  Session.set('queueMode', true);
   track.queueIndex = qIndex++;
   queue.push(track);
   Session.set('queue', queue);
