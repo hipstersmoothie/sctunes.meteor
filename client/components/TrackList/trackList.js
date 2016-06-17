@@ -3,14 +3,25 @@ import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
 import { $ } from 'meteor/jquery';
 import _ from 'lodash';
+import { TimelineLite } from 'gsap';
 
 import { streamTrack, setPlayingToCurrent, prepareTracks, findTrackWithId } from '../../utilities'
 
 let qIndex = 0;
 function addToQueue(node) {
+  let orange = '#ee7600';
+  let origColor = $(`#${node.id} .overlay`).css('backgroundColor');
+  let duration = 0.4;
+
+  let queueMessage = $(`#${node.id} .queueMessage`);
+  new TimelineLite()
+    .to(queueMessage, duration, {backgroundColor: orange, opacity: 1})
+    .to(queueMessage, duration, {backgroundColor: origColor})
+    .to(queueMessage, duration, {backgroundColor: orange})
+    .to(queueMessage, duration, {backgroundColor: origColor, clearProps: 'all'})
+
   let queue = Session.get('queue');
   let track = Session.get('tracks')[node.index];
-
   track.queueIndex = qIndex++;
   queue.push(track);
   Session.set('queue', queue);
@@ -58,7 +69,6 @@ Template.trackList.events({
     //   addToPlaylistClick(tracks, this.index, this.id);
     if(this.kind == 'playlist'){
       Session.set('loaded', false);
-      console.log(SC)
       SC.get('/playlists/' + this.id, function(playlist) {
         Session.set('tracks', prepareTracks(playlist.tracks, true, playlist.artwork_url));
         Session.set('loaded', true);
