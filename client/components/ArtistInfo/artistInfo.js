@@ -13,7 +13,7 @@ Template.artistInfo.helpers({
     return text;
   },
   isActive: (name) => {
-    if(name === Router.current().route.getName() || name === 'artstFavorites' && Router.current().route.getName() === 'artist')
+    if(name === Router.current().route.getName() || name === 'artistTracks' && Router.current().route.getName() === 'artist')
       return 'active';
   }
 });
