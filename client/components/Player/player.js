@@ -27,7 +27,8 @@ Template.player.helpers({
     };
   },
   currentTrack: () => Session.get('currentTrack') || { duration: 100 },
-  trackPosition: () => Session.get('trackPosition') || 0
+  trackPosition: () => Session.get('trackPosition') || 0,
+  queueShowing: () => Session.get('queueAction') === 'Hide'
 });
 
 Template.player.events({
