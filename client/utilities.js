@@ -127,22 +127,6 @@ export function findTrackWithId(tracks, id) {
   return _.find(tracks, track => track.id == id)
 }
 
-function getTracklistTrack(increment) {
-  var tracks          = Session.get('tracks'),
-      currentTrackRow = $('#' + Session.get('currentTrack').id)[0], 
-      nextIndex      = 0;
-
-  if(currentTrackRow) {
-    let currentIndex = findCurrentTrackIndex(tracks);
-    nextIndex = increment ? currentIndex + 1 : currentIndex - 1;
-  } 
-
-  if(nextIndex === tracks.length || nextIndex < 0)
-    nextIndex = 0;
-
-  return tracks[nextIndex];
-}
-
 function findCurrentTrackIndex(array) {
   let cid = Session.get('currentTrack').id;
   let current;
@@ -155,6 +139,20 @@ function findCurrentTrackIndex(array) {
   });
 
   return current;
+}
+
+function getTracklistTrack(increment) {
+  var tracks       = Session.get('tracks'),
+      currentIndex = findCurrentTrackIndex(tracks), 
+      nextIndex    = 0;
+
+  if(currentIndex)
+    nextIndex = increment ? currentIndex + 1 : currentIndex - 1; 
+
+  if(nextIndex === tracks.length || nextIndex < 0)
+    nextIndex = 0;
+
+  return tracks[nextIndex];
 }
 
 function setTrackChangeInfoQueue(increment, queue) {
