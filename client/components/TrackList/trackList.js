@@ -15,7 +15,7 @@ function addToQueue(node) {
 
   let queueMessage = $(`#${node.id} .queueMessage`);
   new TimelineLite()
-    .to(queueMessage, duration, {backgroundColor: orange, opacity: 1})
+    .to(queueMessage, duration, {backgroundColor: orange, opacity: 1, zIndex: 10})
     .to(queueMessage, duration, {backgroundColor: origColor})
     .to(queueMessage, duration, {backgroundColor: orange})
     .to(queueMessage, duration, {backgroundColor: origColor, clearProps: 'all'});
