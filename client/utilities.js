@@ -7,7 +7,6 @@ currentSound = null;
 Meteor.startup(() => {
   Session.set('me', null); 
   Session.set('queue', []); 
-  Session.set('queuePlaying', false);
   Session.set('tracks', []);
   Session.set('origTracks', []);
   Session.set('artists', null);
@@ -79,9 +78,7 @@ export function prepareTracks(tracks, newIndexes, defaultArt) {
   return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
 }
 
-export function setPlayingToCurrent(tracks) {
-  let currentTrack = Session.get('currentTrack');
-
+export function setPlayingToCurrent(tracks, currentTrack = Session.get('currentTrack')) {
   return _.map(tracks, track => {
     track.playstatus = track.id == currentTrack.id ? 'playing' : 'notplaying';
     return track;
@@ -89,7 +86,7 @@ export function setPlayingToCurrent(tracks) {
 }
 
 function stopLastTrack() {
-  soundManager.stopAll();
+  // soundManager.stopAll();
   Session.set('trackPosition', 0);
   if(currentSound)
     currentSound.stop();
@@ -104,9 +101,6 @@ export function streamTrack(track) {
 	    url: track.stream_url + '?client_id=628c0d8bc773cd70e1a32d0236cb79ce',
 	    stream: true
 	});
-
-	if(Session.get('queuePlaying').length)
-	  Session.set('queuePlaying', true);
 
 	currentSound.play({
 	  onload: function() {
@@ -126,7 +120,7 @@ export function findTrackWithId(tracks, id) {
 
 function findCurrentTrackIndex(array) {
   let cid = Session.get('currentTrack').id;
-  let current;
+  let current = -1;
 
   _.forEach(array, (item, index) => {
     if(item.id == cid) {
@@ -141,10 +135,7 @@ function findCurrentTrackIndex(array) {
 function getTracklistTrack(increment) {
   var tracks       = Session.get('tracks'),
       currentIndex = findCurrentTrackIndex(tracks), 
-      nextIndex    = 0;
-
-  if(currentIndex)
-    nextIndex = increment ? currentIndex + 1 : currentIndex - 1; 
+      nextIndex    = increment ? currentIndex + 1 : currentIndex - 1; 
 
   if(nextIndex === tracks.length || nextIndex < 0)
     nextIndex = 0;
@@ -158,10 +149,8 @@ function setTrackChangeInfoQueue(increment, queue) {
 
   let nextTrack;
 
-  if(nextToPlay === queue.length || nextToPlay < 0) {
-    Session.set('queuePlaying', false);
+  if(nextToPlay === queue.length || nextToPlay < 0) {    
     const indexOnPage = findCurrentTrackIndex(Session.get('tracks'))
-
     if(indexOnPage > -1)
       nextTrack = Session.get('tracks')[indexOnPage + 1];
     else
@@ -169,16 +158,11 @@ function setTrackChangeInfoQueue(increment, queue) {
     
     queue = [];
     Session.set('queueAction', 'Show')
-  } else if(currentIndex > -1) {
-    queue[currentIndex].playstatus = 'notplaying';
-    queue[nextToPlay].playstatus = 'playing';
-    nextTrack = queue[nextToPlay];
   } else {
-    queue[0].playstatus = 'playing';
-    nextTrack = queue[0];
-  }
+     nextTrack = queue[nextToPlay];
+  } 
 
-  Session.set('queue', queue);
+  Session.set('queue', setPlayingToCurrent(queue, nextTrack));
   return nextTrack;
 }
 
