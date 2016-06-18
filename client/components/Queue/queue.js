@@ -3,6 +3,8 @@ import { Session } from 'meteor/session';
 import { TimelineLite } from 'gsap';
 import { $ } from 'meteor/jquery';
 
+import { streamTrack, setPlayingToCurrent, findTrackWithId } from '../../utilities'
+
 Session.set('queueAction', 'Show');
 
 Template.queue.helpers({
@@ -25,5 +27,10 @@ Template.queue.events({
         .fromTo($('.footer'), duration, {bottom: 99}, {bottom: 0})
         .fromTo($('.queueContainer'), duration, {bottom: 99}, {bottom: 0}, 0)
     }
+  },
+  'click .queueItem': function() {
+  	let queue = Session.get('queue');
+  	streamTrack(findTrackWithId(queue, this.id));
+    Session.set('queue', setPlayingToCurrent(queue));
   }
 });

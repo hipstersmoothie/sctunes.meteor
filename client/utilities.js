@@ -91,10 +91,17 @@ export function setPlayingToCurrent(tracks) {
   });
 }
 
+function stopLastTrack() {
+  soundManager.stopAll();
+  Session.set('trackPosition', 0);
+  if(currentSound)
+    currentSound.stop();
+}
+
 export function streamTrack(track) {
+  stopLastTrack();
 	Session.set('currentTrack', track);
 
-	soundManager.stopAll();
 	currentSound = soundManager.createSound({
 	    id: track.id,
 	    url: track.stream_url + '?client_id=628c0d8bc773cd70e1a32d0236cb79ce',
@@ -168,11 +175,11 @@ function setTrackChangeInfoQueue(increment, queue) {
     
     queue = [];
   } else if(currentIndex > -1) {
-    queue[currentIndex].qplaystatus = 'notplaying';
-    queue[nextToPlay].qplaystatus = 'playing';
+    queue[currentIndex].playstatus = 'notplaying';
+    queue[nextToPlay].playstatus = 'playing';
     nextTrack = queue[nextToPlay];
   } else {
-    queue[0].qplaystatus = 'playing';
+    queue[0].playstatus = 'playing';
     nextTrack = queue[0];
   }
 

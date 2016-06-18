@@ -8,6 +8,18 @@
     height: 100px;
     flex-basis: inherit;
     padding: 5px;
+
+    &.playing .overlay {
+      margin: -5px !important;
+    }
+
+    &:hover .overlay {
+      height: 100%;
+      width: 100%;
+      background-color: #FFAE69;
+      opacity: 0.8;
+      margin: -5px;
+    }
   }
 }
 

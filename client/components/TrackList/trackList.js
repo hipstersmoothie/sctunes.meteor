@@ -27,19 +27,6 @@ function addToQueue(node) {
   Session.set('queue', queue);
 }
 
-function stopLastTrack() {
-  if(currentSound) {
-    Session.set('trackPosition', 0);
-    currentSound.stop();
-
-    if(Session.get('queuePlaying') && $('#' + Session.get('currentTrack').id + '-queue').length) {
-      let queue = Session.get('queue');
-      Session.set('queuePlaying', false);
-      queue[$('#' + Session.get('currentTrack').id + '-queue')[0].index].qplaystatus = 'notplaying';
-      Session.set('queue', queue);
-    }
-  }
-}
 
 function msToTime(duration) {
   var seconds = parseInt(duration/1000 % 60),
@@ -79,8 +66,7 @@ Template.trackList.events({
       currentSound.togglePause();
     else { 
       Session.set('playing', true);
-      stopLastTrack();
-      streamTrack(findTrackWithId(tracks, this.id), false);
+      streamTrack(findTrackWithId(tracks, this.id));
       Session.set('tracks', setPlayingToCurrent(tracks));
     }
   },
