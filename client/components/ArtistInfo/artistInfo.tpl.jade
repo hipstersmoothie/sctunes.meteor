@@ -13,6 +13,9 @@
 			p.desc #{description}
 .row.artist-buttons
 	.btn-group
-		button#artist-tracks.btn.btn-artist.btn-default(type="button") Tracks (#{ artistData.track_count })
-		button#artist-playlists.btn.btn-artist.btn-default(type="button") Playlists (#{ artistData.playlist_count })
-		button#artist-favorites.btn.btn-artist.btn-default(type="button") Favorites (#{ artistData.public_favorites_count })
+		button#artist-tracks.btn.btn-artist.btn-default(type="button" class="{{isActive 'artistTracks'}}") 
+			|Tracks (#{ artistData.track_count })
+		button#artist-playlists.btn.btn-artist.btn-default(type="button" class="{{isActive 'artistPlaylists'}}") 
+			|Playlists (#{ artistData.playlist_count })
+		button#artist-favorites.btn.btn-artist.btn-default(type="button" class="{{isActive 'artistFavorites'}}") 
+			|Favorites (#{ artistData.public_favorites_count })

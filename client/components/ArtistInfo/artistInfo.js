@@ -11,6 +11,10 @@ Template.artistInfo.helpers({
       return text.trim();
 
     return text;
+  },
+  isActive: (name) => {
+    if(name === Router.current().route.getName() || name === 'artstFavorites' && Router.current().route.getName() === 'artist')
+      return 'active';
   }
 });
 
