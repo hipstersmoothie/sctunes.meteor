@@ -127,22 +127,20 @@ export function findTrackWithId(tracks, id) {
   return _.find(tracks, track => track.id == id)
 }
 
-function setTrackChangeInfo(increment) {
+function getTracklistTrack(increment) {
   var tracks          = Session.get('tracks'),
       currentTrackRow = $('#' + Session.get('currentTrack').id)[0], 
-      currentIndex    = 0, 
-      nextToPlay      = 0;
+      nextIndex      = 0;
 
   if(currentTrackRow) {
-    currentIndex = parseInt(findTrackWithId(tracks, currentTrackRow.id).index);
-    nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+    let currentIndex = findCurrentTrackIndex(tracks);
+    nextIndex = increment ? currentIndex + 1 : currentIndex - 1;
   } 
 
-  if(nextToPlay === tracks.length || nextToPlay < 0)
-    nextToPlay = 0;
-  
-  Session.set('tracks', setPlayingToCurrent(tracks));
-  return tracks[nextToPlay];
+  if(nextIndex === tracks.length || nextIndex < 0)
+    nextIndex = 0;
+
+  return tracks[nextIndex];
 }
 
 function findCurrentTrackIndex(array) {
@@ -160,13 +158,14 @@ function findCurrentTrackIndex(array) {
 }
 
 function setTrackChangeInfoQueue(increment, queue) {
-  var nextTrack, 
-      currentIndex = findCurrentTrackIndex(queue), 
-      nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+  const currentIndex = findCurrentTrackIndex(queue), 
+        nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
+
+  let nextTrack;
 
   if(nextToPlay === queue.length || nextToPlay < 0) {
     Session.set('queuePlaying', false);
-    let indexOnPage = findCurrentTrackIndex(Session.get('tracks'))
+    const indexOnPage = findCurrentTrackIndex(Session.get('tracks'))
 
     if(indexOnPage > -1)
       nextTrack = Session.get('tracks')[indexOnPage + 1];
@@ -193,7 +192,7 @@ export function playNextOrPrevTrack(increment) {
   let queue = Session.get('queue');
 
   if(!queue.length)
-    nextTrack = setTrackChangeInfo(increment);
+    nextTrack = getTracklistTrack(increment);
   else
     nextTrack = setTrackChangeInfoQueue(increment, queue);
 
