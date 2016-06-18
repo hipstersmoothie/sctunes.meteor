@@ -183,7 +183,7 @@ function setTrackChangeInfoQueue(increment, queue) {
 export function playNextOrPrevTrack(increment) {
   let nextTrack;
   let queue = Session.get('queue');
-  console.log(queue)
+
   if(!queue.length)
     nextTrack = setTrackChangeInfo(increment);
   else

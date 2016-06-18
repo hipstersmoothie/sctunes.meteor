@@ -16,19 +16,18 @@ Template.queue.events({
     let duration = 1.2;
 
     if(!animation) {
-	    animation = new TimelineLite()
-	      .fromTo($('.footer'), duration, {bottom: 0}, {bottom: 99})
-	      .fromTo($('.queueContainer'), duration, {bottom: -105}, {bottom: -5}, 0)
-	      .fromTo($('.showQueue'), duration, {bottom: 0}, {bottom: 99}, 0)
-	}
+      animation = new TimelineLite()
+        .fromTo($('.footer'), duration, {bottom: 0}, {bottom: 99})
+        .fromTo($('.queueContainer'), duration, {bottom: 0}, {bottom: 100}, 0)
+    }
 
-	if(Session.get('queueAction') == 'Show') {
-		Session.set('queueAction', 'Hide');
-		animation.play()
-	} else {
-		Session.set('queueAction', 'Show');
-		animation.progress(1, false);
-		animation.reverse()
-	}
+    if(Session.get('queueAction') == 'Show') {
+      Session.set('queueAction', 'Hide');
+      animation.play()
+    } else {
+      Session.set('queueAction', 'Show');
+      animation.progress(1, false);
+      animation.reverse()
+    }
   }
 });

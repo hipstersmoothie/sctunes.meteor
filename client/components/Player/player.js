@@ -4,6 +4,20 @@ import { $ } from 'meteor/jquery';
 
 import { playNextOrPrevTrack } from '../../utilities';
 
+let togglePauseIcon = () => {
+  let playPause = $('#playPauseIcon');
+  let play = 'glyphicon-play';
+  let pause = 'glyphicon-pause';
+
+  if(playPause.hasClass(play)) {
+    playPause.removeClass(play);
+    playPause.addClass(pause);
+  } else {
+    playPause.removeClass(pause);
+    playPause.addClass(play);
+  }
+};
+
 Template.player.helpers({
   player_orientation: () => {
     return {
@@ -11,30 +25,13 @@ Template.player.helpers({
       transition: { curve: 'easeIn', duration: 300 },
       halt: true
     };
-  }
-});
-
-Template.currentTrackPlayer.helpers({
+  },
   currentTrack: () => Session.get('currentTrack') || { duration: 100 },
   trackPosition: () => Session.get('trackPosition') || 0
 });
 
-Template.currentTrackPlayer.events = {
-  'click #time-slider' : event => currentSound.setPosition(event.currentTarget.value)
-};
-
-var togglePauseIcon = () => {
-  var playPause = $('#playPauseIcon');
-  if(playPause.hasClass('glyphicon-play')) {
-    playPause.removeClass('glyphicon-play');
-    playPause.addClass('glyphicon-pause');
-  } else {
-    playPause.removeClass('glyphicon-pause');
-    playPause.addClass('glyphicon-play');
-  }
-};
-
-Template.controls.events({
+Template.player.events({
+  'click #time-slider' : event => currentSound.setPosition(event.currentTarget.value),
   'click #playpause' :() => {
     togglePauseIcon();
     currentSound.togglePause();

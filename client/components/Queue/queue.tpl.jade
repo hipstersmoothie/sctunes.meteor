@@ -1,8 +1,10 @@
 if queue.length
-  .showQueue 
-    a(href='#') #{action} Queue
-  .queueContainer.row
-    .queue
-      each queue
-        div(id='#{this.id}' class='queueItem square bg #{this.playstatus}' style='background-image:url(#{this.big_artwork_url})')
+  .queueContainer
+    .showQueue 
+      a(href='#') #{action} Queue (#{queue.length})
+
+    .scrollContainer.row
+      .queue
+        each queue
+          div(id='#{this.id}' class='queueItem square bg #{this.playstatus}' style='background-image:url(#{this.big_artwork_url})')
 

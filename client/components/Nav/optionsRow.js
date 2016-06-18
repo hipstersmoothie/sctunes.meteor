@@ -47,7 +47,7 @@ function search(term) {
 }
 
 // var videos = function() {
-//   Session.set('tracks',  indexTracks(_.filter(allTracks, function(track) {
+//   Session.set('tracks',  indexTracks(_.filter(allTracks, track => {
 //     console.log(track);
 //     return track.description.toLowerCase().indexOf('youtu') > -1;
 //   }), true));

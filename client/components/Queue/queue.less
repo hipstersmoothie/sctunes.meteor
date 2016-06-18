@@ -1,6 +1,7 @@
+@player-bg: rgba(92, 92, 92, 0.8);
+
 .queue {
   display: inline-flex;
-  // position: fixed;
 
   .queueItem {
     padding: 0;
@@ -13,14 +14,28 @@
 .showQueue {
   width: 100%;
   text-align: center;
-  position: fixed;
   bottom: 0;
   color: white;
-  z-index: 10000;
+
+  a {
+    color: white;
+    background-color: @player-bg;
+    padding: 10px 20px 2px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+}
+
+.scrollContainer {
+  background-color: @player-bg;
+  overflow-x: scroll;
+  position: fixed;
+  width: 100%;
 }
 
 .queueContainer {
-  overflow-x: scroll;
   position: fixed;
-  width: 100%
+  width: 100%;
+  bottom: 0;
+  z-index: 10000;
 }
