@@ -174,6 +174,7 @@ function setTrackChangeInfoQueue(increment, queue) {
       nextTrack = Session.get('tracks')[0];
     
     queue = [];
+    Session.set('queueAction', 'Show')
   } else if(currentIndex > -1) {
     queue[currentIndex].playstatus = 'notplaying';
     queue[nextToPlay].playstatus = 'playing';

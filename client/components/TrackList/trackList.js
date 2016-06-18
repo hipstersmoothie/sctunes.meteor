@@ -27,7 +27,6 @@ function addToQueue(node) {
   Session.set('queue', queue);
 }
 
-
 function msToTime(duration) {
   var seconds = parseInt(duration/1000 % 60),
       minutes = parseInt(duration/(1000*60) % 60),
