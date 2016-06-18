@@ -9,11 +9,11 @@ import { streamTrack, setPlayingToCurrent, prepareTracks, findTrackWithId } from
 
 let qIndex = 0;
 function addToQueue(node) {
-  let orange = '#ee7600';
-  let origColor = $(`#${node.id} .overlay`).css('backgroundColor');
-  let duration = 0.4;
-
-  let queueMessage = $(`#${node.id} .queueMessage`);
+  const orange = '#ee7600';
+  const origColor = $(`#${node.id} .overlay`).css('backgroundColor');
+  const duration = 0.4;
+  const queueMessage = $(`#${node.id} .queueMessage`);
+  
   new TimelineLite()
     .to(queueMessage, duration, {backgroundColor: orange, opacity: 1, zIndex: 10})
     .to(queueMessage, duration, {backgroundColor: origColor})

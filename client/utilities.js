@@ -1,6 +1,5 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
-import { $ } from 'meteor/jquery';
 import _ from 'lodash';
 
 currentSound = null;
@@ -14,8 +13,6 @@ Meteor.startup(() => {
   Session.set('artists', null);
 
   Session.set('currentTrack', {});
-  Session.set('player_orientation', [1,-1]);
-
   Session.set('currentArtist', null);
   Session.set('artistTracks', null);
   Session.set('artistFavorites', null);

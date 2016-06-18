@@ -8,7 +8,7 @@
         span#prevButton.playerControlButton
           span.glyphicon.glyphicon-step-backward
         span#playpause.playerControlButton
-          span#playPauseIcon.glyphicon.glyphicon-pause
+          span#playPauseIcon.glyphicon(class="{{#if pauseIcon}}glyphicon-pause{{else}}glyphicon-play{{/if}}")
         span#nextButton.playerControlButton
           span.glyphicon.glyphicon-step-forward
       span.player-title #{currentTrack.title} - #{currentTrack.user.username}

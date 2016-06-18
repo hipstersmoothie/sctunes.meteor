@@ -100,11 +100,11 @@ Template.optionsRow.events = {
     if(event.keyCode === 13)
       setTime();
   },
-  'click #searchButton, keyup #searchInput' : () => {
+  'keyup #searchInput': event => {
     if (allTracks == null)
       allTracks = Session.get('tracks');
 
-    search($('#searchInput').val());
+    search(event.currentTarget.value);
   },
   'click .artistSort' : () => sortAndSet('Artist', (a, b) => a.artist.localeCompare(b.artist)),
   'click .uploaderSort' : () => sortAndSet('Uploader', (a, b) => a.user.username.localeCompare(b.user.username)),
