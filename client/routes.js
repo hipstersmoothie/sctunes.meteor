@@ -1,7 +1,6 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/iron:router';
-import { $ } from 'meteor/jquery';
 import _ from 'lodash';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
@@ -83,8 +82,6 @@ var splitData = function(artist, data) {
 
 var getResource = function(type, artist, resourceCount, processFunc) {
   var currentData = Session.get('artist' + type);
-
-  $('#artist-' + type.toLowerCase()).addClass('active').siblings().removeClass('active');
 
   if(currentData) {
     Session.set('tracks', setPlayingToCurrent(currentData));

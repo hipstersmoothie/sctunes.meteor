@@ -88,7 +88,11 @@ Template.optionsRow.helpers({
     {type:'Videos', className:'videoSort'}
   ],
   duration: () => Session.get('sortType') === 'Duration',
-  search: () => Session.get('sortType') === 'Search'
+  search: () => Session.get('sortType') === 'Search',
+  isActive: (name) => {
+    if(name === Router.current().route.getName() || name === 'myFavorites' && Router.current().route.getName() === 'app')
+      return 'active';
+  }
 });
 
 Template.optionsRow.events = {

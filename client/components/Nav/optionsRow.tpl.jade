@@ -12,15 +12,15 @@ nav.navbar.navbar-inverse
       .left
         ul.nav.navbar-nav
           li.orange
-            a#favorites(href="#" onclick="return false;")
+            a#favorites(href="#" onclick="return false;" class="{{isActive 'myFavorites'}}")
               span.glyphicon.glyphicon-star(aria-hidden="true")
               span.navDescriptiom Favorites
           li
-            a#playlists(href="#" onclick="return false;")
+            a#playlists(href="#" onclick="return false;" class="{{isActive 'myPlaylists'}}")
               span.glyphicon.glyphicon-tasks(aria-hidden="true")
               span.navDescriptiom Playlists
           li
-            a#following(href="#" onclick="return false;")
+            a#following(href="#" onclick="return false;" class="{{isActive 'following'}}")
               span.glyphicon.glyphicon-user(aria-hidden="true")
               span.navDescriptiom Following
 
