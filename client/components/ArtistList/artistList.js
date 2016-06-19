@@ -8,5 +8,5 @@ Template.artistList.helpers({
 });
 
 Template.artistList.events({
-  'click [id*=artist-profile]': event => Router.go('artist', { _id : event.currentTarget.id.split('-')[0] })
+  'click .square': function() { Router.go('artist', { _id : this.id } ) }
 });
