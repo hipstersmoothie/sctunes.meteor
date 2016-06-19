@@ -6,7 +6,7 @@ Meteor.startup(function () {
   ServiceConfiguration.configurations.remove({ service: 'soundCloud' });
   ServiceConfiguration.configurations.remove({ service: 'soundcloud' });
 
-  if (Meteor.absoluteUrl() == 'http://sctunes.meteor.com/') {
+  if (Meteor.absoluteUrl() == 'http://sctunes.herokuapp.com/') {
     config = {
       clientId: '51c5ebff845639af50314b134ae1e904',
       loginStyle: 'popup',
