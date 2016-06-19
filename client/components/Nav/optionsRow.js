@@ -70,7 +70,8 @@ var shuffle = function(array) {
 
 function handleRouteChange(route) {
   allTracks = null;
-  $('.navbar-toggle').click();
+  if($('.navbar-toggle:visible').length)
+    $('.navbar-toggle').click();
   Router.go(route);
 }
 
