@@ -49,7 +49,6 @@
 
   .btn-artist {
     border-radius: 0;
-    width: 33.3333333333333333%;
     flex: 1;
     height: 75px;
   }
@@ -66,8 +65,7 @@
     display: flex;
 
     .artist-pic-container {
-      width: 40%;
-      height: 80%;
+      width: 30%;
       padding: 0;
 
       .artist-pic {
@@ -92,5 +90,22 @@
         margin-right: 0;
       }
     }
+  }
+}
+
+@media only screen and (min-width: 1500px) {  
+  .artist-info {
+    h1 {
+      font-size: 3vw;
+    }
+
+    .desc {
+      font-size: 1.5vw;
+    }
+  }
+
+  .artist-buttons .btn-artist {
+    height: 3vw;
+    font-size: 1vw; 
   }
 }
