@@ -5,52 +5,32 @@ import _ from 'lodash';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
 
-var getAll = function(path, requests, prepFunction, loaderText, callback) {
-  var args = Array.prototype.slice.apply(arguments);
-  var collection = [];
-
-  for(var i = 0; i < requests; i++) {
-    Meteor.call(path, i, function(error, data){
-      var index = data['index'];
-      data = data['data'].collection || data['data'];
-
-      if(prepFunction)
-        collection = collection.concat(prepFunction(data, args[args.length]));
-      else
-        collection = collection.concat(data);
-
-      if (loaderText) 
-        loaderText(collection)
-
-      if (index === requests - 1) {
-        callback(collection);
-        Session.set('loaded', true);
-      }
-    });
-  }
-};
-
-var getFollowedArtists = function(me) {
-  var loadingText = 'Getting followed tracks';
+let getRoute = function(user, route, array, length, prepFunction) {
+  const loadingText = `Getting ${route}`;
   Session.set('loadingText', loadingText + '...');
 
-  getAll('getArtists', Math.ceil(me.followings_count / 200), null, function(artists) {
-    Session.set('loadingText', loadingText + ': ' + artists.length + ' of ' + Session.get('me').followings_count);
-  }, function(artists) {
-    Session.set('artists', artists);
-  });
+  let collection = [];
+  let resolve = (data) => {
+    collection = collection.concat(prepFunction ? prepFunction(data.collection) : data.collection);
+    Session.set('loadingText', loadingText + ': ' + collection.length + ' of ' + length);
+
+    if(data.next_href)
+      SC.get(data.next_href, resolve);
+    else {
+      Session.set(array, collection);
+      Session.set('loaded', true);
+    }
+  }
+
+  SC.get(`/users/${user}/${route}`, { limit: 200, linked_partitioning: 1 }, resolve);
+}
+
+var getFollowedArtists = function(me) {
+  getRoute(me.id, 'followings', 'artists', me.followings_count)
 };
 
 var getTracks = function () {
-  var loadingText = 'Getting favorite tracks';
-  Session.set('loadingText', loadingText + '...');
-
-  getAll('getFavorites', 1, prepareTracks, function(tracks) {
-    Session.set('loadingText', loadingText + ': ' + tracks.length + ' of ' + Session.get('me').public_favorites_count);
-  }, function(tracks) {
-    Session.set('tracks', tracks);
-    Session.set('origTracks', tracks);   
-  });
+  getRoute(Session.get('me').id, 'favorites', 'tracks', Session.get('me').public_favorites_count, prepareTracks)
 };
 
 var extractSongsAndPlaylists = function(tracks) {
