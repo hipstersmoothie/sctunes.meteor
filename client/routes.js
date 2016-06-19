@@ -96,7 +96,7 @@ var getResource = function(type, artist, resourceCount, processFunc) {
         data,
         id: artist.id
       });
-      console.log(i,  Math.ceil(artist[resourceCount] / 200))
+
       if(i === Math.ceil(artist[resourceCount] / 200)) {
         Session.set('loaded', true);
         Session.set('artistLoaded', true);

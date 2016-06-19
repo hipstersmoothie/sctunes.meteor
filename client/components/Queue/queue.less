@@ -21,6 +21,32 @@
       margin: -5px;
     }
   }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 0;
+    display: none;
+
+    &.queueItem {
+      margin: 0;
+      padding: 0
+    }
+
+    .counts .glyphicon-heart {
+      float: right;
+    }
+  }
+}
+
+.queueGroup {
+  display: flex;
+  &:hover .info {
+    display: flex;
+    width: 210px;
+    padding: 5px;
+  }
 }
 
 .showQueue {
