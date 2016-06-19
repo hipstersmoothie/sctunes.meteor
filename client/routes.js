@@ -44,7 +44,10 @@ var getTracks = function (me) {
     route: 'favorites',
     sessionVar: 'tracks',
     length: me.public_favorites_count,
-    prepFunction: prepareTracks
+    prepFunction: tracks => _.map(prepareTracks(tracks), track => {
+      track.user_favorite = true;
+      return track;
+    })
   });
 };
 
