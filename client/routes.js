@@ -6,14 +6,14 @@ import _ from 'lodash';
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
 
 let newRoute = false;
-let getRoute = function({user, route, experimental = false, sessionVar, length, prepFunction, callback}) {
+let getRoute = function({user, route, experimental = false, sessionVar, length, prepFunction = arr => arr, callback}) {
   const loadingText = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
   Session.set('loadingText', loadingText + '...');
 
   let collection = [];
   let resolve = (data) => {
-    collection = collection.concat(prepFunction ? prepFunction(data.collection) : data.collection);
+    collection = collection.concat(prepFunction(data.collection));
     Session.set('loadingText', loadingText + ': ' + collection.length + (length ? ' of ' + length : ''));
 
     if(startRoute == Router.current().route.getName())
