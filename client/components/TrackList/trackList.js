@@ -46,6 +46,7 @@ Template.trackList.helpers({
   artistLoaded:() => Session.get('artistLoaded')
 });
 Template.registerHelper('loaded', () => Session.get('loaded'));
+Template.registerHelper('artistLoaded', () => Session.get('artistLoaded'));
 Template.registerHelper('currentTrack', () => Session.get('currentTrack'));
 
 Template.trackList.events({
