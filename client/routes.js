@@ -5,8 +5,10 @@ import _ from 'lodash';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
 
+let newRoute = false;
 let getRoute = function({user, route, experimental = false, sessionVar, length, prepFunction, callback}) {
   const loadingText = `Getting ${route}`;
+  const startRoute = Router.current().route.getName();
   Session.set('loadingText', loadingText + '...');
 
   let collection = [];
@@ -14,13 +16,14 @@ let getRoute = function({user, route, experimental = false, sessionVar, length, 
     collection = collection.concat(prepFunction ? prepFunction(data.collection) : data.collection);
     Session.set('loadingText', loadingText + ': ' + collection.length + (length ? ' of ' + length : ''));
 
-    if(data.next_href)
-      SC.get(data.next_href, resolve);
-    else {
-      Session.set(sessionVar, collection);
-      Session.set('loaded', true);
-      if(callback) callback(collection);
-    }
+    if(startRoute == Router.current().route.getName())
+      if(data.next_href && !newRoute)
+        SC.get(data.next_href, resolve);
+      else {
+        Session.set(sessionVar, collection);
+        Session.set('loaded', true);
+        if(callback) callback(collection);
+      }
   }
 
   SC.get(`${experimental ? '/e1' : ''}/users/${user}/${route}`, { limit: 200, linked_partitioning: 1 }, resolve);
@@ -72,7 +75,7 @@ var getResource = function(type, artist, resourceCount, processFunc) {
   getRoute({
     user: artist.id,
     route: type,
-    experimental: true,
+    experimental: type !== 'playlists',
     sessionVar: 'tracks',
     length: artist[resourceCount],
     prepFunction: data => setPlayingToCurrent(processFunc(data)),
