@@ -42,8 +42,7 @@ function msToTime(duration) {
 Template.trackList.helpers({
   tracks:() => Session.get('tracks'),
   toTime:(ms) => msToTime(ms),
-  artist:() => Session.get('currentArtist') != null,
-  artistLoaded:() => Session.get('artistLoaded')
+  artist:() => Session.get('currentArtist') != null
 });
 Template.registerHelper('loaded', () => Session.get('loaded'));
 Template.registerHelper('artistLoaded', () => Session.get('artistLoaded'));

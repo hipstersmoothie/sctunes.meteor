@@ -54,9 +54,7 @@ var getTracks = function () {
 };
 
 var extractSongsAndPlaylists = function(tracks) {
-  return _.map(_.filter(tracks, function(track) {
-    return track.track || track.playlist;
-  }), function(track) {
+  return _.map(_.filter(tracks, track => track.track || track.playlist), function(track) {
     if(track.track)
       return track.track;
     if(track.playlist)
