@@ -177,7 +177,7 @@ var initRoot = function() {
   Session.set('loaded', false);
 
   if(Session.get('origTracks').length) {
-    Session.set('tracks', setPlayingToCurrent(Session.get('origTracks')));
+    Session.set('tracks', setPlayingToCurrent(Session.get('origTracks'), {}));
     Session.set('loaded', true);
   } else {
     Meteor.call('getMe', function(error, me) {
