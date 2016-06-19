@@ -83,24 +83,29 @@ var splitData = function(artist, data) {
 var getResource = function(type, artist, resourceCount, processFunc) {
   var currentData = Session.get('artist' + type);
 
-  if(currentData) {
-    Session.set('tracks', setPlayingToCurrent(currentData));
-    return Session.set('loaded', true);
+  if(currentData && currentData.data && currentData.id === artist.id) {
+    Session.set('tracks', setPlayingToCurrent(currentData.data));
+    return Session.set('artistLoaded', true);
   }
 
-  Session.set('loaded', false);
   for(var i = 0; i < Math.ceil(artist[resourceCount] / 200); i++) {
     Meteor.call('getArtist' + type, artist.id, function(error, data) {
       data  = setPlayingToCurrent(processFunc(data));
       Session.set('tracks', data);
-      Session.set('artist' + type, data);
-      if(i === Math.ceil(artist[resourceCount] / 200)) 
+      Session.set('artist' + type, {
+        data,
+        id: artist.id
+      });
+      console.log(i,  Math.ceil(artist[resourceCount] / 200))
+      if(i === Math.ceil(artist[resourceCount] / 200)) {
         Session.set('loaded', true);
+        Session.set('artistLoaded', true);
+      }
     });
   }
   if(artist[resourceCount] < 1) {
     // toastr.error('User has no' + type + '!');
-    Session.set('loaded', true);
+    Session.set('artistLoaded', true);
   }
 };
 
@@ -119,6 +124,7 @@ var getArtistTracks = function(artist) {
 
 var loadArtist = function(id, resource) {
   var currentArtist = Session.get('currentArtist');
+  Session.set('artistLoaded', false);
   Session.set('loadingText', 'Getting user\'s profile...');
 
   if(currentArtist && currentArtist.id == id) {

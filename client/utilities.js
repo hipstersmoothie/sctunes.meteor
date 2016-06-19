@@ -17,9 +17,8 @@ Meteor.startup(() => {
   Session.set('artistFavorites', null);
 
   Session.set('loaded', false);
-  Session.set('loadingText', '')
-  Session.set('artistsLoaded', false);
-
+  Session.set('loadingText', '');
+  Session.set('artistLoaded', true);
   Session.set('sortType', 'Like Date');
 });
 

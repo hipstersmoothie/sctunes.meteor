@@ -1,7 +1,11 @@
 @orange: #FFAE69;
 
-#artistLoader {
-  top: 25%;
+.artistLoader {
+  flex: 1;
+  
+  .loaderContainer {
+    height: 100%;
+  }
 }
 
 .loaderContainer {
@@ -11,7 +15,7 @@
   height: calc(~"100vh - 50px");
 
   p {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     padding-bottom: 15px;
   }
