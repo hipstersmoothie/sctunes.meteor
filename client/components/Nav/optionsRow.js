@@ -102,10 +102,16 @@ Template.optionsRow.events = {
       setTime();
   },
   'keyup #searchInput': event => {
-    if (allTracks == null)
-      allTracks = Session.get('tracks');
+    let to;
 
-    search(event.currentTarget.value);
+    if(!to) {
+      to = setTimeout(() => {
+        if (allTracks == null)
+          allTracks = Session.get('tracks');
+        search(event.currentTarget.value)
+        to = null;
+      }, 250)
+    }
   },
   'click .artistSort' : () => sortAndSet('Artist', (a, b) => a.artist.localeCompare(b.artist)),
   'click .uploaderSort' : () => sortAndSet('Uploader', (a, b) => a.user.username.localeCompare(b.user.username)),
