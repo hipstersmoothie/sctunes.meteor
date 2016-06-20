@@ -26,7 +26,7 @@ let getRoute = function({user, route, experimental = false, sessionVar, length, 
       }
   }
 
-  SC.get(`${experimental ? '/e1' : ''}/users/${user}/${route}`, { limit: 200, linked_partitioning: 1 }, resolve);
+  SC.get(`https://api.soundcloud.com${experimental ? '/e1' : ''}/users/${user}/${route}`, { limit: 200, linked_partitioning: 1 }, resolve);
 }
 
 var getFollowedArtists = function(me) {

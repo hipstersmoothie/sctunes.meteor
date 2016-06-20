@@ -9,7 +9,7 @@ template(name="ApplicationLayout")
 template(name="trackLayout")
 	+optionsRow
 	#wrapper.active(style="{{#unless artistLoaded}}height: calc(100% - 53px){{/unless}}")
-		.container-fluid.trackLayout(style="{{#if currentTrack.id}}padding-bottom:100px{{/if}}")					
+		.container-fluid.trackLayout(style="{{#if currentTrack.id}}padding-bottom:100px{{/if}}")
 			+yield
 			if currentTrack.id
 				+player
