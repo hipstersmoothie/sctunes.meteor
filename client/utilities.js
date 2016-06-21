@@ -1,5 +1,6 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import _ from 'lodash';
 
 currentSound = null;
@@ -24,6 +25,15 @@ Meteor.startup(() => {
   soundManager.setup({
     debugMode: false
   });
+});
+
+Tracker.autorun(function () {
+  if(Meteor.user() && Meteor.user().services && Meteor.user().services.soundCloud) {
+    SC.initialize({
+     access_token: Meteor.user().services.soundCloud.accessToken,
+     scope: 'non-expiring'
+    })
+  }
 });
 
 let tIndex = 0;
