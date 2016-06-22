@@ -1,9 +1,9 @@
 {
   "parser": "babel-eslint",
+  "extends": "airbnb",
   "globals": {
     "soundManager": true,
     "SC": true,
-
     "currentSound": true
   },
   "env": {
@@ -16,22 +16,13 @@
   "rules": {
     // Tons of rules you can use, for example...
     "quotes": [1, "single"],
-    "comma-dangle": 1,
-    "no-cond-assign": 2,
-    "no-dupe-args": 2,
-    "no-dupe-keys": 2,
-    "no-duplicate-case": 2,
-    "no-empty": 2,
-    "no-extra-boolean-cast": 1,
-    "no-extra-parens": 1, 
-    "no-extra-semi": 1,
-    "no-func-assign": 2,
-    "no-unreachable": 1,
-    "no-constant-condition": 2,
-    "block-scoped-var": 2,
-    "no-redeclare": 1,
-    "no-use-before-define": 2,
-    "no-unused-vars": 2,
-    "no-undef": 2
+    "import/no-unresolved": 0,
+    "curly": 0,
+    "no-extra-parens": 1,
+    "consistent-return": 0,
+    "comma-dangle": ["error", "never"],
+    "max-len": ["error", 120],
+    "no-param-reassign": 0,
+    "no-underscore-dangle": 0
   }
 }

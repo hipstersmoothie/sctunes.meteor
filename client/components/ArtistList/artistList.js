@@ -4,9 +4,11 @@ import { Router } from 'meteor/iron:router';
 
 Template.artistList.helpers({
   artists: () => Session.get('artists'),
-  big: (artwork_url)  => artwork_url.replace('large', 't300x300')
+  big: artworkUrl => artworkUrl.replace('large', 't300x300')
 });
 
 Template.artistList.events({
-  'click .square': function() { Router.go('artist', { _id : this.id } ) }
+  'click .square'() {
+    Router.go('artist', { _id: this.id });
+  }
 });

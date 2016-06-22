@@ -3,42 +3,44 @@ import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/iron:router';
 import _ from 'lodash';
 
-import { setArt, setPlayingToCurrent, prepareTracks } from './utilities'
+import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
 
-let newRoute = false;
-let getRoute = function({user, route, experimental = false, sessionVar, length, prepFunction = arr => arr, callback}) {
+function getRoute({ user, route, experimental = false, sessionVar, length, prepFunction = arr => arr, callback }) {
   const loadingText = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
-  Session.set('loadingText', loadingText + '...');
+  Session.set('loadingText', `${loadingText}...`);
 
   let collection = [];
-  let resolve = (data) => {
+  function resolve(data) {
     collection = collection.concat(prepFunction(data.collection));
-    Session.set('loadingText', loadingText + ': ' + collection.length + (length ? ' of ' + length : ''));
+    Session.set('loadingText', `${loadingText}: ${collection.length}${length ? ` of ${length}` : ''}`);
 
-    if(startRoute == Router.current().route.getName())
-      if(data.next_href && !newRoute)
+    if (startRoute === Router.current().route.getName())
+      if (data.next_href)
         SC.get(data.next_href, resolve);
       else {
         Session.set(sessionVar, collection);
         Session.set('loaded', true);
-        if(callback) callback(collection);
+        if (callback) callback(collection);
       }
   }
 
-  SC.get(`https://api.soundcloud.com${experimental ? '/e1' : ''}/users/${user}/${route}`, { limit: 200, linked_partitioning: 1 }, resolve);
+  SC.get(`https://api.soundcloud.com${experimental ? '/e1' : ''}/users/${user}/${route}`, {
+    limit: 200,
+    linked_partitioning: 1
+  }, resolve);
 }
 
-var getFollowedArtists = function(me) {
+function getFollowedArtists(me) {
   getRoute({
     user: me.id,
     route: 'followings',
     sessionVar: 'artists',
     length: me.followings_count
   });
-};
+}
 
-var getTracks = function (me) {
+function getTracks(me) {
   getRoute({
     user: me.id,
     route: 'favorites',
@@ -49,28 +51,28 @@ var getTracks = function (me) {
       return track;
     })
   });
-};
+}
 
-var extractSongsAndPlaylists = function(tracks) {
+function extractSongsAndPlaylists(tracks) {
   return _.map(_.filter(tracks, track => track.track || track.playlist), track => track.track || track.playlist);
-};
+}
 
-var likedPlaylists = null;
-var getLikePlaylists = function(me) {
+let likedPlaylists = null;
+function getLikePlaylists(me) {
   getRoute({
     user: me.id,
     route: 'playlist_likes',
     experimental: true,
     sessionVar: 'tracks',
     prepFunction: playlists => setArt(playlists.artwork_url, extractSongsAndPlaylists(playlists)),
-    callback: allPlaylist => likedPlaylists = allPlaylist
+    callback: allPlaylist => { likedPlaylists = allPlaylist; }
   });
-};
+}
 
-var getResource = function(type, artist, resourceCount, processFunc) {
-  var currentData = Session.get('artist' + type);
+function getResource(type, artist, resourceCount, processFunc) {
+  const currentData = Session.get(`artist${type}`);
 
-  if(currentData && currentData.data && currentData.id === artist.id) {
+  if (currentData && currentData.data && currentData.id === artist.id) {
     Session.set('tracks', setPlayingToCurrent(currentData.data));
     return Session.set('artistLoaded', true);
   }
@@ -83,7 +85,7 @@ var getResource = function(type, artist, resourceCount, processFunc) {
     length: artist[resourceCount],
     prepFunction: data => setPlayingToCurrent(processFunc(data)),
     callback: data => {
-      Session.set('artist' + type, {
+      Session.set(`artist${type}`, {
         data,
         id: artist.id
       });
@@ -91,46 +93,46 @@ var getResource = function(type, artist, resourceCount, processFunc) {
     }
   });
 
-  if(artist[resourceCount] < 1) {
+  if (artist[resourceCount] < 1) {
     // toastr.error('User has no' + type + '!');
     Session.set('artistLoaded', true);
   }
-};
+}
 
-var getArtistPlaylists = function(artist) {
+function getArtistPlaylists(artist) {
   getResource('playlists', artist, 'playlist_count', _.bind(setArt, this, artist));
-};
+}
 
-var splitData = function(artist, data) {
+function splitData(artist, data) {
   return prepareTracks(extractSongsAndPlaylists(data), true, artist.avatar_url);
-};
+}
 
-var getFavorites = function(artist) {                
+function getFavorites(artist) {
   getResource('likes', artist, 'public_favorites_count', _.bind(splitData, this, artist));
-};
+}
 
-var getArtistTracks = function(artist) {
+function getArtistTracks(artist) {
   getResource('stream', artist, 'track_count', _.bind(splitData, this, artist));
-};
+}
 
-var loadArtist = function(id, resource) {
-  var currentArtist = Session.get('currentArtist');
+function loadArtist(id, resource) {
+  const currentArtist = Session.get('currentArtist');
   Session.set('artistLoaded', false);
   Session.set('loadingText', 'Getting user\'s profile...');
 
-  function chooseResource(resource, artist) {
-    if(resource === 'favorites' || artist.track_count === 0) 
+  function chooseResource(resourceName, artist) {
+    if (resourceName === 'favorites' || artist.track_count === 0)
       return getFavorites(artist);
-    else if(resource === 'playlists')
+    else if (resource === 'playlists')
       return getArtistPlaylists(artist);
-    else
-      return getArtistTracks(artist);
-  } 
 
-  if(currentArtist && currentArtist.id == id) 
+    return getArtistTracks(artist);
+  }
+
+  if (currentArtist && currentArtist.id === id)
     chooseResource(resource, currentArtist);
   else
-    Meteor.call('getArtist', id, function(error, info) {    
+    Meteor.call('getArtist', id, (error, info) => {
       info.big_avatar = info.avatar_url.replace('large', 't300x300');
       Session.set('artiststream', null);
       Session.set('artistlikes', null);
@@ -138,8 +140,8 @@ var loadArtist = function(id, resource) {
       Session.set('currentArtist', info);
 
       chooseResource(resource, info);
-    });  
-};
+    });
+}
 
 Router.configure({
   layoutTemplate: 'trackLayout',
@@ -165,14 +167,14 @@ Router.configure({
   authenticate: 'login'
 });
 
-var initRoot = function() {
+function initRoot() {
   Session.set('loaded', false);
 
-  if(Session.get('origTracks').length) {
+  if (Session.get('origTracks').length) {
     Session.set('tracks', setPlayingToCurrent(Session.get('origTracks'), {}));
     Session.set('loaded', true);
   } else {
-    Meteor.call('getMe', function(error, me) {
+    Meteor.call('getMe', (error, me) => {
       Session.set('me', me);
       getTracks(me);
     });
@@ -180,9 +182,9 @@ var initRoot = function() {
 
   Session.set('currentArtist', null);
   this.next();
-};
+}
 
-Router.map(function() {
+Router.map(function() {// eslint-disable-line
   this.route('app', {
     path: '/',
     layoutTemplate: 'trackLayout',
@@ -201,12 +203,12 @@ Router.map(function() {
     path: '/following',
     layoutTemplate: 'trackLayout',
     template: 'artistList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       Session.set('loaded', false);
 
-      if(!Session.get('artists')) {
-        if(!Session.get('me'))
-          Meteor.call('getMe', function(error, me) {
+      if (!Session.get('artists')) {
+        if (!Session.get('me'))
+          Meteor.call('getMe', (error, me) => {
             Session.set('me', me);
             getFollowedArtists(me);
           });
@@ -224,15 +226,15 @@ Router.map(function() {
     path: '/likedPlaylists',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       Session.set('loaded', false);
       Session.set('currentArtist', null);
 
-      if(likedPlaylists) {
-        Session.set('tracks', likedPlaylists); 
+      if (likedPlaylists) {
+        Session.set('tracks', likedPlaylists);
         Session.set('loaded', true);
-      } else if(!Session.get('me'))
-        Meteor.call('getMe', function(error, me) {
+      } else if (!Session.get('me'))
+        Meteor.call('getMe', (error, me) => {
           Session.set('me', me);
           getLikePlaylists(me);
         });
@@ -247,7 +249,7 @@ Router.map(function() {
     path: '/artist/:_id',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       loadArtist(this.params._id);
       this.next();
     }
@@ -257,7 +259,7 @@ Router.map(function() {
     path: '/artist/:_id/favorites',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       loadArtist(this.params._id, 'favorites');
       this.next();
     }
@@ -267,7 +269,7 @@ Router.map(function() {
     path: '/artist/:_id/tracks',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       loadArtist(this.params._id);
       this.next();
     }
@@ -277,7 +279,7 @@ Router.map(function() {
     path: '/artist/:_id/playlists',
     layoutTemplate: 'trackLayout',
     template: 'trackList',
-    onBeforeAction: function() {
+    onBeforeAction() {
       loadArtist(this.params._id, 'playlists');
       this.next();
     }
@@ -287,8 +289,8 @@ Router.map(function() {
     path: '/login',
     redirectOnLogin: true,
     layoutTemplate: 'ApplicationLayout',
-    onBeforeAction: function() {
-      if(Meteor.user())
+    onBeforeAction() {
+      if (Meteor.user())
         Router.go('/');
       this.next();
     }
