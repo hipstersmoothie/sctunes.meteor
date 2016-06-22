@@ -49,37 +49,37 @@ export function indexTracks(tracksToIndex, newIndex) {
 
 export function setArt(defaultArt, tracks) {
   return _.map(tracks, track => {
-    if (track.artwork_url)
-      track.big_artwork_url = track.artwork_url.replace('large', 't300x300');
-    else
-      track.big_artwork_url = track.user.avatar_url.replace('large', 't300x300');
+    track.big_artwork_url = (track.artwork_url || track.user.avatar_url).replace('large', 't300x300');
     return track;
   });
 }
 
-// TODO REFACTOR
 function getArtist(tracks) {
   return _.map(tracks, track => {
     const title = track.title;
+    const beforeHyphen = title.substr(0, title.indexOf('-'));
+    const afterHyphen = title.substr(title.indexOf('-') + 1, title.length);
     track.playstatus = 'notplaying';
 
-    if (title.indexOf(track.user.username) === -1 && track.title.indexOf('-') > -1) {
-      const checkValid = parseInt(title.substr(0, title.indexOf('-')), 10) || 0;
-      if (checkValid > 0) {
-        track.artist = title.substr(title.indexOf('-') + 1,
-                                    title.substr(title.indexOf('-') + 1,
-                                    title.length).indexOf('-'));
+    if (title.includes(track.user.username) && title.includes('-')) {
+      const validId = parseInt(beforeHyphen, 10) || 0;
+
+      if (validId) {
+        track.artist = title.substr(title.indexOf('-') + 1, afterHyphen.indexOf('-'));
         if (track.artist === '')
-          track.artist = title.substr(0, title.indexOf('-'));
-      } else
-        track.artist = title.substr(0, title.indexOf('-'));
-      track.titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+          track.artist = beforeHyphen;
+      } else {
+        track.artist = beforeHyphen;
+      }
+
+      track.titleWithoutArtist = afterHyphen;
     } else {
-      if (title.indexOf('-') > -1 &&
+      if (title.includes('-') &&
          track.user.username.localeCompare(title.substr(0, title.indexOf('-') - 1)) === 0)
-        track.titleWithoutArtist = title.substr(title.indexOf('-') + 1, title.length);
+        track.titleWithoutArtist = afterHyphen;
       else
         track.titleWithoutArtist = title;
+
       track.artist = track.user.username;
     }
 

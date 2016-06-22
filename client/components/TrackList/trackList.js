@@ -62,7 +62,7 @@ Template.trackList.events({
       });
     } else if (event.shiftKey)
       addToQueue(this);
-    else if (this.id == Session.get('currentTrack').id)
+    else if (this.id === Session.get('currentTrack').id)
       currentSound.togglePause();
     else {
       Session.set('playing', true);
