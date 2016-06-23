@@ -4,17 +4,18 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "get-style-property": "^0.1.1",
+    "gsap": "^1.18.5",
+    "lodash": "^4.13.1"
+  },
+  "devDependencies": {
     "babel-eslint": "^6.0.4",
     "eslint": "^2.12.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.8.1",
     "eslint-plugin-jsx-a11y": "^1.4.2",
-    "eslint-plugin-react": "^5.1.1",
-    "get-style-property": "^0.1.1",
-    "gsap": "^1.18.5",
-    "lodash": "^4.13.1"
+    "eslint-plugin-react": "^5.1.1"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
