@@ -1,21 +1,17 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Template } from 'meteor/templating';
+import { Player } from './components/Player/player';
 import _ from 'lodash';
 
 Meteor.startup(() => {
   Session.set('tracks', []); // eslint-disable-line meteor/no-session
-  Session.set('currentTrack', {}); // eslint-disable-line meteor/no-session
   Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
 
   soundManager.setup({
     debugMode: false
   });
 });
-
-// eslint-disable-next-line meteor/no-session
-Template.registerHelper('currentTrack', () => Session.get('currentTrack') || { duration: 100 });
 
 Tracker.autorun(() => {
   if (Meteor.user() && Meteor.user().services && Meteor.user().services.soundCloud) {
@@ -82,7 +78,7 @@ export function prepareTracks(tracks, newIndexes, defaultArt) {
 }
 
 // eslint-disable-next-line meteor/no-session
-export function setPlayingToCurrent(tracks, currentTrack = Session.get('currentTrack')) {
+export function setPlayingToCurrent(tracks, currentTrack = Player.currentTrack.get()) {
   return _.map(tracks, track => {
     track.playstatus = track.id === currentTrack.id ? 'playing' : 'notplaying';
     return track;

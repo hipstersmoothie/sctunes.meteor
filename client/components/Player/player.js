@@ -9,6 +9,9 @@ import Queue from '../Queue/queue';
 const pauseIcon = new ReactiveVar(true);
 export const trackPosition = new ReactiveVar(0);
 
+export const currentTrack = new ReactiveVar();
+Template.registerHelper('currentTrack', () => currentTrack.get() || { duration: 100 });
+
 currentSound = null;
 
 function stopLastTrack() {
@@ -19,7 +22,7 @@ function stopLastTrack() {
 
 export function streamTrack(track) {
   stopLastTrack();
-  Session.set('currentTrack', track); // eslint-disable-line meteor/no-session
+  currentTrack.set(track);
 
   currentSound = soundManager.createSound({
     id: track.id,
@@ -40,7 +43,7 @@ export function streamTrack(track) {
 }
 
 function findCurrentTrackIndex(array) {
-  const cid = Session.get('currentTrack').id; // eslint-disable-line meteor/no-session
+  const cid = currentTrack.get().id;
   let current = -1;
 
   _.forEach(array, (item, index) => {

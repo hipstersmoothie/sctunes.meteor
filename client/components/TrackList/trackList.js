@@ -58,7 +58,7 @@ Template.trackList.events({
       });
     } else if (event.shiftKey)
       addToQueue(this);
-    else if (this.id === Session.get('currentTrack').id) // eslint-disable-line meteor/no-session
+    else if (this.id === Player.currentTrack.get().id) // eslint-disable-line meteor/no-session
       currentSound.togglePause();
     else {
       Player.streamTrack(findTrackWithId(tracks, this.id));
