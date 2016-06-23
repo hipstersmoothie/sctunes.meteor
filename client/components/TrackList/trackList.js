@@ -39,8 +39,7 @@ function msToTime(duration) {
 
 Template.trackList.helpers({
   tracks: () => Session.get('tracks'), // eslint-disable-line meteor/no-session
-  toTime: (ms) => msToTime(ms),
-  artist: () => Session.get('currentArtist') != null // eslint-disable-line meteor/no-session
+  toTime: (ms) => msToTime(ms)
 });
 
 Template.trackList.events({

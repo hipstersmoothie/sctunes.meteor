@@ -278,7 +278,7 @@ Router.map(function() {// eslint-disable-line
 
   this.route('artist', {
     path: '/artist/:_id',
-    layoutTemplate: 'trackLayout',
+    layoutTemplate: 'artistLayout',
     template: 'trackList',
     onBeforeAction() {
       loadArtist(this.params._id);
@@ -288,7 +288,7 @@ Router.map(function() {// eslint-disable-line
 
   this.route('artistFavorites', {
     path: '/artist/:_id/favorites',
-    layoutTemplate: 'trackLayout',
+    layoutTemplate: 'artistLayout',
     template: 'trackList',
     onBeforeAction() {
       loadArtist(this.params._id, 'favorites');
@@ -298,7 +298,7 @@ Router.map(function() {// eslint-disable-line
 
   this.route('artistTracks', {
     path: '/artist/:_id/tracks',
-    layoutTemplate: 'trackLayout',
+    layoutTemplate: 'artistLayout',
     template: 'trackList',
     onBeforeAction() {
       loadArtist(this.params._id);
@@ -308,7 +308,7 @@ Router.map(function() {// eslint-disable-line
 
   this.route('artistPlaylists', {
     path: '/artist/:_id/playlists',
-    layoutTemplate: 'trackLayout',
+    layoutTemplate: 'artistLayout',
     template: 'trackList',
     onBeforeAction() {
       loadArtist(this.params._id, 'playlists');
