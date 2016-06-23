@@ -20,7 +20,6 @@ Meteor.startup(() => {
   Session.set('loaded', false);
   Session.set('loadingText', '');
   Session.set('artistLoaded', true);
-  Session.set('sortType', 'Like Date');
 
   soundManager.setup({
     debugMode: false

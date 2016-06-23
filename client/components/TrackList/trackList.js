@@ -91,8 +91,5 @@ Template.trackList.events({
     track.user_favorite = !track.user_favorite;
     tracks[track.index] = track;
     Session.set('tracks', tracks);
-  },
-  artist: () => Session.get('sortType') === 'Artist',
-  uploader: () => Session.get('sortType') === 'Uploader',
-  titleDoesNotContainUsername: (title, username) => title.indexOf(username) === -1
+  }
 });
