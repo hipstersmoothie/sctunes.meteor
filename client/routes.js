@@ -211,7 +211,6 @@ function initRoot() {
     });
   }
 
-  Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
   this.next();
 }
 
@@ -259,7 +258,6 @@ Router.map(function() {// eslint-disable-line
     template: 'trackList',
     onBeforeAction() {
       loader.on();
-      Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
 
       if (cache.likedPlaylists) {
         Session.set('tracks', cache.likedPlaylists); // eslint-disable-line meteor/no-session
