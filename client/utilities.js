@@ -9,14 +9,12 @@ Meteor.startup(() => {
   Session.set('queue', []);
   Session.set('tracks', []);
   Session.set('origTracks', []);
-  Session.set('artists', null);
 
   Session.set('currentTrack', {});
   Session.set('currentArtist', null);
 
   Session.set('loaded', false);
   Session.set('loadingText', '');
-  Session.set('artistLoaded', true);
 
   soundManager.setup({
     debugMode: false

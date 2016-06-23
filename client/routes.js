@@ -1,6 +1,10 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/iron:router';
+import { Template } from 'meteor/templating';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 import _ from 'lodash';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
@@ -14,7 +18,13 @@ const cache = {
   artiststream: null
 };
 
-function getRoute({ user, route, experimental = false, sessionVar, length, prepFunction = arr => arr, callback }) {
+const data = new ReactiveDict();
+Template.registerHelper('artists', () => data.get('artists'));
+const artistLoaded = new ReactiveVar(true);
+Template.registerHelper('artistLoaded', () => artistLoaded.get());
+
+function getRoute({ user, route, experimental = false, sessionVar, length,
+    source = Session, prepFunction = arr => arr, callback }) {
   const loadingText = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
   Session.set('loadingText', `${loadingText}...`);
@@ -28,7 +38,7 @@ function getRoute({ user, route, experimental = false, sessionVar, length, prepF
       if (data.next_href)
         SC.get(data.next_href, resolve);
       else {
-        Session.set(sessionVar, collection);
+        source.set(sessionVar, collection);
         Session.set('loaded', true);
         if (callback) callback(collection);
       }
@@ -44,6 +54,7 @@ function getFollowedArtists(me) {
   getRoute({
     user: me.id,
     route: 'followings',
+    source: data,
     sessionVar: 'artists',
     length: me.followings_count,
     callback: artists => { cache.followedArtists = artists; }
@@ -83,7 +94,7 @@ function getResource(type, artist, resourceCount, processFunc) {
 
   if (currentData && currentData.data && currentData.id === artist.id) {
     Session.set('tracks', setPlayingToCurrent(currentData.data));
-    return Session.set('artistLoaded', true);
+    return artistLoaded.set(true);
   }
 
   getRoute({
@@ -98,13 +109,13 @@ function getResource(type, artist, resourceCount, processFunc) {
         data,
         id: artist.id
       };
-      Session.set('artistLoaded', true);
+      artistLoaded.set(true);
     }
   });
 
   if (artist[resourceCount] < 1) {
     // toastr.error('User has no' + type + '!');
-    Session.set('artistLoaded', true);
+    artistLoaded.set(true);
   }
 }
 
@@ -125,8 +136,8 @@ function getArtistTracks(artist) {
 }
 
 function loadArtist(id, resource) {
-  const currentArtist = Session.get('currentArtist');
-  Session.set('artistLoaded', false);
+  const currentArtist = Session.get('currentArtist'); // eslint-disable-line meteor/no-session
+  artistLoaded.set(false);
   Session.set('loadingText', 'Getting user\'s profile...');
 
   function chooseResource(resourceName, artist) {
