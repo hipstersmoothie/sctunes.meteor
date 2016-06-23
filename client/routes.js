@@ -7,6 +7,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import _ from 'lodash';
 import { resetSort } from './components/Nav/optionsRow.js';
+import loader from './components/Loader/loader.js';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
 
@@ -25,26 +26,23 @@ Template.registerHelper('artists', () => data.get('artists'));
 const artistLoaded = new ReactiveVar(true);
 Template.registerHelper('artistLoaded', () => artistLoaded.get());
 
-const loadingText = new ReactiveVar(true);
-Template.registerHelper('loadingText', () => loadingText.get());
-
 function getRoute({ user, route, experimental = false, sessionVar, length,
     source = Session, prepFunction = arr => arr, callback }) {
   const text = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
-  loadingText.set(`${text}...`);
+  loader.text(`${text}...`);
 
   let collection = [];
   function resolve(items) {
     collection = collection.concat(prepFunction(items.collection));
-    loadingText.set(`${text}: ${collection.length}${length ? ` of ${length}` : ''}`);
+    loader.text(`${text}: ${collection.length}${length ? ` of ${length}` : ''}`);
 
     if (startRoute === Router.current().route.getName())
       if (items.next_href)
         SC.get(items.next_href, resolve);
       else {
         source.set(sessionVar, collection);
-        Session.set('loaded', true);
+        loader.off();
         if (callback) callback(collection);
       }
   }
@@ -143,7 +141,7 @@ function getArtistTracks(artist) {
 function loadArtist(id, resource) {
   const currentArtist = Session.get('currentArtist'); // eslint-disable-line meteor/no-session
   artistLoaded.set(false);
-  loadingText.set('Getting user\'s profile...');
+  loader.text('Getting user\'s profile...');
 
   function chooseResource(resourceName, artist) {
     if (resourceName === 'favorites' || artist.track_count === 0)
@@ -199,11 +197,11 @@ Router.configure({
 
 let identity;
 function initRoot() {
-  Session.set('loaded', false);
+  loader.on();
 
   if (Session.get('origTracks').length) {
     Session.set('tracks', setPlayingToCurrent(Session.get('origTracks'), {}));
-    Session.set('loaded', true);
+    loader.off();
   } else {
     Meteor.call('getMe', (error, me) => {
       identity = me;
@@ -235,7 +233,7 @@ Router.map(function() {// eslint-disable-line
     layoutTemplate: 'trackLayout',
     template: 'artistList',
     onBeforeAction() {
-      Session.set('loaded', false);
+      loader.on();
 
       if (!cache.followedArtists) {
         if (!identity)
@@ -246,7 +244,7 @@ Router.map(function() {// eslint-disable-line
         else
           getFollowedArtists(identity);
       } else {
-        Session.set('loaded', true);
+        loader.off();
       }
 
       this.next();
@@ -258,12 +256,12 @@ Router.map(function() {// eslint-disable-line
     layoutTemplate: 'trackLayout',
     template: 'trackList',
     onBeforeAction() {
-      Session.set('loaded', false);
+      loader.on();
       Session.set('currentArtist', null);
 
       if (cache.likedPlaylists) {
         Session.set('tracks', cache.likedPlaylists);
-        Session.set('loaded', true);
+        loader.off();
       } else if (!identity)
         Meteor.call('getMe', (error, me) => {
           identity = me;

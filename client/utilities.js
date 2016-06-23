@@ -12,9 +12,7 @@ Meteor.startup(() => {
   Session.set('origTracks', []);
 
   Session.set('currentTrack', {});
-  Session.set('currentArtist', null); 
-
-  Session.set('loaded', false); // eslint-disable-line meteor/no-session
+  Session.set('currentArtist', null);
 
   soundManager.setup({
     debugMode: false
