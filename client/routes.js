@@ -6,6 +6,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import _ from 'lodash';
+import { resetSort } from './components/Nav/optionsRow.js';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
 
@@ -181,6 +182,11 @@ Router.onBeforeAction('authenticate', {
     template: 'login'
   },
   except: ['login']
+});
+
+Router.onBeforeAction(function() {
+  resetSort();
+  this.next();
 });
 
 Router.configure({

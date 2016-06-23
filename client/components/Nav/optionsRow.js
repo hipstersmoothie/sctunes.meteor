@@ -8,6 +8,9 @@ import _ from 'lodash';
 
 import { indexTracks } from '../../utilities';
 
+const sortType = new ReactiveVar('Like Date');
+export const resetSort = () => sortType.set('Like Date');
+
 function setTime() {
   const minTime = $('#min-length').val() * 60000;
   const maxTime = $('#max-length').val() * 60000;
@@ -28,12 +31,12 @@ function setTime() {
 function sortAndSet(sort, comparator, template) {
   const tracks = Session.get('tracks');
 
-  if (template.sortType.get() === sort)
+  if (sortType.get() === sort)
     Session.set('tracks', indexTracks(tracks.reverse(), true));
   else
     Session.set('tracks', indexTracks(tracks.sort(comparator), true));
 
-  template.sortType.set(sort);
+  sortType.set(sort);
 }
 
 let allTracks = null;
@@ -78,12 +81,8 @@ function handleRouteChange(route) {
   Router.go(route);
 }
 
-Template.optionsRow.onCreated(function onCreated() {
-  this.sortType = new ReactiveVar('Like Date');
-});
-
 Template.optionsRow.helpers({
-  sortType: () => Template.instance().sortType.get(),
+  sortType: () => sortType.get(),
   otherSortTypes: () => [
     { type: 'Like Date', className: 'likedateSort' },
     { type: 'Artist', className: 'artistSort' },
@@ -95,8 +94,8 @@ Template.optionsRow.helpers({
     { type: 'Search', className: 'searchSort' },
     { type: 'Videos', className: 'videoSort' }
   ],
-  duration: () => Template.instance().sortType.get() === 'Duration',
-  search: () => Template.instance().sortType.get() === 'Search',
+  duration: () => sortType.get() === 'Duration',
+  search: () => sortType.get() === 'Search',
   isActive: (name) => {
     if (name === Router.current().route.getName() ||
       name === 'myFavorites' && Router.current().route.getName() === 'app')
@@ -121,27 +120,15 @@ Template.optionsRow.events = {
       }, 250);
     }
   },
-  'click .artistSort'(event, template) {
-    sortAndSet('Artist', (a, b) => a.artist.localeCompare(b.artist), template);
-  },
-  'click .uploaderSort'(event, template) {
-    sortAndSet('Uploader', (a, b) => a.user.username.localeCompare(b.user.username), template);
-  },
-  'click .playcountSort'(event, template) {
-    sortAndSet('Play Count', (a, b) => b.playback_count - a.playback_count, template);
-  },
-  'click .heartcountSort'(event, template) {
-    sortAndSet('Heart Count', (a, b) => b.favoritings_count - a.favoritings_count, template);
-  },
-  'click .creationSort'(event, template) {
-    sortAndSet('Creation Date', (a, b) => a.created_at.localeCompare(b.created_at), template);
-  },
-  'click .durationSort'(event, template) {
-    sortAndSet('Duration', (a, b) => b.duration - a.duration, template);
-  },
-  'click .searchSort': (event, template) => template.sortType.set('Search'),
+  'click .artistSort': () => sortAndSet('Artist', (a, b) => a.artist.localeCompare(b.artist)),
+  'click .uploaderSort': () => sortAndSet('Uploader', (a, b) => a.user.username.localeCompare(b.user.username)),
+  'click .playcountSort': () => sortAndSet('Play Count', (a, b) => b.playback_count - a.playback_count),
+  'click .heartcountSort': () => sortAndSet('Heart Count', (a, b) => b.favoritings_count - a.favoritings_count),
+  'click .creationSort': () => sortAndSet('Creation Date', (a, b) => a.created_at.localeCompare(b.created_at)),
+  'click .durationSort': () => sortAndSet('Duration', (a, b) => b.duration - a.duration),
+  'click .searchSort': () => sortType.set('Search'),
   'click #shuffle': () => Session.set('tracks', shuffle(Session.get('tracks'))),
-  'click .videoSort'(event, template) {
+  'click .videoSort'() {
     Session.set('tracks', indexTracks(_.filter(Session.get('tracks'), track => {
       if (track.video_url)
         return true;
@@ -151,14 +138,14 @@ Template.optionsRow.events = {
       return false;
     }), true));
 
-    template.sortType.set('Videos');
+    sortType.set('Videos');
   },
-  'click .likedateSort'(event, template) {
-    if (template.sortType.get() === 'Like Date')
+  'click .likedateSort'() {
+    if (sortType.get() === 'Like Date')
       Session.set('tracks', Session.get('tracks').reverse());
     else {
       Session.set('tracks', Session.get('origTracks'));
-      template.sortType.set('Like Date');
+      sortType.set('Like Date');
     }
   },
   'click #log-out': () => Meteor.logout(),

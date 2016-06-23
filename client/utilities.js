@@ -11,7 +11,7 @@ Meteor.startup(() => {
   Session.set('tracks', []);
   Session.set('origTracks', []);
 
-  Session.set('currentTrack', null);
+  Session.set('currentTrack', {});
   Session.set('currentArtist', null); 
 
   Session.set('loaded', false); // eslint-disable-line meteor/no-session
@@ -22,7 +22,7 @@ Meteor.startup(() => {
   });
 });
 
-Template.registerHelper('currentTrack', () => Session.get('currentTrack') || { duration: 100 });
+Template.registerHelper('currentTrack', () => Session.get('currentTrack').id || { duration: 100 });
 
 Tracker.autorun(() => {
   if (Meteor.user() && Meteor.user().services && Meteor.user().services.soundCloud) {
