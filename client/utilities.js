@@ -1,6 +1,7 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
 import _ from 'lodash';
 
 currentSound = null;
@@ -10,16 +11,18 @@ Meteor.startup(() => {
   Session.set('tracks', []);
   Session.set('origTracks', []);
 
-  Session.set('currentTrack', {});
-  Session.set('currentArtist', null);
+  Session.set('currentTrack', null);
+  Session.set('currentArtist', null); 
 
-  Session.set('loaded', false);
-  Session.set('loadingText', '');
+  Session.set('loaded', false); // eslint-disable-line meteor/no-session
+  Session.set('loadingText', ''); // eslint-disable-line meteor/no-session
 
   soundManager.setup({
     debugMode: false
   });
 });
+
+Template.registerHelper('currentTrack', () => Session.get('currentTrack') || { duration: 100 });
 
 Tracker.autorun(() => {
   if (Meteor.user() && Meteor.user().services && Meteor.user().services.soundCloud) {

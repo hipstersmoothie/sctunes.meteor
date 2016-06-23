@@ -45,7 +45,6 @@ Template.trackList.helpers({
   artist: () => Session.get('currentArtist') != null
 });
 Template.registerHelper('loaded', () => Session.get('loaded'));
-Template.registerHelper('currentTrack', () => Session.get('currentTrack'));
 
 Template.trackList.events({
   'click .trackItem'(event) {
