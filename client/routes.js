@@ -201,7 +201,7 @@ let identity;
 function initRoot() {
   loader.on();
 
-  if (cache.favorites.length) {
+  if (cache.favorites) {
     Session.set('tracks', setPlayingToCurrent(cache.favorites, {})); // eslint-disable-line meteor/no-session
     loader.off();
   } else {

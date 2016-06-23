@@ -3,21 +3,22 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import _ from 'lodash';
+import Player from './components/Player/player';
 
 currentSound = null;
 
 Meteor.startup(() => {
-  Session.set('queue', []);
-  Session.set('tracks', []);
-
-  Session.set('currentTrack', {});
-  Session.set('currentArtist', null);
+  Session.set('queue', []); // eslint-disable-line meteor/no-session
+  Session.set('tracks', []); // eslint-disable-line meteor/no-session
+  Session.set('currentTrack', {}); // eslint-disable-line meteor/no-session
+  Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
 
   soundManager.setup({
     debugMode: false
   });
 });
 
+// eslint-disable-next-line meteor/no-session
 Template.registerHelper('currentTrack', () => Session.get('currentTrack').id || { duration: 100 });
 
 Tracker.autorun(() => {
@@ -84,6 +85,7 @@ export function prepareTracks(tracks, newIndexes, defaultArt) {
   return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
 }
 
+// eslint-disable-next-line meteor/no-session
 export function setPlayingToCurrent(tracks, currentTrack = Session.get('currentTrack')) {
   return _.map(tracks, track => {
     track.playstatus = track.id === currentTrack.id ? 'playing' : 'notplaying';
@@ -92,15 +94,14 @@ export function setPlayingToCurrent(tracks, currentTrack = Session.get('currentT
 }
 
 function stopLastTrack() {
-  // soundManager.stopAll();
-  Session.set('trackPosition', 0);
+  Player.setTrackPostition(0);
   if (currentSound)
     currentSound.stop();
 }
 
 export function streamTrack(track) {
   stopLastTrack();
-  Session.set('currentTrack', track);
+  Session.set('currentTrack', track); // eslint-disable-line meteor/no-session
 
   currentSound = soundManager.createSound({
     id: track.id,
@@ -114,7 +115,7 @@ export function streamTrack(track) {
         playNextOrPrevTrack(true); // eslint-disable-line no-use-before-define
     },
     whileplaying() {
-      Session.set('trackPosition', this.position);
+      Player.setTrackPostition(this.position);
     },
     onfinish: () => playNextOrPrevTrack(true) // eslint-disable-line no-use-before-define
   });
@@ -125,7 +126,7 @@ export function findTrackWithId(tracks, id) {
 }
 
 function findCurrentTrackIndex(array) {
-  const cid = Session.get('currentTrack').id;
+  const cid = Session.get('currentTrack').id; // eslint-disable-line meteor/no-session
   let current = -1;
 
   _.forEach(array, (item, index) => {
@@ -139,7 +140,7 @@ function findCurrentTrackIndex(array) {
 }
 
 function getTracklistTrack(increment) {
-  const tracks = Session.get('tracks');
+  const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
   const currentIndex = findCurrentTrackIndex(tracks);
   let nextIndex = increment ? currentIndex + 1 : currentIndex - 1;
 
@@ -156,7 +157,7 @@ function setTrackChangeInfoQueue(increment, queue) {
   let nextTrack;
 
   if (nextToPlay === queue.length || nextToPlay < 0) {
-    const tracks = Session.get('tracks');
+    const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
     const indexOnPage = findCurrentTrackIndex(tracks);
 
     if (indexOnPage > -1)
@@ -170,13 +171,13 @@ function setTrackChangeInfoQueue(increment, queue) {
     nextTrack = queue[nextToPlay];
   }
 
-  Session.set('queue', setPlayingToCurrent(queue, nextTrack));
+  Session.set('queue', setPlayingToCurrent(queue, nextTrack)); // eslint-disable-line meteor/no-session
   return nextTrack;
 }
 
 export function playNextOrPrevTrack(increment) {
   let nextTrack;
-  const queue = Session.get('queue');
+  const queue = Session.get('queue'); // eslint-disable-line meteor/no-session
 
   if (!queue.length)
     nextTrack = getTracklistTrack(increment);
