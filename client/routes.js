@@ -30,13 +30,13 @@ function getRoute({ user, route, experimental = false, sessionVar, length,
   Session.set('loadingText', `${loadingText}...`);
 
   let collection = [];
-  function resolve(data) {
-    collection = collection.concat(prepFunction(data.collection));
+  function resolve(items) {
+    collection = collection.concat(prepFunction(items.collection));
     Session.set('loadingText', `${loadingText}: ${collection.length}${length ? ` of ${length}` : ''}`);
 
     if (startRoute === Router.current().route.getName())
-      if (data.next_href)
-        SC.get(data.next_href, resolve);
+      if (items.next_href)
+        SC.get(items.next_href, resolve);
       else {
         source.set(sessionVar, collection);
         Session.set('loaded', true);
