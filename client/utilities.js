@@ -9,7 +9,6 @@ currentSound = null;
 Meteor.startup(() => {
   Session.set('queue', []);
   Session.set('tracks', []);
-  Session.set('origTracks', []);
 
   Session.set('currentTrack', {});
   Session.set('currentArtist', null);

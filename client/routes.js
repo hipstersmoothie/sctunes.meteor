@@ -11,7 +11,8 @@ import loader from './components/Loader/loader.js';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
 
-const cache = {
+export const cache = {
+  favorites: null,
   likedPlaylists: null,
   followedArtists: null,
 
@@ -20,8 +21,8 @@ const cache = {
   artiststream: null
 };
 
-const data = new ReactiveDict();
-Template.registerHelper('artists', () => data.get('artists'));
+const dataStore = new ReactiveDict();
+Template.registerHelper('artists', () => dataStore.get('artists'));
 
 const artistLoaded = new ReactiveVar(true);
 Template.registerHelper('artistLoaded', () => artistLoaded.get());
@@ -57,7 +58,7 @@ function getFollowedArtists(me) {
   getRoute({
     user: me.id,
     route: 'followings',
-    source: data,
+    source: dataStore,
     sessionVar: 'artists',
     length: me.followings_count,
     callback: artists => { cache.followedArtists = artists; }
@@ -73,7 +74,8 @@ function getTracks(me) {
     prepFunction: tracks => _.map(prepareTracks(tracks), track => {
       track.user_favorite = true;
       return track;
-    })
+    }),
+    callback: artists => { cache.favorites = artists; }
   });
 }
 
@@ -96,7 +98,7 @@ function getResource(type, artist, resourceCount, processFunc) {
   const currentData = cache[`artist${type}`];
 
   if (currentData && currentData.data && currentData.id === artist.id) {
-    Session.set('tracks', setPlayingToCurrent(currentData.data));
+    Session.set('tracks', setPlayingToCurrent(currentData.data)); // eslint-disable-line meteor/no-session
     return artistLoaded.set(true);
   }
 
@@ -160,7 +162,7 @@ function loadArtist(id, resource) {
       cache.artiststream = null;
       cache.artistlikes = null;
       cache.artistplaylists = null;
-      Session.set('currentArtist', info);
+      Session.set('currentArtist', info); // eslint-disable-line meteor/no-session
 
       chooseResource(resource, info);
     });
@@ -199,8 +201,8 @@ let identity;
 function initRoot() {
   loader.on();
 
-  if (Session.get('origTracks').length) {
-    Session.set('tracks', setPlayingToCurrent(Session.get('origTracks'), {}));
+  if (cache.favorites.length) {
+    Session.set('tracks', setPlayingToCurrent(cache.favorites, {})); // eslint-disable-line meteor/no-session
     loader.off();
   } else {
     Meteor.call('getMe', (error, me) => {
@@ -209,7 +211,7 @@ function initRoot() {
     });
   }
 
-  Session.set('currentArtist', null);
+  Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
   this.next();
 }
 
@@ -257,10 +259,10 @@ Router.map(function() {// eslint-disable-line
     template: 'trackList',
     onBeforeAction() {
       loader.on();
-      Session.set('currentArtist', null);
+      Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
 
       if (cache.likedPlaylists) {
-        Session.set('tracks', cache.likedPlaylists);
+        Session.set('tracks', cache.likedPlaylists); // eslint-disable-line meteor/no-session
         loader.off();
       } else if (!identity)
         Meteor.call('getMe', (error, me) => {

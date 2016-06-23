@@ -7,6 +7,7 @@ import { $ } from 'meteor/jquery';
 import _ from 'lodash';
 
 import { indexTracks } from '../../utilities';
+import { cache } from '../../routes';
 
 const sortType = new ReactiveVar('Like Date');
 export const resetSort = () => sortType.set('Like Date');
@@ -14,7 +15,7 @@ export const resetSort = () => sortType.set('Like Date');
 function setTime() {
   const minTime = $('#min-length').val() * 60000;
   const maxTime = $('#max-length').val() * 60000;
-  const tracks = Session.get('tracks');
+  const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
 
   const longTracks = _.filter(tracks, track =>
     minTime && maxTime && track.duration >= minTime && track.duration <= maxTime
@@ -23,18 +24,18 @@ function setTime() {
   );
 
   if (!minTime && !maxTime)
-    Session.set('tracks', indexTracks(tracks, true));
+    Session.set('tracks', indexTracks(tracks, true)); // eslint-disable-line meteor/no-session
   else
-    Session.set('tracks', indexTracks(longTracks, true));
+    Session.set('tracks', indexTracks(longTracks, true)); // eslint-disable-line meteor/no-session
 }
 
-function sortAndSet(sort, comparator, template) {
-  const tracks = Session.get('tracks');
+function sortAndSet(sort, comparator) {
+  const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
 
   if (sortType.get() === sort)
-    Session.set('tracks', indexTracks(tracks.reverse(), true));
+    Session.set('tracks', indexTracks(tracks.reverse(), true)); // eslint-disable-line meteor/no-session
   else
-    Session.set('tracks', indexTracks(tracks.sort(comparator), true));
+    Session.set('tracks', indexTracks(tracks.sort(comparator), true)); // eslint-disable-line meteor/no-session
 
   sortType.set(sort);
 }
@@ -44,9 +45,9 @@ function search(term) {
   const procTerm = term.toLowerCase();
 
   if (procTerm === '')
-    Session.set('tracks', allTracks);
+    Session.set('tracks', allTracks); // eslint-disable-line meteor/no-session
 
-  Session.set('tracks', indexTracks(_.filter(allTracks, track =>
+  Session.set('tracks', indexTracks(_.filter(allTracks, track => // eslint-disable-line meteor/no-session
     track.title.toLowerCase().indexOf(procTerm) > -1 ||
       track.artist && track.artist.toLowerCase().indexOf(procTerm) > -1 ||
       track.user.username.toLowerCase().indexOf(procTerm) > -1
@@ -114,7 +115,7 @@ Template.optionsRow.events = {
     if (!to) {
       to = Meteor.defer(() => {
         if (allTracks == null)
-          allTracks = Session.get('tracks');
+          allTracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
         search(event.currentTarget.value);
         to = null;
       }, 250);
@@ -127,8 +128,10 @@ Template.optionsRow.events = {
   'click .creationSort': () => sortAndSet('Creation Date', (a, b) => a.created_at.localeCompare(b.created_at)),
   'click .durationSort': () => sortAndSet('Duration', (a, b) => b.duration - a.duration),
   'click .searchSort': () => sortType.set('Search'),
+  // eslint-disable-next-line meteor/no-session
   'click #shuffle': () => Session.set('tracks', shuffle(Session.get('tracks'))),
   'click .videoSort'() {
+    // eslint-disable-next-line meteor/no-session
     Session.set('tracks', indexTracks(_.filter(Session.get('tracks'), track => {
       if (track.video_url)
         return true;
@@ -142,9 +145,9 @@ Template.optionsRow.events = {
   },
   'click .likedateSort'() {
     if (sortType.get() === 'Like Date')
-      Session.set('tracks', Session.get('tracks').reverse());
+      Session.set('tracks', Session.get('tracks').reverse()); // eslint-disable-line meteor/no-session
     else {
-      Session.set('tracks', Session.get('origTracks'));
+      Session.set('tracks', cache.favorites);  // eslint-disable-line meteor/no-session
       sortType.set('Like Date');
     }
   },
