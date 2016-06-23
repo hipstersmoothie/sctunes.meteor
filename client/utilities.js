@@ -13,8 +13,6 @@ Meteor.startup(() => {
 
   Session.set('currentTrack', {});
   Session.set('currentArtist', null);
-  Session.set('artistTracks', null);
-  Session.set('artistFavorites', null);
 
   Session.set('loaded', false);
   Session.set('loadingText', '');

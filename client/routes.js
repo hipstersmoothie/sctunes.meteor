@@ -5,6 +5,15 @@ import _ from 'lodash';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
 
+const cache = {
+  likedPlaylists: null,
+  followedArtists: null,
+
+  artistplaylists: null,
+  artistlikes: null,
+  artiststream: null
+};
+
 function getRoute({ user, route, experimental = false, sessionVar, length, prepFunction = arr => arr, callback }) {
   const loadingText = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
@@ -36,7 +45,8 @@ function getFollowedArtists(me) {
     user: me.id,
     route: 'followings',
     sessionVar: 'artists',
-    length: me.followings_count
+    length: me.followings_count,
+    callback: artists => { cache.followedArtists = artists; }
   });
 }
 
@@ -57,7 +67,6 @@ function extractSongsAndPlaylists(tracks) {
   return _.map(_.filter(tracks, track => track.track || track.playlist), track => track.track || track.playlist);
 }
 
-let likedPlaylists = null;
 function getLikePlaylists(me) {
   getRoute({
     user: me.id,
@@ -65,12 +74,12 @@ function getLikePlaylists(me) {
     experimental: true,
     sessionVar: 'tracks',
     prepFunction: playlists => setArt(playlists.artwork_url, extractSongsAndPlaylists(playlists)),
-    callback: allPlaylist => { likedPlaylists = allPlaylist; }
+    callback: allPlaylist => { cache.likedPlaylists = allPlaylist; }
   });
 }
 
 function getResource(type, artist, resourceCount, processFunc) {
-  const currentData = Session.get(`artist${type}`);
+  const currentData = cache[`artist${type}`];
 
   if (currentData && currentData.data && currentData.id === artist.id) {
     Session.set('tracks', setPlayingToCurrent(currentData.data));
@@ -85,10 +94,10 @@ function getResource(type, artist, resourceCount, processFunc) {
     length: artist[resourceCount],
     prepFunction: data => setPlayingToCurrent(processFunc(data)),
     callback: data => {
-      Session.set(`artist${type}`, {
+      cache[`artist${type}`] = {
         data,
         id: artist.id
-      });
+      };
       Session.set('artistLoaded', true);
     }
   });
@@ -134,9 +143,9 @@ function loadArtist(id, resource) {
   else
     Meteor.call('getArtist', id, (error, info) => {
       info.big_avatar = info.avatar_url.replace('large', 't300x300');
-      Session.set('artiststream', null);
-      Session.set('artistlikes', null);
-      Session.set('artistplaylists', null);
+      cache.artiststream = null;
+      cache.artistlikes = null;
+      cache.artistplaylists = null;
       Session.set('currentArtist', info);
 
       chooseResource(resource, info);
@@ -207,6 +216,7 @@ Router.map(function() {// eslint-disable-line
     onBeforeAction() {
       Session.set('loaded', false);
 
+      if (!cache.followedArtists) {
         if (!identity)
           Meteor.call('getMe', (error, me) => {
             identity = me;
@@ -230,8 +240,8 @@ Router.map(function() {// eslint-disable-line
       Session.set('loaded', false);
       Session.set('currentArtist', null);
 
-      if (likedPlaylists) {
-        Session.set('tracks', likedPlaylists);
+      if (cache.likedPlaylists) {
+        Session.set('tracks', cache.likedPlaylists);
         Session.set('loaded', true);
       } else if (!identity)
         Meteor.call('getMe', (error, me) => {
