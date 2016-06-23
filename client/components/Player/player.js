@@ -9,7 +9,7 @@ import Queue from '../Queue/queue';
 const pauseIcon = new ReactiveVar(true);
 export const trackPosition = new ReactiveVar(0);
 
-export const currentTrack = new ReactiveVar();
+export const currentTrack = new ReactiveVar({});
 Template.registerHelper('currentTrack', () => currentTrack.get() || { duration: 100 });
 
 currentSound = null;

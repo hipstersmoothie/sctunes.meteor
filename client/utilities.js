@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Player } from './components/Player/player';
+import Player from './components/Player/player';
 import _ from 'lodash';
 
 Meteor.startup(() => {
