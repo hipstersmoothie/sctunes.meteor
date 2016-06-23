@@ -5,9 +5,11 @@ import { $ } from 'meteor/jquery';
 import _ from 'lodash';
 import { TimelineLite } from 'gsap';
 
-import { streamTrack, setPlayingToCurrent, prepareTracks, findTrackWithId } from '../../utilities';
+import { setPlayingToCurrent, prepareTracks, findTrackWithId } from '../../utilities';
+import Queue from '../Queue/queue';
+import Player from '../Player/player';
+import Loader from '../Loader/loader';
 
-let qIndex = 0;
 function addToQueue(node) {
   const orange = '#ee7600';
   const origColor = $(`#${node.id} .overlay`).css('backgroundColor');
@@ -20,11 +22,7 @@ function addToQueue(node) {
     .to(queueMessage, duration, { backgroundColor: orange })
     .to(queueMessage, duration, { backgroundColor: origColor, clearProps: 'all' });
 
-  const queue = Session.get('queue');
-  const track = Session.get('tracks')[node.index];
-  track.queueIndex = qIndex++;
-  queue.push(track);
-  Session.set('queue', queue);
+  Queue.add(node);
 }
 
 function msToTime(duration) {
@@ -40,34 +38,30 @@ function msToTime(duration) {
 }
 
 Template.trackList.helpers({
-  tracks: () => Session.get('tracks'),
-  toTime: (ms) => msToTime(ms),
-  artist: () => Session.get('currentArtist') != null
+  tracks: () => Session.get('tracks'), // eslint-disable-line meteor/no-session
+  toTime: (ms) => msToTime(ms)
 });
-Template.registerHelper('loaded', () => Session.get('loaded'));
-Template.registerHelper('artistLoaded', () => Session.get('artistLoaded'));
-Template.registerHelper('currentTrack', () => Session.get('currentTrack'));
 
 Template.trackList.events({
   'click .trackItem'(event) {
-    const tracks = Session.get('tracks');
+    const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
 
     // if(event.altKey)
     //   addToPlaylistClick(tracks, this.index, this.id);
     if (this.kind === 'playlist') {
-      Session.set('loaded', false);
+      Loader.on();
       SC.get(`/playlists/${this.id}`, playlist => {
+        // eslint-disable-next-line meteor/no-session
         Session.set('tracks', prepareTracks(playlist.tracks, true, playlist.artwork_url));
-        Session.set('loaded', true);
+        Loader.off();
       });
     } else if (event.shiftKey)
       addToQueue(this);
-    else if (this.id === Session.get('currentTrack').id)
-      currentSound.togglePause();
+    else if (this.id === Player.currentTrack.get().id)
+      Player.toggleState();
     else {
-      Session.set('playing', true);
-      streamTrack(findTrackWithId(tracks, this.id));
-      Session.set('tracks', setPlayingToCurrent(tracks));
+      Player.streamTrack(findTrackWithId(tracks, this.id));
+      Session.set('tracks', setPlayingToCurrent(tracks)); // eslint-disable-line meteor/no-session
     }
   },
   'click [id*=artist-profile]'(event) {
@@ -85,14 +79,11 @@ Template.trackList.events({
       console.log('ioeno');
     }
 
-    const tracks = Session.get('tracks');
+    const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
     const track = _.find(tracks, node => node.id === event.target.parentNode.parentNode.parentNode.id);
 
     track.user_favorite = !track.user_favorite;
     tracks[track.index] = track;
-    Session.set('tracks', tracks);
-  },
-  artist: () => Session.get('sortType') === 'Artist',
-  uploader: () => Session.get('sortType') === 'Uploader',
-  titleDoesNotContainUsername: (title, username) => title.indexOf(username) === -1
+    Session.set('tracks', tracks); // eslint-disable-line meteor/no-session
+  }
 });

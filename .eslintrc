@@ -1,10 +1,12 @@
 {
   "parser": "babel-eslint",
-  "extends": "airbnb",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
   "globals": {
     "soundManager": true,
-    "SC": true,
-    "currentSound": true
+    "SC": true
   },
   "env": {
     // I write for browser
@@ -13,8 +15,14 @@
     "node": true
   },
   // To give you an idea how to override rule options:
+  "plugins": [
+    "meteor"
+  ],
+  "extends": [
+    "airbnb",
+    "plugin:meteor/recommended"
+  ],
   "rules": {
-    // Tons of rules you can use, for example...
     "quotes": [1, "single"],
     "import/no-unresolved": 0,
     "curly": 0,
