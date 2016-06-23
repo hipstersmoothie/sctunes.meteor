@@ -167,6 +167,7 @@ Router.configure({
   authenticate: 'login'
 });
 
+let identity;
 function initRoot() {
   Session.set('loaded', false);
 
@@ -175,7 +176,7 @@ function initRoot() {
     Session.set('loaded', true);
   } else {
     Meteor.call('getMe', (error, me) => {
-      Session.set('me', me);
+      identity = me;
       getTracks(me);
     });
   }
@@ -206,14 +207,13 @@ Router.map(function() {// eslint-disable-line
     onBeforeAction() {
       Session.set('loaded', false);
 
-      if (!Session.get('artists')) {
-        if (!Session.get('me'))
+        if (!identity)
           Meteor.call('getMe', (error, me) => {
-            Session.set('me', me);
-            getFollowedArtists(me);
+            identity = me;
+            getFollowedArtists(identity);
           });
         else
-          getFollowedArtists(Session.get('me'));
+          getFollowedArtists(identity);
       } else {
         Session.set('loaded', true);
       }
@@ -233,13 +233,13 @@ Router.map(function() {// eslint-disable-line
       if (likedPlaylists) {
         Session.set('tracks', likedPlaylists);
         Session.set('loaded', true);
-      } else if (!Session.get('me'))
+      } else if (!identity)
         Meteor.call('getMe', (error, me) => {
-          Session.set('me', me);
-          getLikePlaylists(me);
+          identity = me;
+          getLikePlaylists(identity);
         });
       else
-        getLikePlaylists(Session.get('me'));
+        getLikePlaylists(identity);
 
       this.next();
     }

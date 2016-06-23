@@ -6,7 +6,6 @@ import _ from 'lodash';
 currentSound = null;
 
 Meteor.startup(() => {
-  Session.set('me', null);
   Session.set('queue', []);
   Session.set('tracks', []);
   Session.set('origTracks', []);
