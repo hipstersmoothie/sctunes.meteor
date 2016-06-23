@@ -3,12 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import _ from 'lodash';
-import Player from './components/Player/player';
-
-currentSound = null;
 
 Meteor.startup(() => {
-  Session.set('queue', []); // eslint-disable-line meteor/no-session
   Session.set('tracks', []); // eslint-disable-line meteor/no-session
   Session.set('currentTrack', {}); // eslint-disable-line meteor/no-session
   Session.set('currentArtist', null); // eslint-disable-line meteor/no-session
@@ -19,7 +15,7 @@ Meteor.startup(() => {
 });
 
 // eslint-disable-next-line meteor/no-session
-Template.registerHelper('currentTrack', () => Session.get('currentTrack').id || { duration: 100 });
+Template.registerHelper('currentTrack', () => Session.get('currentTrack') || { duration: 100 });
 
 Tracker.autorun(() => {
   if (Meteor.user() && Meteor.user().services && Meteor.user().services.soundCloud) {
@@ -93,96 +89,7 @@ export function setPlayingToCurrent(tracks, currentTrack = Session.get('currentT
   });
 }
 
-function stopLastTrack() {
-  Player.setTrackPostition(0);
-  if (currentSound)
-    currentSound.stop();
-}
-
-export function streamTrack(track) {
-  stopLastTrack();
-  Session.set('currentTrack', track); // eslint-disable-line meteor/no-session
-
-  currentSound = soundManager.createSound({
-    id: track.id,
-    url: `${track.stream_url}?client_id=628c0d8bc773cd70e1a32d0236cb79ce`,
-    stream: true
-  });
-
-  currentSound.play({
-    onload() {
-      if (this.readyState === 2)
-        playNextOrPrevTrack(true); // eslint-disable-line no-use-before-define
-    },
-    whileplaying() {
-      Player.setTrackPostition(this.position);
-    },
-    onfinish: () => playNextOrPrevTrack(true) // eslint-disable-line no-use-before-define
-  });
-}
-
 export function findTrackWithId(tracks, id) {
   return _.find(tracks, track => track.id === id);
 }
 
-function findCurrentTrackIndex(array) {
-  const cid = Session.get('currentTrack').id; // eslint-disable-line meteor/no-session
-  let current = -1;
-
-  _.forEach(array, (item, index) => {
-    if (item.id === cid) {
-      current = index;
-      return false;
-    }
-  });
-
-  return current;
-}
-
-function getTracklistTrack(increment) {
-  const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
-  const currentIndex = findCurrentTrackIndex(tracks);
-  let nextIndex = increment ? currentIndex + 1 : currentIndex - 1;
-
-  if (nextIndex === tracks.length || nextIndex < 0)
-    nextIndex = 0;
-
-  return tracks[nextIndex];
-}
-
-function setTrackChangeInfoQueue(increment, queue) {
-  const currentIndex = findCurrentTrackIndex(queue);
-  const nextToPlay = increment ? currentIndex + 1 : currentIndex - 1;
-
-  let nextTrack;
-
-  if (nextToPlay === queue.length || nextToPlay < 0) {
-    const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
-    const indexOnPage = findCurrentTrackIndex(tracks);
-
-    if (indexOnPage > -1)
-      nextTrack = tracks[indexOnPage + 1];
-    else
-      nextTrack = tracks[0];
-
-    queue = [];
-    Session.set('queueAction', 'Show');
-  } else {
-    nextTrack = queue[nextToPlay];
-  }
-
-  Session.set('queue', setPlayingToCurrent(queue, nextTrack)); // eslint-disable-line meteor/no-session
-  return nextTrack;
-}
-
-export function playNextOrPrevTrack(increment) {
-  let nextTrack;
-  const queue = Session.get('queue'); // eslint-disable-line meteor/no-session
-
-  if (!queue.length)
-    nextTrack = getTracklistTrack(increment);
-  else
-    nextTrack = setTrackChangeInfoQueue(increment, queue);
-
-  streamTrack(nextTrack);
-}
