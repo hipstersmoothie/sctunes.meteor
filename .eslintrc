@@ -6,8 +6,7 @@
   },
   "globals": {
     "soundManager": true,
-    "SC": true,
-    "currentSound": true
+    "SC": true
   },
   "env": {
     // I write for browser

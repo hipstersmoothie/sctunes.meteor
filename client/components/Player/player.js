@@ -12,7 +12,12 @@ export const trackPosition = new ReactiveVar(0);
 export const currentTrack = new ReactiveVar({});
 Template.registerHelper('currentTrack', () => currentTrack.get() || { duration: 100 });
 
-currentSound = null;
+let currentSound = null;
+
+export function toggleState() {
+  if (currentSound)
+    currentSound.togglePause();
+}
 
 function stopLastTrack() {
   trackPosition.set(0);

@@ -58,7 +58,7 @@ Template.trackList.events({
     } else if (event.shiftKey)
       addToQueue(this);
     else if (this.id === Player.currentTrack.get().id)
-      currentSound.togglePause();
+      Player.toggleState();
     else {
       Player.streamTrack(findTrackWithId(tracks, this.id));
       Session.set('tracks', setPlayingToCurrent(tracks)); // eslint-disable-line meteor/no-session
