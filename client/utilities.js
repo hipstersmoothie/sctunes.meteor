@@ -77,7 +77,6 @@ export function prepareTracks(tracks, newIndexes, defaultArt) {
   return setArt(defaultArt, getArtist(indexTracks(tracks, newIndexes)));
 }
 
-// eslint-disable-next-line meteor/no-session
 export function setPlayingToCurrent(tracks, currentTrack = Player.currentTrack.get()) {
   return _.map(tracks, track => {
     track.playstatus = track.id === currentTrack.id ? 'playing' : 'notplaying';
