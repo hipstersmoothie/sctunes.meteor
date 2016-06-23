@@ -21,19 +21,23 @@ const cache = {
 
 const data = new ReactiveDict();
 Template.registerHelper('artists', () => data.get('artists'));
+
 const artistLoaded = new ReactiveVar(true);
 Template.registerHelper('artistLoaded', () => artistLoaded.get());
 
+const loadingText = new ReactiveVar(true);
+Template.registerHelper('loadingText', () => loadingText.get());
+
 function getRoute({ user, route, experimental = false, sessionVar, length,
     source = Session, prepFunction = arr => arr, callback }) {
-  const loadingText = `Getting ${route}`;
+  const text = `Getting ${route}`;
   const startRoute = Router.current().route.getName();
-  Session.set('loadingText', `${loadingText}...`);
+  loadingText.set(`${text}...`);
 
   let collection = [];
   function resolve(items) {
     collection = collection.concat(prepFunction(items.collection));
-    Session.set('loadingText', `${loadingText}: ${collection.length}${length ? ` of ${length}` : ''}`);
+    loadingText.set(`${text}: ${collection.length}${length ? ` of ${length}` : ''}`);
 
     if (startRoute === Router.current().route.getName())
       if (items.next_href)
@@ -139,7 +143,7 @@ function getArtistTracks(artist) {
 function loadArtist(id, resource) {
   const currentArtist = Session.get('currentArtist'); // eslint-disable-line meteor/no-session
   artistLoaded.set(false);
-  Session.set('loadingText', 'Getting user\'s profile...');
+  loadingText.set('Getting user\'s profile...');
 
   function chooseResource(resourceName, artist) {
     if (resourceName === 'favorites' || artist.track_count === 0)
@@ -184,7 +188,7 @@ Router.onBeforeAction('authenticate', {
   except: ['login']
 });
 
-Router.onBeforeAction(function() {
+Router.onBeforeAction(function onBeforeAction() {
   resetSort();
   this.next();
 });

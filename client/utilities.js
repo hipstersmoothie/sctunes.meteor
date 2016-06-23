@@ -15,7 +15,6 @@ Meteor.startup(() => {
   Session.set('currentArtist', null); 
 
   Session.set('loaded', false); // eslint-disable-line meteor/no-session
-  Session.set('loadingText', ''); // eslint-disable-line meteor/no-session
 
   soundManager.setup({
     debugMode: false
