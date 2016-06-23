@@ -159,12 +159,13 @@ function setTrackChangeInfoQueue(increment, queue) {
   let nextTrack;
 
   if (nextToPlay === queue.length || nextToPlay < 0) {
-    const indexOnPage = findCurrentTrackIndex(Session.get('tracks'));
+    const tracks = Session.get('tracks');
+    const indexOnPage = findCurrentTrackIndex(tracks);
 
     if (indexOnPage > -1)
-      nextTrack = Session.get('tracks')[indexOnPage + 1];
+      nextTrack = tracks[indexOnPage + 1];
     else
-      nextTrack = Session.get('tracks')[0];
+      nextTrack = tracks[0];
 
     queue = [];
     Session.set('queueAction', 'Show');
