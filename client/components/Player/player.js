@@ -106,6 +106,7 @@ function playNextOrPrevTrack(increment) {
   else
     nextTrack = setTrackChangeInfoQueue(increment, queue);
 
+  Session.set('tracks', setPlayingToCurrent(Session.get('tracks'), nextTrack));
   streamTrack(nextTrack);
 }
 
