@@ -27,10 +27,10 @@ nav.navbar.navbar-inverse
       ul.nav.navbar-nav.navbar-center
         if duration
           li
-            a
+            .durationControls
               span Min:
               input#min-length.btn.btn-default.length(name="minlength" type="text")
-              span Max:
+              span.max Max:
               input#max-length.btn.btn-default.length(name="maxlength" type="text")
         else
           li
