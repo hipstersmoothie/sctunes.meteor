@@ -35,10 +35,10 @@ function getRoute({ user, route, experimental = false, sessionVar, length,
 
   let collection = [];
   function resolve(items) {
-    collection = collection.concat(prepFunction(items.collection));
-    loader.text(`${text}: ${collection.length}${length ? ` of ${length}` : ''}`);
+    if (startRoute === Router.current().route.getName()) {
+      collection = collection.concat(prepFunction(items.collection));
+      loader.text(`${text}: ${collection.length}${length ? ` of ${length}` : ''}`);
 
-    if (startRoute === Router.current().route.getName())
       if (items.next_href)
         SC.get(items.next_href, resolve);
       else {
@@ -46,6 +46,7 @@ function getRoute({ user, route, experimental = false, sessionVar, length,
         loader.off();
         if (callback) callback(collection);
       }
+    }
   }
 
   SC.get(`https://api.soundcloud.com${experimental ? '/e1' : ''}/users/${user}/${route}`, {
