@@ -6,7 +6,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import _ from 'lodash';
-import { resetSort } from './components/Nav/optionsRow.js';
+import { sort, resetSort } from './components/Nav/optionsRow.js';
 import loader from './components/Loader/loader.js';
 
 import { setArt, setPlayingToCurrent, prepareTracks } from './utilities';
@@ -42,7 +42,7 @@ function getRoute({ user, route, experimental = false, sessionVar, length,
       if (items.next_href)
         SC.get(items.next_href, resolve);
       else {
-        source.set(sessionVar, collection);
+        source.set(sessionVar, sort(collection));
         loader.off();
         if (callback) callback(collection);
       }

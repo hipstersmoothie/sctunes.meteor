@@ -9,8 +9,23 @@ import _ from 'lodash';
 import { indexTracks } from '../../utilities';
 import { cache } from '../../routes';
 
+const comparators = {
+  Artist: (a, b) => a.artist.localeCompare(b.artist),
+  Uploader: (a, b) => a.user.username.localeCompare(b.user.username),
+  'Play Count': (a, b) => b.playback_count - a.playback_count,
+  'Heart Count': (a, b) => b.favoritings_count - a.favoritings_count,
+  'Creation Date': (a, b) => a.created_at.localeCompare(b.created_at),
+  Duration: (a, b) => b.duration - a.duration
+};
+
 const sortType = new ReactiveVar('Like Date');
 export const resetSort = () => sortType.set('Like Date');
+export const sort = (tracks) => {
+  if (sortType.get() === 'Like Date')
+    return tracks;
+
+  return indexTracks(tracks.slice().sort(comparators[sortType.get()]), true);
+};
 
 function setTime() {
   const minTime = $('#min-length').val() * 60000;
@@ -29,15 +44,15 @@ function setTime() {
     Session.set('tracks', indexTracks(longTracks, true)); // eslint-disable-line meteor/no-session
 }
 
-function sortAndSet(sort, comparator) {
+function sortAndSet(sortName) {
   const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
 
   if (sortType.get() === sort)
     Session.set('tracks', indexTracks(tracks.reverse(), true)); // eslint-disable-line meteor/no-session
   else
-    Session.set('tracks', indexTracks(tracks.sort(comparator), true)); // eslint-disable-line meteor/no-session
+    Session.set('tracks', indexTracks(tracks.sort(comparators[sortName]), true));
 
-  sortType.set(sort);
+  sortType.set(sortName);
 }
 
 let allTracks = null;
@@ -121,12 +136,12 @@ Template.optionsRow.events = {
       }, 250);
     }
   },
-  'click .artistSort': () => sortAndSet('Artist', (a, b) => a.artist.localeCompare(b.artist)),
-  'click .uploaderSort': () => sortAndSet('Uploader', (a, b) => a.user.username.localeCompare(b.user.username)),
-  'click .playcountSort': () => sortAndSet('Play Count', (a, b) => b.playback_count - a.playback_count),
-  'click .heartcountSort': () => sortAndSet('Heart Count', (a, b) => b.favoritings_count - a.favoritings_count),
-  'click .creationSort': () => sortAndSet('Creation Date', (a, b) => a.created_at.localeCompare(b.created_at)),
-  'click .durationSort': () => sortAndSet('Duration', (a, b) => b.duration - a.duration),
+  'click .artistSort': () => sortAndSet('Artist'),
+  'click .uploaderSort': () => sortAndSet('Uploader'),
+  'click .playcountSort': () => sortAndSet('Play Count'),
+  'click .heartcountSort': () => sortAndSet('Heart Count'),
+  'click .creationSort': () => sortAndSet('Creation Date'),
+  'click .durationSort': () => sortAndSet('Duration'),
   'click .searchSort': () => sortType.set('Search'),
   // eslint-disable-next-line meteor/no-session
   'click #shuffle': () => Session.set('tracks', shuffle(Session.get('tracks'))),
