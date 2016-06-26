@@ -10,7 +10,7 @@
 			else if artistData.country
 				h5.artist-title #{ artistData.country }
 		if artistData.description
-			p.desc #{trim artistData.description}
+			p.desc {{trim artistData.description}}
 .row.artist-buttons
 	.btn-group
 		button#artist-tracks.btn.btn-artist.btn-default(type="button" class="{{isActive 'artistTracks'}}") 
