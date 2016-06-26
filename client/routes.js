@@ -148,7 +148,7 @@ function collapseTracksInPlaylist(data) {
 }
 
 function getArtistTracks(artist) {
-  getResource('stream', artist, 'track_count', (data) => collapseTracksInPlaylist(splitData(artist, data))); // _.bind(splitData, this, artist));
+  getResource('stream', artist, 'track_count', (data) => collapseTracksInPlaylist(splitData(artist, data)));
 }
 
 function loadArtist(id, resource) {
