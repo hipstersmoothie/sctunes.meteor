@@ -113,17 +113,20 @@ function playNextOrPrevTrack(increment) {
 
 Template.player.helpers({
   trackPosition: () => trackPosition.get(),
-  trackPercent: () => {
-    let v = (trackPosition.get() / currentTrack.get().duration) * 100;
-    console.log(v)
-    return `${v}%`;
-  },
+  trackPercent: () => `${(trackPosition.get() / currentTrack.get().duration) * 100}%`,
   queueShowing: () => Queue.queueAction.get() === 'Hide',
   pauseIcon: () => pauseIcon.get()
 });
 
 Template.player.events({
-  'click #time-slider': event => currentSound.setPosition(event.currentTarget.value),
+  'input #time-slider': event => {
+    currentSound.pause();
+    currentSound.setPosition(event.currentTarget.value);
+  },
+  'change #time-slider': event => {
+    currentSound.setPosition(event.currentTarget.value);
+    currentSound.play();
+  },
   'click #playpause'() {
     pauseIcon.set(!pauseIcon.get());
     currentSound.togglePause();
