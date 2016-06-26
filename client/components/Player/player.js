@@ -113,6 +113,11 @@ function playNextOrPrevTrack(increment) {
 
 Template.player.helpers({
   trackPosition: () => trackPosition.get(),
+  trackPercent: () => {
+    let v = (trackPosition.get() / currentTrack.get().duration) * 100;
+    console.log(v)
+    return `${v}%`;
+  },
   queueShowing: () => Queue.queueAction.get() === 'Hide',
   pauseIcon: () => pauseIcon.get()
 });
