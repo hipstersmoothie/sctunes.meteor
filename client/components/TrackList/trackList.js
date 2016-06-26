@@ -66,24 +66,25 @@ Template.trackList.events({
   },
   'click [id*=artist-profile]'(event) {
     event.stopPropagation();
-    Router.go('artist', { _id: event.currentTarget.id.split('-')[0] });
+    Router.go('artist', { _id: this.user_id });
   },
   'click .heartCount'(event) {
+    event.stopPropagation();
     try {
-      if (event.target.classList[1] === 'hearted')
-        SC.delete(`/me/favorites/${event.target.parentNode.parentNode.parentNode.id}`);
-      else {
-        SC.put(`/me/favorites/${event.target.parentNode.parentNode.parentNode.id}`);
+      if (this.user_favorite) {
+        SC.delete(`/me/favorites/${this.id}`);
+        this.favoritings_count--;
+      } else {
+        SC.put(`/me/favorites/${this.id}`);
+        this.favoritings_count++;
       }
     } catch (error) {
-      console.log('ioeno');
+      console.log(error);
     }
 
     const tracks = Session.get('tracks'); // eslint-disable-line meteor/no-session
-    const track = _.find(tracks, node => node.id === event.target.parentNode.parentNode.parentNode.id);
-
-    track.user_favorite = !track.user_favorite;
-    tracks[track.index] = track;
+    this.user_favorite = !this.user_favorite;
+    tracks[this.index] = this;
     Session.set('tracks', tracks); // eslint-disable-line meteor/no-session
   }
 });
