@@ -137,8 +137,18 @@ function getFavorites(artist) {
   getResource('likes', artist, 'public_favorites_count', _.bind(splitData, this, artist));
 }
 
+function collapseTracksInPlaylist(data) {
+  const tracksInPlaylist = _.chain(data)
+    .filter(node => node.track_count)
+    .map(playlist => _.map(playlist.tracks, track => track.id))
+    .flatten()
+    .value();
+
+  return _.filter(data, node => tracksInPlaylist.indexOf(node.id) === -1);
+}
+
 function getArtistTracks(artist) {
-  getResource('stream', artist, 'track_count', _.bind(splitData, this, artist));
+  getResource('stream', artist, 'track_count', (data) => collapseTracksInPlaylist(splitData(artist, data))); // _.bind(splitData, this, artist));
 }
 
 function loadArtist(id, resource) {
