@@ -2,16 +2,16 @@
   //- .player-node.artwork
   //-   img(src='#{currentTrack.artwork_url}')
     
-  .player-node.controls
-    //- div
-      //- span.controls
-      //-   span#prevButton.playerControlButton
-      //-     span.glyphicon.glyphicon-step-backward
-      //-   span#playpause.playerControlButton
-      //-     span#playPauseIcon.glyphicon(class="{{#if pauseIcon}}glyphicon-pause{{else}}glyphicon-play{{/if}}")
-      //-   span#nextButton.playerControlButton
-      //-     span.glyphicon.glyphicon-step-forward
-      //- span.player-title #{currentTrack.title} - #{currentTrack.user.username}
+  .player-node
+    .top
+      span.controls
+        span#prevButton.playerControlButton
+          span.glyphicon.glyphicon-step-backward
+        span#playpause.playerControlButton
+          span#playPauseIcon.glyphicon(class="{{#if pauseIcon}}glyphicon-pause{{else}}glyphicon-play{{/if}}")
+        span#nextButton.playerControlButton
+          span.glyphicon.glyphicon-step-forward
+      span.player-title #{currentTrack.title} - #{currentTrack.user.username}
     #currentTrackPlayer
       input(type='range' min='0' max='#{currentTrack.duration}' value='#{trackPosition}' id='time-slider')
       .progress(style='width:#{trackPercent}')

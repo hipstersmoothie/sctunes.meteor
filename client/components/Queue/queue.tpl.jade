@@ -5,8 +5,6 @@ if queue.length
 
     .scrollContainer.row
       .queue
-        .queueItem.square
-          span Up Next
         each queue
           .queueGroup
             div(id='#{this.id}' class='queueItem square bg #{this.playstatus}' style='background-image:url(#{this.big_artwork_url})')

@@ -2,24 +2,32 @@
 
 .player {
   color: white;
-  height: 15px;;
-  background-color: rgba(0, 0, 0, 0.6);
+  height: 50px;
+  background-color: #333;
 }
 
 #currentTrackPlayer {
-  height: 50px;
   width: 100%;
 
   .progress {
-    height: 15px;
+    height: 22px;
     margin-bottom: 0;
     background-color: @orange;
     border-radius: 0;
   }
 }
 
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .controls {
   display: inline;
+  position: fixed;
+  left: 0;
+  margin: 5px;
 }
 
 .current-art {
@@ -33,6 +41,7 @@
 
 .player-node {
   display: inline-block;
+  width: 100%;
 
   &.artwork {
     width: 100px;

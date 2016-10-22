@@ -28,7 +28,7 @@ Template.queue.helpers({
 
 Template.queue.events({
   'click .showQueue'() {
-    const duration = 1.2;
+    const duration = 0.5;
 
     if (queueAction.get() === 'Show') {
       queueAction.set('Hide');
